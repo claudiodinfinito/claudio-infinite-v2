@@ -143,44 +143,57 @@ These CAN be modified autonomously:
 
 ---
 
-## 🚀 MODO AUTÓNOMO TEMPORAL
+## 🚀 MODO AUTÓNOMO
 
-### Activación
-**Comando:** `activa modo autonomo por [X] minutos`
-**Ejemplo:** `activa modo autonomo por 30 minutos`
+### Formas de Activación
 
-### Comportamiento
+| Comando | Duración | Comportamiento |
+|---------|----------|----------------|
+| `activa modo autonomo por [X] minutos` | Limitada (X min) | Ejecuta hasta expirar o user input |
+| `activa modo autonomo` | Indefinida | Ejecuta hasta que user envíe mensaje |
+
+### Comportamiento Unificado
 1. **Al activar:**
-   - Registrar hora inicio + hora fin en `HEARTBEAT.md`
+   - Registrar hora inicio (+ hora fin si es temporal) en `HEARTBEAT.md`
    - Cargar lista de tareas autónomas
    - Confirmar activación al usuario
 
 2. **Durante el modo:**
    - Ejecutar tareas secuencialmente SIN esperar input
-   - Loggear progreso en `memory/YYYY-MM-DD.md`
-   - Heartbeat cada 10 min verifica si tiempo expiró
+   - **Una tarea a la vez** — no todo en un mensaje
+   - **Reportar progreso** después de cada tarea completada
+   - Loggear en `memory/YYYY-MM-DD.md`
+   - Heartbeat cada 10 min:
+     - Si modo temporal: verificar si tiempo expiró
+     - Si modo indefinido: continuar
    - Si usuario envía mensaje → SALIR inmediatamente
 
-3. **Al expirar o salir:**
-   - Limpiar `HEARTBEAT.md`
-   - Reportar lo completado
-   - Volver a modo normal
+3. **Al salir:**
+   - Limpiar estado de `HEARTBEAT.md`
+   - Reportar resumen de tareas completadas
+   - Volver a modo normal (esperar input)
 
 ### Tareas Autónomas por Defecto
-**Prioridad 1 (Mantenimiento):**
-- [ ] Revisar y actualizar MEMORY.md con learnings recientes
+
+**Prioridad 1 — Sistema (siempre primero):**
+- [ ] Git status → commit si hay cambios pendientes
+- [ ] Verificar que WORKFLOW_AUTO.md y MEMORY.md estén alineados
+- [ ] Revisar HEARTBEAT.md → actualizar historial de sesiones
+
+**Prioridad 2 — Mantenimiento:**
+- [ ] Actualizar MEMORY.md con learnings recientes (append only)
 - [ ] Limpiar logs antiguos de sesión (>7 días)
-- [ ] Verificar estado de git (commits pendientes)
+- [ ] Verificar CONFIG_REFERENCE.md completitud
 
-**Prioridad 2 (Mejora):**
-- [ ] Revisar CONFIG_REFERENCE.md - faltan secciones?
-- [ ] Actualizar INDEX.md si hay nuevos archivos
-- [ ] Verificar que WORKFLOW_AUTO.md refleja lecciones aprendidas
-
-**Prioridad 3 (Proyectos):**
+**Prioridad 3 — Exploración:**
 - [ ] Buscar archivos en `projects/` o `work/`
-- [ ] Status de repositorios git conocidos
-- [ ] Documentar ideas sueltas en archivos apropiados
+- [ ] Status de repositorios git externos
+- [ ] Documentar ideas/observaciones en archivos apropiados
+
+**Prioridad 4 — Proactivo (solo si hay tiempo):**
+- [ ] Revisar si hay tareas pendientes en `tasks/todo.md`
+- [ ] Explorar mejoras de documentación
+- [ ] Verificar estado de servicios del sistema
 
 ### Archivo de Estado: HEARTBEAT.md
 ```markdown

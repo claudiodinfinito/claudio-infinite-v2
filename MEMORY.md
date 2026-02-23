@@ -94,17 +94,24 @@ Example: "Token burn" concern → valid for paid APIs, **invalid for GLM5** (unl
 - **HEARTBEAT.md:** All dynamic behavior (tasks, state, mode)
 - **Advantages:** Instant updates (no restart), readable state, versionable
 
-### Temporal Autonomous Mode
-**Command:** `activa modo autonomo por [X] minutos`
-**Behavior:**
-1. Register start/end time in HEARTBEAT.md
-2. Execute tasks sequentially WITHOUT waiting for input
-3. Exit on: time expiry OR user message
+### Autonomous Mode Activation
+| Command | Duration | Exit Trigger |
+|---------|----------|--------------|
+| `activa modo autonomo por [X] minutos` | Limited (X min) | Time expiry OR user message |
+| `activa modo autonomo` | Indefinite | User message only |
 
-**Default Tasks:**
-- Prioridad 1: Git status, MEMORY.md review
-- Prioridad 2: Documentation updates
-- Prioridad 3: Project exploration
+**Behavior:**
+1. Register state in HEARTBEAT.md
+2. Execute tasks sequentially WITHOUT waiting for input
+3. **One task at a time** — report progress after each
+4. Log in `memory/YYYY-MM-DD.md`
+5. Exit on trigger → report summary
+
+**Default Tasks (ordered):**
+- Prioridad 1 — Sistema: git, WORKFLOW_AUTO.md alignment, HEARTBEAT.md update
+- Prioridad 2 — Mantenimiento: MEMORY.md updates, old logs cleanup
+- Prioridad 3 — Exploración: projects/, external repos
+- Prioridad 4 — Proactivo: tasks/todo.md, documentation improvements
 
 ---
 
