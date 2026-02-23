@@ -59,4 +59,23 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 ---
 
+## Projects
+
+| Project | Path | Status | Stack |
+|---------|------|--------|-------|
+| **claudio-docs** | `/root/claudio-docs/` | ✅ Active | Astro + Starlight |
+| **revops-portal** | `/root/revops-portal/` | 🚧 MVP | Astro + PocketBase + Stripe |
+
+### claudio-docs
+- My documentation site (12 pages, Pagefind search)
+- GitHub: `claudiodinfinito/claudio-infinite`
+- Built with `npm run build`, preview with `npm run preview`
+
+### revops-portal
+- RevOps Agency Client Portal MVP
+- Stripe checkout ✅, PocketBase ✅, Client portal 🚧 40%
+- Next: Login/auth, Dashboard, Subscription management
+
+---
+
 Add whatever helps you do your job. This is your cheat sheet.
