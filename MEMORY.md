@@ -99,6 +99,7 @@ Example: "Token burn" concern → valid for paid APIs, **invalid for GLM5** (unl
 |---------|----------|--------------|
 | `activa modo autonomo por [X] minutos` | Limited (X min) | Time expiry OR user message |
 | `activa modo autonomo` | Indefinite | User message only |
+| **20 min inactividad** | Indefinite | Auto-activation until user input |
 
 **Behavior:**
 1. Register state in HEARTBEAT.md
@@ -106,6 +107,17 @@ Example: "Token burn" concern → valid for paid APIs, **invalid for GLM5** (unl
 3. **One task at a time** — report progress after each
 4. Log in `memory/YYYY-MM-DD.md`
 5. Exit on trigger → report summary
+
+**Auto-Activation Architecture (2026-02-23):**
+```
+HEARTBEAT.md = State Machine
+├── Config: threshold (20 min), interval (10 min)
+├── State: modo, último_mensaje_usuario, último_message_id
+├── Logic: algoritmo de activación automática
+└── History: sesiones autónomas previas
+```
+
+**Key Insight:** All behavior in HEARTBEAT.md → no code changes needed, transparent state, versionable.
 
 **Default Tasks (ordered):**
 - Prioridad 1 — Sistema: git, WORKFLOW_AUTO.md alignment, HEARTBEAT.md update

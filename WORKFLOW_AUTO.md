@@ -135,11 +135,57 @@ These CAN be modified autonomously:
 - Long analysis tasks
 - Session log review
 
-## ⚡ Inactivity Threshold
+## ⚡ Inactivity Threshold (Auto-Activation)
 
-- 10 minutes silence → Enter autonomous mode
-- User message → Immediately exit autonomous mode
-- Running tasks complete gracefully
+**Threshold:** 20 minutos de inactividad
+**Modo:** Indefinido (hasta que usuario envíe mensaje)
+
+### Arquitectura de Activación Automática
+
+```
+HEARTBEAT.md = State Machine
+├── Config: threshold, interval
+├── State: modo, último_mensaje_usuario, último_message_id
+├── Logic: algoritmo de activación
+└── History: sesiones autónomas previas
+```
+
+### Flujo de Activación
+
+```
+Heartbeat cada 10min
+    │
+    ├─► Leer HEARTBEAT.md
+    │
+    ├─► Calcular inactividad
+    │       └─► inactividad = ahora - último_mensaje_usuario
+    │
+    ├─► ¿Inactividad >= 20 min Y modo == Normal?
+    │       ├─► SÍ → Activar modo autónomo indefinido
+    │       │         └─► Ejecutar tareas → Reportar progreso
+    │       └─► NO → HEARTBEAT_OK
+    │
+    └─► ¿Usuario envió mensaje?
+            ├─► SÍ → Desactivar autónomo → Reportar resumen
+            └─► NO → Continuar en estado actual
+```
+
+### Transiciones
+
+| Condición | Acción |
+|-----------|--------|
+| 20 min inactividad | Normal → Autónomo (indefinido) |
+| Usuario mensaje | Autónomo → Normal + resumen |
+| `activa modo autonomo` | Normal → Autónomo (indefinido) |
+| `activa modo autonomo por X min` | Normal → Autónomo (temporal) |
+
+### Ventajas de Esta Arquitectura
+
+1. **Zero code changes** — Todo en HEARTBEAT.md
+2. **Transparente** — Estado visible y debuggeable
+3. **Versionable** — Git trackeable
+4. **Flexible** — Threshold configurable sin restart
+5. **Elegante** — Un archivo = state machine completa
 
 ---
 
@@ -147,10 +193,19 @@ These CAN be modified autonomously:
 
 ### Formas de Activación
 
-| Comando | Duración | Comportamiento |
+| Trigger | Duración | Comportamiento |
 |---------|----------|----------------|
+| **20 min inactividad** | Indefinida | Auto-activación hasta user input |
 | `activa modo autonomo por [X] minutos` | Limitada (X min) | Ejecuta hasta expirar o user input |
 | `activa modo autonomo` | Indefinida | Ejecuta hasta que user envíe mensaje |
+
+### Estado: HEARTBEAT.md
+
+El archivo HEARTBEAT.md actúa como **state machine** completo:
+- Configuración (threshold, interval)
+- Estado actual (modo, último mensaje, inactividad)
+- Lógica de activación (algoritmo)
+- Historial de sesiones
 
 ### Comportamiento Unificado
 1. **Al activar:**
