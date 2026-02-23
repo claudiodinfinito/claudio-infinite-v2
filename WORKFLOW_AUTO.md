@@ -3,8 +3,7 @@
 ## ⚙️ HEARTBEAT CONFIGURATION
 
 **Interval:** Every 10 minutes
-**Token Priority:** Use cronjobs and tools efficiently to reduce token burn
-**Subagents:** ❌ NO — Token burn. Prefer cron, background exec, or direct tool calls.
+**Subagents:** ✅ YES — GLM5 has unlimited tokens. Use liberally to keep main context clean.
 
 ## 📋 DYNAMIC TASK LIST
 
