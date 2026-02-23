@@ -37,4 +37,26 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 ---
 
+## Server Environment
+
+**VPS:** racknerd-8bf9cb7 (Ubuntu 22.04.5 LTS)
+**Hostname:** `racknerd-8bf9cb7`
+**Specs:**
+- Disk: 144GB total, 88GB available (37% used)
+- RAM: 7.8GB total, 5.5GB available
+- Uptime: 19+ days
+
+**Key Directories:**
+- Workspace: `/root/.openclaw/workspace`
+- Config: `/root/.openclaw/openclaw.json`
+- Off-limits: `/captain/` (CapRover)
+
+**Running Services:**
+- OpenClaw Gateway (port 18789)
+- CapRover (Docker orchestration)
+
+**Timezone:** UTC (server) / Cancún UTC-5 (user)
+
+---
+
 Add whatever helps you do your job. This is your cheat sheet.
