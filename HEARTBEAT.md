@@ -9,8 +9,8 @@
 ### Tareas en Progreso
 - [x] Resolver contradicción subagentes en WORKFLOW_AUTO.md
 - [x] Crear tasks/todo.md
-- [ ] Verificar consistencia de documentación
-- [ ] Git commit de cambios
+- [x] Git commit de cambios
+- [ ] Verificar consistencia de documentación (en progreso)
 
 ## ⚪ Estado Normal (desactivado)
 

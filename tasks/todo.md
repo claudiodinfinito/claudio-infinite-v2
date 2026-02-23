@@ -4,9 +4,9 @@
 
 ### 2026-02-23 - Workflow Orchestration Setup
 - [x] Resolver contradicción subagentes en WORKFLOW_AUTO.md
+- [x] Crear tasks/todo.md para tracking
+- [x] Git commit de cambios autónomos
 - [ ] Verificar consistencia en todos los archivos de documentación
-- [ ] Confirmar WORKFLOW_AUTO.md refleja lecciones aprendidas
-- [ ] Git commit de cambios autónomos
 
 ## Completed
 
