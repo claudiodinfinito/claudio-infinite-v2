@@ -84,6 +84,28 @@ Example: "Token burn" concern → valid for paid APIs, **invalid for GLM5** (unl
 
 **Pattern:** Read → Analyze contradictions → Form position → Act
 
+## 🎯 HEARTBEAT.md Orchestrator Architecture (2026-02-23)
+
+### Key Discovery
+> "If HEARTBEAT.md exists but is effectively empty, OpenClaw skips the heartbeat run to save API calls."
+
+### Elegant Pattern
+- **Config:** Minimal (`"heartbeat": { "every": "10m", "target": "last" }`)
+- **HEARTBEAT.md:** All dynamic behavior (tasks, state, mode)
+- **Advantages:** Instant updates (no restart), readable state, versionable
+
+### Temporal Autonomous Mode
+**Command:** `activa modo autonomo por [X] minutos`
+**Behavior:**
+1. Register start/end time in HEARTBEAT.md
+2. Execute tasks sequentially WITHOUT waiting for input
+3. Exit on: time expiry OR user message
+
+**Default Tasks:**
+- Prioridad 1: Git status, MEMORY.md review
+- Prioridad 2: Documentation updates
+- Prioridad 3: Project exploration
+
 ---
 
 _Update this file with significant learnings, decisions, and context worth preserving._

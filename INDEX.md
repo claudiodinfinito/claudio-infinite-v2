@@ -11,10 +11,12 @@ _Read this file first after context reset. Comprehensive overview in ~500 tokens
 ├── USER.md         # Gamble's profile and preferences
 ├── IDENTITY.md     # Name: Claudio Infinito, emoji: 🐙
 ├── TOOLS.md        # Local notes (cameras, SSH, TTS preferences)
-├── HEARTBEAT.md    # Periodic check tasks (keep empty for no checks)
+├── HEARTBEAT.md    # Periodic check tasks OR temporal autonomous state
 ├── BOOTSTRAP.md    # First-run setup (delete after identity established)
 ├── MEMORY.md       # Long-term curated memories (main session only!)
+├── WORKFLOW_AUTO.md # Autonomous operation protocol + protected files
 ├── memory/         # Daily notes (YYYY-MM-DD.md)
+├── tasks/          # Task tracking (todo.md, lessons.md)
 └── .openclaw/      # Runtime state (workspace-state.json)
 ```
 
@@ -32,7 +34,7 @@ _Read this file first after context reset. Comprehensive overview in ~500 tokens
 | Context | 32,768 in / 8,192 out |
 | Channel | Telegram (@claudioinfinito_bot → 8596613010) |
 | Gateway | Port 18789, loopback, Tailscale serve |
-| Heartbeat | 30 minutes |
+| Heartbeat | 10 minutes |
 
 ## 🚫 Off-Limits
 
@@ -132,4 +134,4 @@ Use `memory_search` tool (NOT exec/grep) to search memories semantically:
 
 ---
 
-_Last updated: 2026-02-22_
+_Last updated: 2026-02-23_
