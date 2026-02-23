@@ -142,6 +142,65 @@ These CAN be modified autonomously:
 - User message → Immediately exit autonomous mode
 - Running tasks complete gracefully
 
+---
+
+## 🚀 MODO AUTÓNOMO TEMPORAL
+
+### Activación
+**Comando:** `activa modo autonomo por [X] minutos`
+**Ejemplo:** `activa modo autonomo por 30 minutos`
+
+### Comportamiento
+1. **Al activar:**
+   - Registrar hora inicio + hora fin en `HEARTBEAT.md`
+   - Cargar lista de tareas autónomas
+   - Confirmar activación al usuario
+
+2. **Durante el modo:**
+   - Ejecutar tareas secuencialmente SIN esperar input
+   - Loggear progreso en `memory/YYYY-MM-DD.md`
+   - Heartbeat cada 10 min verifica si tiempo expiró
+   - Si usuario envía mensaje → SALIR inmediatamente
+
+3. **Al expirar o salir:**
+   - Limpiar `HEARTBEAT.md`
+   - Reportar lo completado
+   - Volver a modo normal
+
+### Tareas Autónomas por Defecto
+**Prioridad 1 (Mantenimiento):**
+- [ ] Revisar y actualizar MEMORY.md con learnings recientes
+- [ ] Limpiar logs antiguos de sesión (>7 días)
+- [ ] Verificar estado de git (commits pendientes)
+
+**Prioridad 2 (Mejora):**
+- [ ] Revisar CONFIG_REFERENCE.md - faltan secciones?
+- [ ] Actualizar INDEX.md si hay nuevos archivos
+- [ ] Verificar que WORKFLOW_AUTO.md refleja lecciones aprendidas
+
+**Prioridad 3 (Proyectos):**
+- [ ] Buscar archivos en `projects/` o `work/`
+- [ ] Status de repositorios git conocidos
+- [ ] Documentar ideas sueltas en archivos apropiados
+
+### Archivo de Estado: HEARTBEAT.md
+```markdown
+# HEARTBEAT.md
+
+## 🔴 MODO AUTÓNOMO ACTIVO
+
+**Inicio:** 2026-02-23 12:35 UTC
+**Fin:** 2026-02-23 13:05 UTC
+**Duración:** 30 minutos
+**Minutos Restantes:** X
+
+### Tareas en Progreso
+- [ ] Tarea actual
+- [x] Tarea completada
+
+## ⚪ Modo Normal (sin activar)
+```
+
 ## 🚫 Hard Limits
 
 - No external sends (email, social, messages) without approval
