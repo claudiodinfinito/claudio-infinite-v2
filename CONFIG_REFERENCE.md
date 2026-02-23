@@ -352,11 +352,300 @@ heartbeat: {
 
 ```json5
 plugins: {
-  slots: {
-    memory: "memory-core",  // or "none" to disable
+  enabled: true,
+  allow: ["voice-call"],  // optional allowlist
+  deny: [],
+  load: {
+    paths: ["~/Projects/oss/voice-call-extension"],
+  },
+  entries: {
+    "voice-call": {
+      enabled: true,
+      config: { provider: "twilio" },
+    },
   },
 }
 ```
+
+**Locations:** `~/.openclaw/extensions`, `<workspace>/.openclaw/extensions`, `plugins.load.paths`
+**Note:** Config changes require gateway restart.
+
+---
+
+## 🎯 skills
+
+```json5
+skills: {
+  allowBundled: ["gemini", "peekaboo"],  // restrict bundled skills
+  load: {
+    extraDirs: ["~/Projects/agent-scripts/skills"],
+  },
+  install: {
+    preferBrew: true,
+    nodeManager: "npm",  // npm | pnpm | yarn
+  },
+  entries: {
+    "nano-banana-pro": {
+      apiKey: "GEMINI_KEY_HERE",
+      env: { GEMINI_API_KEY: "GEMINI_KEY_HERE" },
+    },
+    peekaboo: { enabled: true },
+    sag: { enabled: false },  // disable a skill
+  },
+}
+```
+
+- `allowBundled`: optional allowlist for bundled skills only
+- `entries.<skillKey>.enabled: false` disables a skill even if bundled/installed
+- `entries.<skillKey>.apiKey`: convenience for skills declaring a primary env var
+
+---
+
+## 🌐 browser
+
+```json5
+browser: {
+  enabled: true,
+  evaluateEnabled: true,  // false disables act:evaluate and wait --fn
+  defaultProfile: "chrome",
+  profiles: {
+    openclaw: { cdpPort: 18800, color: "#FF4500" },
+    work: { cdpPort: 18801, color: "#0066CC" },
+    remote: { cdpUrl: "http://10.0.0.42:9222", color: "#00AA00" },  // attach-only
+  },
+  color: "#FF4500",
+  // headless: false,
+  // noSandbox: false,
+  // executablePath: "/Applications/Brave Browser.app/...",
+  // attachOnly: false,
+}
+```
+
+- Remote profiles are attach-only (start/stop/reset disabled)
+- Auto-detect order: default browser if Chromium-based → Chrome → Brave → Edge → Chromium → Chrome Canary
+- Control service: loopback only (port derived from `gateway.port`, default `18791`)
+
+---
+
+## 🎨 ui
+
+```json5
+ui: {
+  seamColor: "#FF4500",  // accent color for native app UI chrome
+  assistant: {
+    name: "OpenClaw",
+    avatar: "CB",  // emoji, short text, image URL, or data URI
+  },
+}
+```
+
+---
+
+## 🚪 gateway
+
+```json5
+gateway: {
+  mode: "local",  // local | remote
+  port: 18789,
+  bind: "loopback",  // auto | loopback | lan | tailnet | custom
+  auth: {
+    mode: "token",  // none | token | password | trusted-proxy
+    token: "your-token",
+    allowTailscale: true,
+    rateLimit: {
+      maxAttempts: 10,
+      windowMs: 60000,
+      lockoutMs: 300000,
+      exemptLoopback: true,
+    },
+  },
+  tailscale: {
+    mode: "off",  // off | serve | funnel
+    resetOnExit: false,
+  },
+  controlUi: {
+    enabled: true,
+    basePath: "/openclaw",
+  },
+  remote: {
+    url: "ws://gateway.tailnet:18789",
+    transport: "ssh",  // ssh | direct
+    token: "your-token",
+  },
+  trustedProxies: ["10.0.0.1"],
+  allowRealIpFallback: false,
+  tools: {
+    deny: ["browser"],  // extra HTTP deny
+    allow: ["gateway"],  // remove from default deny
+  },
+}
+```
+
+**Auth modes:**
+- `none`: explicit no-auth (trusted loopback only)
+- `token`: shared token
+- `password`: shared password
+- `trusted-proxy`: delegate to reverse proxy, trust headers from `trustedProxies`
+
+**Multi-instance:** Use `OPENCLAW_CONFIG_PATH` + `OPENCLAW_STATE_DIR` for separate gateways.
+
+---
+
+## 🪝 hooks
+
+```json5
+hooks: {
+  enabled: true,
+  token: "shared-secret",
+  path: "/hooks",
+  maxBodyBytes: 262144,
+  defaultSessionKey: "hook:ingress",
+  allowRequestSessionKey: false,
+  allowedSessionKeyPrefixes: ["hook:"],
+  allowedAgentIds: ["hooks", "main"],
+  presets: ["gmail"],
+  transformsDir: "~/.openclaw/hooks/transforms",
+  mappings: [
+    {
+      match: { path: "gmail" },
+      action: "agent",
+      agentId: "hooks",
+      wakeMode: "now",
+      name: "Gmail",
+      sessionKey: "hook:gmail:{{messages[0].id}}",
+      messageTemplate: "From: {{messages[0].from}}\nSubject: {{messages[0].subject}}",
+      deliver: true,
+      channel: "last",
+      model: "openai/gpt-5.2-mini",
+    },
+  ],
+}
+```
+
+**Endpoints:**
+- `POST /hooks/wake` → `{ text, mode?: "now"|"next-heartbeat" }`
+- `POST /hooks/agent` → `{ message, agentId?, sessionKey?, ... }`
+- `POST /hooks/<name>` → resolved via `hooks.mappings`
+
+**Gmail integration:** Auto-starts `gog gmail watch serve` when configured.
+
+---
+
+## 🖼️ canvasHost
+
+```json5
+canvasHost: {
+  root: "~/.openclaw/workspace/canvas",
+  liveReload: true,
+  // enabled: false,
+}
+```
+
+- Serves HTML/CSS/JS at `http://<gateway>:<port>/__openclaw__/canvas/`
+- Also serves A2UI at `/__openclaw__/a2ui/`
+- Non-loopback binds require Gateway auth
+- Capability URLs for paired nodes (auto-expiring)
+
+---
+
+## 🔍 discovery
+
+```json5
+discovery: {
+  mdns: {
+    mode: "minimal",  // minimal | full | off
+  },
+  wideArea: { enabled: true },
+}
+```
+
+- `mdns`: Bonjour/mDNS discovery (minimal omits `cliPath` + `sshPort`)
+- `wideArea`: DNS-SD for cross-network discovery (requires DNS server)
+
+---
+
+## 🌿 env
+
+```json5
+env: {
+  OPENROUTER_API_KEY: "sk-or-...",
+  vars: {
+    GROQ_API_KEY: "gsk-...",
+  },
+  shellEnv: {
+    enabled: true,
+    timeoutMs: 15000,
+  },
+}
+```
+
+- Inline vars only applied if process env is missing the key
+- `.env` files: CWD `.env` + `~/.openclaw/.env` (neither overrides existing)
+- `shellEnv`: imports missing expected keys from login shell profile
+
+**Env var substitution:** Use `${VAR_NAME}` in any config string:
+```json5
+gateway: { auth: { token: "${OPENCLAW_GATEWAY_TOKEN}" } }
+```
+
+---
+
+## 📝 logging
+
+```json5
+logging: {
+  level: "info",
+  file: "/tmp/openclaw/openclaw.log",
+  consoleLevel: "info",
+  consoleStyle: "pretty",  // pretty | compact | json
+  redactSensitive: "tools",  // off | tools
+  redactPatterns: ["\\bTOKEN\\b\\s*[=:]\\s*..."],
+}
+```
+
+---
+
+## 🆔 identity (per-agent)
+
+```json5
+agents: {
+  list: [
+    {
+      id: "main",
+      identity: {
+        name: "Samantha",
+        theme: "helpful sloth",
+        emoji: "🦥",
+        avatar: "avatars/samantha.png",  // workspace-relative, http(s), or data:
+      },
+    },
+  ],
+}
+```
+
+Derived from macOS onboarding. Sets `messages.ackReaction` from `identity.emoji` (fallback 👀).
+
+---
+
+## 📦 $include (config splitting)
+
+```json5
+// ~/.openclaw/openclaw.json
+{
+  gateway: { port: 18789 },
+  agents: { $include: "./agents.json5" },
+  broadcast: {
+    $include: ["./clients/mueller.json5", "./clients/schmidt.json5"],
+  },
+}
+```
+
+**Merge behavior:**
+- Single file: replaces containing object
+- Array of files: deep-merged in order
+- Sibling keys: merged after includes (override)
+- Max depth: 10 levels
+- Paths must stay inside top-level config directory
 
 ---
 
