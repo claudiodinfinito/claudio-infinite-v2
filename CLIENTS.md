@@ -74,9 +74,71 @@ _System for tracking clients, projects, and billing._
 
 ---
 
+### Client 002: Tours - Landing + Google Ads
+
+**Basic Info:**
+| Field | Value |
+|-------|-------|
+| **Name** | Tours (pendiente nombre exacto) |
+| **Business Type** | Tours / Turismo |
+| **Timezone** | Mexico (UTC-6) |
+| **Since** | 2026-02-24 |
+| **Source** | Lead directo |
+
+**Project:**
+| Field | Value |
+|-------|-------|
+| **Type** | Landing Page + Google Ads Management |
+| **Status** | 🟡 Active |
+| **Start Date** | 2026-02-24 |
+| **Deliverables** | Landing page, Google Ads setup |
+
+**Billing:**
+| Field | Value |
+|-------|-------|
+| **Landing Page** | [Por definir] |
+| **Google Ads Management** | $3,000 MXN/mes |
+| **Google Ads Budget** | $6,000 MXN (ficha de pago a enviar hoy) |
+| **Total MRR** | $3,000 MXN/mes |
+
+**Deliverables:**
+- [ ] Enviar ficha de pago Google Ads ($6,000 MXN) - HOY
+- [ ] Diseñar landing page
+- [ ] Configurar Google Ads
+- [ ] Setup conversion tracking
+
+**Communication:**
+- **Preferred Channel:** Telegram (Gamble)
+- **Last Contact:** 2026-02-24
+- **Notes:**
+  - Cliente necesita landing para tours
+  - Google Ads mensual: $3,000 MXN gestión
+  - Presupuesto ads: $6,000 MXN
+
+---
+
 ## 📈 Pipeline (Potential Clients)
 
-### Prospect 001: [Name]
+### Prospect 001: Tours - Landing + Google Ads
+| Field | Value |
+|-------|-------|
+| **Name** | Tours (pendiente nombre) |
+| **Business Type** | Tours / Turismo |
+| **Status** | 🟡 Negotiating |
+| **Source** | Lead directo |
+| **Project** | Landing page + Google Ads management |
+| **Services** | |
+| → Landing Page | One-time |
+| → Google Ads | $3,000 MXN/mes |
+| **Google Ads Budget** | $6,000 MXN (cliente) |
+| **Action Needed** | Enviar ficha de pago HOY |
+| **Total Potential MRR** | $3,000 MXN/mes |
+| **Notes** | |
+| - Negociación en proceso | |
+| - Pendiente aceptación propuesta | |
+| - Enviar: Ficha de pago Google Ads ($6,000) | |
+
+### Prospect 002: [Name]
 | Field | Value |
 |-------|-------|
 | **Status** | 🔵 Lead / 🟡 Negotiating / 🟢 Closed |
@@ -104,12 +166,12 @@ _System for tracking clients, projects, and billing._
 
 | Metric | Value |
 |--------|-------|
-| **Total Clients** | 1 |
+| **Active Clients** | 1 (Spa - Kommo CRM) |
+| **Pipeline Prospects** | 1 (Tours - Landing + Ads) |
 | **Active Projects** | 1 |
-| **Completed Projects** | 0 |
-| **Pipeline Value** | $0 |
-| **MRR** | $0 (if subscriptions) |
-| **Total Revenue** | $0 |
+| **Pipeline Value** | $3,000 MXN/mes (potential MRR) |
+| **Current MRR** | $0 |
+| **Total Revenue** | $2,000 MXN (deposit Client 001) |
 
 ---
 
@@ -133,9 +195,17 @@ _System for tracking clients, projects, and billing._
 
 ## 📝 Notes
 
+### 2026-02-24 - Prospect Added: Tours
+- Tours business interesado en landing + Google Ads
+- Propuesta: Landing page + $3,000 MXN/mes Google Ads management
+- Budget ads cliente: $6,000 MXN
+- **Action:** Enviar ficha de pago HOY
+- Status: Negotiating (sin pago recibido)
+
 ### 2026-02-24 - First Client Acquired
-- Client 001 started [project type]
-- Details: [relevant info about the project]
+- Client 001 started: Spa Kommo CRM setup
+- Value: $4,000 MXN ($2,000 deposit received)
+- Timeline: Feb 24-27 (4 days)
 
 ---
 

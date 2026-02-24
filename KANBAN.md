@@ -48,6 +48,29 @@ _Visual tracking for active projects._
 
 ---
 
+## 🎯 Prospect 001: Tours - Landing + Google Ads
+
+**Status:** 🟡 Negotiating
+**Action Required:** Enviar ficha de pago HOY
+
+### 📌 To Do
+- [ ] Enviar ficha de pago Google Ads ($6,000)
+- [ ] Enviar propuesta formal
+- [ ] Confirmar alcance landing page
+
+### 💰 Potential Revenue
+| Service | Value | Frequency |
+|---------|-------|-----------|
+| Landing Page | Quote pending | One-time |
+| Google Ads Management | $3,000 MXN | Monthly |
+| **Total MRR** | **$3,000 MXN/mes** | |
+
+### 📅 Follow Up
+- **Next Step:** Enviar ficha de pago hoy
+- **Goal:** Cerrar venta esta semana
+
+---
+
 ## 📝 Daily Progress
 
 ### 2026-02-24 (Martes) - Day 1
