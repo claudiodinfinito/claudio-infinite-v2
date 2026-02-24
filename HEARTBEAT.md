@@ -17,8 +17,8 @@
 | **Modo** | ⚪ Normal |
 | **Último Mensaje Usuario** | 2026-02-24 00:23 UTC |
 | **Último Message ID** | 4960 |
-| **Inactividad Actual** | 47 min |
-| **Sesión autónoma** | Completada ✅ |
+| **Inactividad Actual** | 56 min |
+| **Última sesión autónoma** | Completada ✅ (ASTRO.md) |
 
 ---
 
