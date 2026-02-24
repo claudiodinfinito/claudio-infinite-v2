@@ -185,6 +185,36 @@ node ./dist/server/entry.mjs
 
 ---
 
+## 2026-02-24 - HEARTBEAT.md Race Condition
+
+### The Mistake
+`edit` tool falla con "Could not find exact text" en HEARTBEAT.md, incluso después de leerlo.
+
+### Why It Was Wrong
+- **Heartbeat corre cada 10 minutos** → modifica HEARTBEAT.md
+- **Delay entre read y edit** → archivo cambia mientras tanto
+- **edit requiere match exacto** → cualquier cambio causa fail
+
+### The Correct Approach
+```markdown
+# ❌ Mal
+read(HEARTBEAT.md)
+read(otros_archivos)  # ← delay
+edit(HEARTBEAT.md)    # ← race condition
+
+# ✅ Bien
+read(HEARTBEAT.md)
+edit(HEARTBEAT.md)    # ← inmediato, funciona
+```
+
+### The Pattern
+> **Para archivos actualizados frecuentemente (HEARTBEAT.md, logs):**
+> - Leer → editar inmediatamente (sin operaciones intermedias)
+> - O usar `write` en lugar de `edit`
+> - Aceptar que el sistema puede modificar estos archivos
+
+---
+
 ## Template for Future Lessons
 
 ```markdown

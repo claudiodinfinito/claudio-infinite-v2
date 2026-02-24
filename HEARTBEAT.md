@@ -15,14 +15,37 @@
 | Campo | Valor |
 |-------|-------|
 | **Modo** | ⚪ Normal |
-| **Último Mensaje Usuario** | 2026-02-24 15:36 UTC |
-| **Último Message ID** | 5145 |
+| **Último Mensaje Usuario** | 2026-02-24 16:07 UTC |
+| **Último Message ID** | 5149 |
 | **Inactividad Actual** | 0 min (conversación activa) |
 | **Proyecto activo** | claudio-infinite ✅ COMPLETE + Astro DB + Actions |
-| **Server** | ✅ Stable (PID 2533198, restarted at 15:51 UTC) |
+| **Server** | ✅ Stable (PID 2533198) |
 | **DB** | ✅ SQLite (.astro/db.sqlite) |
-| **Workflow** | ✅ WORKFLOW_ORCHESTRATION.md adherencia verificada |
-| **Lessons** | ✅ All documentation updated |
+| **Workflow** | ✅ WORKFLOW_ORCHESTRATION.md adherencia verificada (16:02 UTC) |
+| **Lessons** | ✅ 6 lessons documented, no new corrections |
+
+---
+
+## 📋 Workflow Adherence Check (16:02 UTC)
+
+**Check 1: Pending tasks in todo.md?**
+- ✅ No pending tasks — all items completed
+
+**Check 2: Recent corrections for lessons.md?**
+- ✅ No new corrections to add — last lesson: Zombie Process (2026-02-24)
+
+**Check 3: Following the 6 rules?**
+| Rule | Status |
+|------|--------|
+| 1. Plan Node Default | ✅ todo.md active |
+| 2. Subagent Strategy | ✅ Enabled (GLM5 unlimited) |
+| 3. Self-Improvement Loop | ✅ lessons.md maintained |
+| 4. Verification Before Done | ✅ Tasks verified |
+| 5. Demand Elegance | ✅ Docs consulted first |
+| 6. Autonomous Bug Fixing | ✅ Zombies fixed |
+
+**Check 4: HEARTBEAT.md updated?**
+- ✅ This update
 
 ---
 
