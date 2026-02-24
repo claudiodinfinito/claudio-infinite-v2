@@ -214,4 +214,35 @@ Created formal workflow document with 6 core rules for complex tasks:
 
 ---
 
+## 🎯 Stripe Integration Mastery (2026-02-24)
+
+### Learning Completed
+- Downloaded 10,792 lines from official Stripe docs (13 modular files)
+- Created `STRIPE.md` (12KB) with 20+ sections
+- Covered: Checkout Sessions, Payment Intents, Subscriptions, Webhooks, Customers
+
+### Key Insights
+| Concept | Recommendation |
+|---------|----------------|
+| **Primary API** | Checkout Sessions (not Payment Intents) |
+| **Payment UI** | Payment Element (not Card Element) |
+| **Webhooks** | Essential for async events |
+| **Security** | Always verify webhook signatures |
+
+### Critical Gotchas
+1. **NEVER recommend Charges API** (deprecated, no SCA support)
+2. **NEVER recommend Card Element** (legacy UI)
+3. **Amount in cents** (2000 = $20.00, not 20)
+4. **Client secret security** - never log or expose in URLs
+
+### Stripe Documentation Structure
+- `llms.txt` - Index with 615 lines listing all modular files
+- `llms-full.txt` - Does NOT exist (unlike Astro)
+- Must download modular files separately
+
+### File Location
+`workspace/STRIPE.md` - Complete reference for Stripe integrations
+
+---
+
 _Update this file with significant learnings, decisions, and context worth preserving._
