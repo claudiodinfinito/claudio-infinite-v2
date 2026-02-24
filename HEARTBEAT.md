@@ -14,10 +14,11 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Modo** | ⚪ Normal |
+| **Modo** | 🔴 Autónomo |
 | **Último Mensaje Usuario** | 2026-02-24 16:26 UTC |
 | **Último Message ID** | 5156 |
-| **Inactividad Actual** | 0 min (conversación activa) |
+| **Inactividad Actual** | 25 min (auto-activación) |
+| **Activación** | 2026-02-24 16:51 UTC |
 | **Proyecto activo** | claudio-infinite ✅ COMPLETE + Astro DB + Actions |
 | **Server** | ✅ Stable (PID 2535789, 16:22 UTC) |
 | **DB** | ✅ SQLite (.astro/db.sqlite) |
