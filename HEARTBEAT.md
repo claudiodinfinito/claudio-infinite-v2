@@ -14,13 +14,14 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Modo** | 🔴 Autónomo |
-| **Último Mensaje Usuario** | 2026-02-24 09:37 UTC |
-| **Último Message ID** | 5084 |
-| **Inactividad Actual** | 52 min |
-| **Activación** | 2026-02-24 10:29 UTC (auto-activación) |
-| **Proyecto activo** | claudio-infinite ✅ COMPLETE |
-| **Server** | ✅ Running |
+| **Modo** | ⚪ Normal |
+| **Último Mensaje Usuario** | 2026-02-24 12:17 UTC |
+| **Último Message ID** | 5113 |
+| **Inactividad Actual** | 0 min (conversación activa) |
+| **Proyecto activo** | claudio-infinite ✅ COMPLETE + Astro DB + Actions |
+| **Server** | ✅ Running (12:16 UTC) |
+| **DB** | ✅ SQLite (.astro/db.sqlite) |
+| **Workflow** | ✅ WORKFLOW_ORCHESTRATION.md creado |
 
 ---
 
@@ -29,6 +30,7 @@
 ### Algoritmo (ejecutar en cada heartbeat)
 
 ```
+0. LEER WORKFLOW_ORCHESTRATION.md (verificar adherencia a las 6 reglas)
 1. LEER estado actual
 2. CALCULAR inactividad = ahora - último_mensaje_usuario
 3. SI inactividad >= 20 min Y modo == Normal:
@@ -121,9 +123,14 @@
 
 ## 🔄 Tareas Autónomas (por defecto)
 
+**Prioridad 0 — Workflow Adherence (cada heartbeat):**
+- [ ] Leer WORKFLOW_ORCHESTRATION.md
+- [ ] Verificar adherencia a las 6 reglas
+- [ ] Si hay desviación → re-planear
+
 **Prioridad 1 — Sistema:**
 - [ ] Git status → commit si hay cambios
-- [ ] Verificar WORKFLOW_AUTO.md alignment
+- [ ] Verificar WORKFLOW_ORCHESTRATION.md alignment
 - [ ] Actualizar HEARTBEAT.md estado
 
 **Prioridad 2 — Aprendizaje Continuo:**
