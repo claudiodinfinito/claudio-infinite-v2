@@ -33,22 +33,30 @@ _Curated knowledge that persists across sessions. Update sparingly with high-val
 
 ## 📌 Active Projects
 
-### claudio-infinite (Astro 5)
+### claudio-infinite (Astro 5) ✅ COMPLETE
 **Path:** `/root/projects/claudio-infinite/`
 **URL:** `http://100.87.200.4:4321/`
-**Stack:** Astro 5 + Hybrid Rendering + Node adapter
+**Stack:** Astro 5 + Server Rendering + Node adapter
 **Features:**
 - Home page con CSS nativo (dark mode, animaciones)
 - Blog con Content Collections (2 posts en MD)
-- Contact form con POST processing + debug data
+- FAQs con tabs + accordion CSS-only
+- Contact form con API endpoint + debug data
 - Learning section con progress bars
+- Responsive design (mobile-first)
 
 **Commands:**
 ```bash
 cd /root/projects/claudio-infinite
-npm run build    # Build con hybrid mode
+npm run build    # Build
 HOST=0.0.0.0 PORT=4321 node ./dist/server/entry.mjs  # Start server
 ```
+
+**Lessons Learned:**
+- Astro 5 eliminó `output: 'hybrid'` → usar `output: 'static'` con `prerender: false` o `output: 'server'`
+- `security.checkOrigin: true` por defecto → bloquea POST cross-site
+- API routes necesitan `output: 'server'` para funcionar
+- CSS-only tabs/accordion funciona con `input[type="radio"]:checked` + sibling selectors
 
 ## ⚠️ Lessons Learned
 
@@ -162,6 +170,20 @@ Muchos frameworks ahora ofrecen archivos `.txt` optimizados para LLMs:
 > ```bash
 > curl -o docs/llms-full.txt https://docs.X.com/llms-full.txt
 > ```
+
+---
+
+## 🛠️ Technical Gotchas (2026-02-24)
+
+### Edit Tool Race Condition
+**Problem:** `edit` fails with "Could not find the exact text" even after reading the file.
+**Cause:** File changed between read and edit (heartbeat updates, compacted context shows old version).
+**Solution:** Re-read file immediately before editing, or use `write` for small/dynamic files.
+
+### Compaction Timeout
+**What:** System tries to compress conversation history to save tokens.
+**Failure:** "Compaction timed out" — context too large, processing took too long.
+**Impact:** None — context continues working, just not compacted. Informational only.
 
 ---
 
