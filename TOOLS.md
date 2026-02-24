@@ -96,7 +96,7 @@ HOST=0.0.0.0 PORT=4321 node ./dist/server/entry.mjs
 - Kill old processes with `kill -9 <pid>`
 - Single process per port = stability
 
-**Current Server PID:** 2527679 (started 14:48 UTC)
+**Current Server PID:** 2548538 (started 18:58 UTC)
 
 ---
 
