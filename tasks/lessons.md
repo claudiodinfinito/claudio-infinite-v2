@@ -87,6 +87,69 @@ export const prerender = false;  // Esta página es SSR
 
 ---
 
+## 2026-02-24 - Quickfixes vs Official Documentation
+
+### The Mistake
+Hacer quickfixes sin consultar documentación oficial. Usuario tuvo que recordarme: "El troubleshooting lo deberías de hacer viendo el llms-full.txt de astro no inventando"
+
+### Why It Was Wrong
+- Intenté múltiples soluciones sin entender el problema
+- Perdí tiempo en "trial and error" en lugar de consultar la fuente
+- Violé WORKFLOW_ORCHESTRATION.md Regla 5: "Consult official documentation first"
+
+### The Correct Approach
+```markdown
+**Workflow para bugs:**
+1. Leer error del log
+2. Consultar documentación oficial (llms-full.txt)
+3. Entender el patrón correcto
+4. Implementar solución elegante
+```
+
+### The Pattern
+> **Documentation First, Implementation Second.**
+> 
+> - No inventar soluciones
+> - Buscar en llms-full.txt con grep
+> - Entender el patrón oficial antes de codear
+> - Si la documentación no tiene la respuesta, entonces experimentar
+
+---
+
+## 2026-02-24 - Astro Actions Result Pattern
+
+### The Mistake
+```astro
+result.data.data.name  // ❌ Anidado incorrectamente
+```
+
+### Why It Was Wrong
+- Assumí que el handler retornaba `{ data: { name } }`
+- No leí el ejemplo de la documentación oficial
+- El handler retorna el objeto directamente, no anidado
+
+### The Correct Approach
+```astro
+// actions/index.ts
+handler: async (input) => {
+  return { id, name, email };  // ← Retorna directamente
+}
+
+// contact.astro
+const result = Astro.getActionResult(actions.contact);
+result.data.name  // ✅ Correcto - data es el retorno del handler
+```
+
+### The Pattern
+> **Leer ejemplos de la documentación oficial antes de asumir estructuras.**
+> 
+> Patrón Astro Actions:
+> - `result.data` = lo que retorna el handler
+> - `result.error` = errores de validación o ActionError
+> - No hay doble anidación
+
+---
+
 ## Template for Future Lessons
 
 ```markdown
