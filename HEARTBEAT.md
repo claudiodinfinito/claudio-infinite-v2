@@ -14,11 +14,12 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Modo** | ⚪ Normal |
-| **Último Mensaje Usuario** | 2026-02-24 03:40 UTC |
-| **Último Message ID** | 5023 |
-| **Inactividad Actual** | 0 min (conversación activa) |
-| **Proyecto activo** | claudio-infinite (Astro site personal) |
+| **Modo** | 🔴 Autónomo |
+| **Último Mensaje Usuario** | 2026-02-24 04:12 UTC |
+| **Último Message ID** | 5043 |
+| **Inactividad Actual** | 76 min |
+| **Activación** | 2026-02-24 04:48 UTC (auto-activación) |
+| **Proyecto activo** | claudio-infinite (Astro site personal) - CSRF form error FIXED ✅ |
 
 ---
 
