@@ -19,10 +19,11 @@
 | **Último Message ID** | ~5202 |
 | **Inactividad Actual** | 0 min (usuario activo) |
 | **Activación** | 2026-02-24 19:11 UTC (confirmado por usuario) |
-| **Proyecto activo** | claudio-infinite ✅ COMPLETE + Stripe Store + About/Projects |
-| **Server** | ✅ Stable (PID 2562518, 21:23 UTC) |
-| **DB** | ✅ SQLite (.astro/db.sqlite) |
-| **Workflow** | ✅ WORKFLOW_ORCHESTRATION.md adherencia verificada (20:02 UTC) |
+| **Proyecto activo** | Client 001: Spa Kommo CRM Setup (Feb 24-27) |
+| **Server** | ✅ Stable (PID from session) |
+| **Clients** | ✅ CLIENTS.md + KANBAN.md created |
+| **Billing** | $4,000 MXN (50% depositado, 50% al entregar) |
+| **Up-sale** | Google Ads $1,500 MXN/mes |
 | **Learning** | ✅ Stripe mastery complete (STRIPE.md created) |
 | **Tasks** | ✅ 15/15 completed (all phases done) |
 | **Learning** | ✅ Stripe mastery complete (STRIPE.md created) |
