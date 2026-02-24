@@ -1702,3 +1702,13 @@ const dbUrl = import.meta.env.DATABASE_URL;
 ---
 
 _Ultima actualización: 2026-02-24 | Basado en documentación oficial de Astro_
+
+## 🔄 Estado del Documento
+
+**Fuente:** `docs/llms-full.txt` (78,187 líneas)
+**Progreso:** 5.7% leído (4,500/78,187 líneas)
+**Estado:** 🔄 En aprendizaje continuo
+
+**Ver plan detallado:** `tasks/astro-learning-prompt.md`
+
+_Este documento se enriquecerá automáticamente durante el modo autónomo._

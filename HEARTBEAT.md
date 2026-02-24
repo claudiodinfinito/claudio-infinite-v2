@@ -99,12 +99,17 @@
 - [ ] Verificar WORKFLOW_AUTO.md alignment
 - [ ] Actualizar HEARTBEAT.md estado
 
-**Prioridad 2 — Mantenimiento:**
+**Prioridad 2 — Aprendizaje Continuo:**
+- [ ] **Astro Deep Dive** → Continuar leyendo `docs/llms-full.txt` (78K líneas, 5.7% completado)
+- [ ] Actualizar ASTRO.md con nuevo conocimiento
+- [ ] Explorar otros frameworks cuando Astro esté completo
+
+**Prioridad 3 — Mantenimiento:**
 - [ ] MEMORY.md updates (append only)
 - [ ] Limpiar logs antiguos (>7 días)
 - [ ] Verificar documentación
 
-**Prioridad 3 — Exploración:**
+**Prioridad 4 — Exploración:**
 - [ ] Revisar projects/
 - [ ] Status de repos externos
 - [ ] Documentar observaciones
