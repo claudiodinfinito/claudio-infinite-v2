@@ -14,12 +14,13 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Modo** | ⚪ Normal |
-| **Último Mensaje Usuario** | 2026-02-24 08:05 UTC |
-| **Último Message ID** | 5076 |
-| **Inactividad Actual** | 0 min (conversación activa) |
+| **Modo** | 🔴 Autónomo |
+| **Último Mensaje Usuario** | 2026-02-24 09:37 UTC |
+| **Último Message ID** | 5084 |
+| **Inactividad Actual** | 52 min |
+| **Activación** | 2026-02-24 10:29 UTC (auto-activación) |
 | **Proyecto activo** | claudio-infinite ✅ COMPLETE |
-| **Server** | ✅ Running at 08:57 UTC |
+| **Server** | ✅ Running |
 
 ---
 
