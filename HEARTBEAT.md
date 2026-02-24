@@ -14,12 +14,13 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Modo** | ⚪ Normal |
+| **Modo** | 🔴 Autónomo |
 | **Último Mensaje Usuario** | 2026-02-24 15:00 UTC |
 | **Último Message ID** | 5130 |
-| **Inactividad Actual** | 6 min (conversación activa) |
+| **Inactividad Actual** | 28 min |
+| **Activación** | 2026-02-24 15:28 UTC (auto-activación) |
 | **Proyecto activo** | claudio-infinite ✅ COMPLETE + Astro DB + Actions |
-| **Server** | ✅ Stable (zombie process killed, PID 2527679) |
+| **Server** | ✅ Stable (PID 2527679, no zombie processes) |
 | **DB** | ✅ SQLite (.astro/db.sqlite) |
 | **Workflow** | ✅ WORKFLOW_ORCHESTRATION.md adherencia verificada |
 | **Lessons** | ✅ Zombie process pattern documented |
