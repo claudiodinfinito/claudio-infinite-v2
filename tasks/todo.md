@@ -24,10 +24,10 @@
 - [x] Create /projects page
 - [x] Add header/footer navigation (via nav in existing pages)
 
-#### Phase 4: Features (PENDING)
-- [ ] Dark mode toggle
-- [ ] Reading time for posts
-- [ ] Social share buttons
+#### Phase 4: Features ✅ COMPLETE
+- [x] Dark mode toggle — Already implemented (CSS dark theme)
+- [x] Reading time for posts
+- [x] Social share buttons (Twitter, LinkedIn, Copy link)
 
 ---
 
