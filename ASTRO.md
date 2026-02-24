@@ -19,19 +19,20 @@
 10. [View Transitions](#10-view-transitions)
 11. [Middleware](#11-middleware)
 12. [Server-Side Rendering (SSR)](#12-server-side-rendering-ssr)
-13. [Sessions](#13-sessions)
-14. [Authentication](#14-authentication)
-15. [State Management](#15-state-management)
-16. [Internationalization (i18n)](#16-internationalization-i18n)
-17. [Testing](#17-testing)
-18. [Deployment](#18-deployment)
-19. [CMS Integrations](#19-cms-integrations)
-20. [Backend Services](#20-backend-services)
-21. [Configuration Reference](#21-configuration-reference)
-22. [Integrations API](#22-integrations-api)
-23. [Error Reference](#23-error-reference)
-24. [Common Patterns & Recipes](#24-common-patterns--recipes)
-25. [Gotchas & Common Mistakes](#25-gotchas--common-mistakes)
+13. [Astro DB](#13-astro-db)
+14. [Sessions](#14-sessions)
+15. [Authentication](#15-authentication)
+16. [State Management](#16-state-management)
+17. [Internationalization (i18n)](#17-internationalization-i18n)
+18. [Testing](#18-testing)
+19. [Deployment](#19-deployment)
+20. [CMS Integrations](#20-cms-integrations)
+21. [Backend Services](#21-backend-services)
+22. [Configuration Reference](#22-configuration-reference)
+23. [Integrations API](#23-integrations-api)
+24. [Error Reference](#24-error-reference)
+25. [Common Patterns & Recipes](#25-common-patterns--recipes)
+26. [Gotchas & Common Mistakes](#26-gotchas--common-mistakes)
 
 ---
 
@@ -304,73 +305,167 @@ export const onRequest = defineMiddleware((context, next) => {
 
 ## 6. Content Collections
 
-### Setup
+Content Collections son el sistema type-safe de Astro para organizar contenido (Markdown, MDX, JSON, YAML).
+
+### Configuration File (Astro 5.0+)
 
 ```typescript
-// src/content/config.ts
-import { defineCollection, z } from 'astro:content';
+// src/content.config.ts (nuevo archivo en Astro 5)
+import { defineCollection, reference } from 'astro:content';
+import { glob, file } from 'astro/loaders';
+import { z } from 'astro/zod';
 
-const blogCollection = defineCollection({
-  type: 'content',
+// Define collections
+const blog = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/data/blog" }),
   schema: z.object({
     title: z.string(),
-    date: z.date(),
+    pubDate: z.coerce.date(),
     description: z.string().optional(),
+    draft: z.boolean().default(false),
+    author: reference('authors'),  // Reference to another collection
     tags: z.array(z.string()).default([]),
   }),
 });
 
-export const collections = {
-  blog: blogCollection,
-};
+const authors = defineCollection({
+  loader: glob({ pattern: "**/*.json", base: "./src/data/authors" }),
+  schema: z.object({
+    name: z.string(),
+    email: z.string().email(),
+    portfolio: z.string().url().optional(),
+  }),
+});
+
+export const collections = { blog, authors };
 ```
 
-### Query Collections
+### Built-in Loaders
 
-```astro
----
-import { getCollection } from 'astro:content';
+| Loader | Use Case | Example |
+|--------|----------|---------|
+| `glob()` | Multiple files (MD, MDX, JSON, YAML) | `glob({ pattern: "**/*.md", base: "./src/data" })` |
+| `file()` | Single file with multiple entries | `file("src/data/posts.json")` |
+| **Custom** | API, CMS, database | `async () => fetch(...).map(item => ({ id, ...item }))` |
 
+### Custom Loader (API/CMS)
+
+```typescript
+const countries = defineCollection({
+  loader: async () => {
+    const response = await fetch("https://restcountries.com/v3.1/all");
+    const data = await response.json();
+    return data.map((country) => ({
+      id: country.cca3,  // Required: unique ID
+      ...country,
+    }));
+  },
+  schema: z.object({
+    id: z.string(),
+    name: z.object({ common: z.string() }),
+    region: z.string(),
+  }),
+});
+```
+
+### Query Helpers
+
+```typescript
+import { getCollection, getEntry, getEntries, render } from 'astro:content';
+
+// Get all entries
 const allPosts = await getCollection('blog');
----
 
-<ul>
-  {allPosts.map(post => (
-    <li>
-      <a href={`/blog/${post.slug}`}>{post.data.title}</a>
-    </li>
-  ))}
-</ul>
+// Filter entries
+const published = await getCollection('blog', ({ data }) => !data.draft);
+
+// Filter by directory
+const englishDocs = await getCollection('docs', ({ id }) => id.startsWith('en/'));
+
+// Get single entry
+const post = await getEntry('blog', 'my-first-post');
+
+// Render Markdown/MDX to HTML
+const { Content, headings } = await render(post);
 ```
 
-### Render Content
+### References Between Collections
+
+```typescript
+// Schema with references
+const blog = defineCollection({
+  schema: z.object({
+    title: z.string(),
+    author: reference('authors'),            // Single reference
+    relatedPosts: z.array(reference('blog')), // Array of references
+  }),
+});
+
+// Query referenced data
+const post = await getEntry('blog', 'welcome');
+const author = await getEntry(post.data.author);
+const relatedPosts = await getEntries(post.data.relatedPosts);
+```
+
+### Static Routes (getStaticPaths)
 
 ```astro
 ---
-import { getEntry } from 'astro:content';
+// src/pages/blog/[id].astro (static build)
+import { getCollection, render } from 'astro:content';
 
-const post = await getEntry('blog', 'my-post');
-const { Content } = await post.render();
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { id: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
 ---
 
 <h1>{post.data.title}</h1>
 <Content />
 ```
 
-### Live Content Collections (Astro 5.0+)
+### SSR Routes
 
-```typescript
-// src/content/config.ts
-import { defineCollection } from 'astro:content';
-import { glob } from 'astro/loaders';
+```astro
+---
+// src/pages/blog/[id].astro (SSR)
+import { getEntry, render } from 'astro:content';
 
-const blog = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
-  schema: z.object({
-    title: z.string(),
-    date: z.date(),
-  }),
-});
+export const prerender = false;  // Required in hybrid mode
+
+const { id } = Astro.params;
+if (!id) return Astro.redirect('/404');
+
+const post = await getEntry('blog', id);
+if (!post) return Astro.redirect('/404');
+
+const { Content } = await render(post);
+---
+
+<h1>{post.data.title}</h1>
+<Content />
+```
+
+### JSON Schema for Editor IntelliSense
+
+Astro auto-generates JSON schemas in `.astro/collections/`:
+
+```json
+// VS Code settings.json
+{
+  "json.schemas": [
+    {
+      "fileMatch": ["/src/data/authors/**"],
+      "url": "./.astro/collections/authors.schema.json"
+    }
+  ]
+}
 ```
 
 ---
@@ -684,6 +779,14 @@ export const onRequest = defineMiddleware((context, next) => {
 
 ## 12. Server-Side Rendering (SSR)
 
+### Rendering Modes
+
+| Mode | Config | Use Case |
+|------|--------|----------|
+| **Static** | `output: 'static'` (default) | Blogs, docs, marketing sites |
+| **SSR** | `output: 'server'` | Dynamic apps, auth, user data |
+| **Hybrid** | `output: 'hybrid'` | Mix static + dynamic pages |
+
 ### Enable SSR
 
 ```javascript
@@ -691,36 +794,68 @@ export const onRequest = defineMiddleware((context, next) => {
 import vercel from '@astrojs/vercel/serverless';
 
 export default defineConfig({
-  output: 'server',  // 'static' | 'server' | 'hybrid'
+  output: 'server',
   adapter: vercel(),
 });
 ```
 
+### Available Adapters
+
+| Adapter | Platform | Install |
+|---------|----------|---------|
+| `@astrojs/vercel/serverless` | Vercel | `npx astro add vercel` |
+| `@astrojs/netlify` | Netlify | `npx astro add netlify` |
+| `@astrojs/cloudflare` | Cloudflare Workers | `npx astro add cloudflare` |
+| `@astrojs/node` | Node.js server | `npx astro add node` |
+| `@astrojs/deno` | Deno Deploy | `npx astro add deno` |
+| `@astrojs/aws-amplify` | AWS Amplify | Community adapter |
+
 ### Hybrid Rendering
 
-```javascript
-export default defineConfig({
-  output: 'hybrid',  // Static by default, opt-in SSR
-});
+Static by default, opt-in SSR per page:
 
-// In page:
-export const prerender = false;  // SSR this page
+```javascript
+// astro.config.mjs
+export default defineConfig({
+  output: 'hybrid',
+  adapter: vercel(),
+});
+```
+
+```astro
+---
+// src/pages/dashboard.astro (SSR page)
+export const prerender = false;  // Override static default
+
+const user = await getUser(Astro.request);
+---
+
+<h1>Welcome, {user.name}</h1>
 ```
 
 ### Request Handling
 
 ```astro
 ---
-// Access request data
+// Form data
 const formData = await Astro.request.formData();
+const email = formData.get('email');
+
+// JSON body
 const body = await Astro.request.json();
+
+// Headers
+const auth = Astro.request.headers.get('Authorization');
+
+// Cookies
+const session = Astro.cookies.get('session');
 
 // Redirect
 if (!user) {
   return Astro.redirect('/login');
 }
 
-// Response
+// Custom response
 return new Response(JSON.stringify({ success: true }), {
   status: 200,
   headers: { 'Content-Type': 'application/json' }
@@ -746,9 +881,183 @@ const slowData = fetch('/api/slow');
 </html>
 ```
 
+### Docker Deployment (SSR)
+
+```dockerfile
+FROM node:lts
+WORKDIR /app
+COPY . .
+RUN npm ci && npm run build
+ENV HOST=0.0.0.0
+ENV PORT=4321
+EXPOSE 4321
+CMD ["node", "./dist/server/entry.mjs"]
+```
+
 ---
 
-## 13. Sessions
+## 13. Astro DB
+
+Astro DB es una base de datos SQL fully-managed integrada en Astro (powered by libSQL/SQLite).
+
+### Installation
+
+```bash
+npx astro add db
+```
+
+### Define Tables
+
+```typescript
+// db/config.ts
+import { defineDb, defineTable, column } from 'astro:db';
+
+const Author = defineTable({
+  columns: {
+    id: column.number({ primaryKey: true }),
+    name: column.text(),
+    email: column.text({ unique: true }),
+    avatar: column.text().optional(),
+    createdAt: column.date({ default: new Date() }),
+  }
+});
+
+const Comment = defineTable({
+  columns: {
+    id: column.number({ primaryKey: true }),
+    authorId: column.number({ references: () => Author.columns.id }),
+    postId: column.text(),
+    body: column.text(),
+    createdAt: column.date({ default: new Date() }),
+  }
+});
+
+export default defineDb({ tables: { Author, Comment } });
+```
+
+### Column Types
+
+| Type | Use Case |
+|------|----------|
+| `column.text()` | Strings |
+| `column.number()` | Integers |
+| `column.boolean()` | true/false |
+| `column.date()` | Date objects |
+| `column.json()` | Untyped JSON |
+
+### Seed Development Data
+
+```typescript
+// db/seed.ts
+import { db, Author, Comment } from 'astro:db';
+
+export default async function() {
+  await db.insert(Author).values([
+    { id: 1, name: "Kasim", email: "kasim@example.com" },
+    { id: 2, name: "Mina", email: "mina@example.com" },
+  ]);
+
+  await db.insert(Comment).values([
+    { authorId: 1, postId: 'welcome', body: 'Great post!' },
+    { authorId: 2, postId: 'welcome', body: 'Thanks for sharing' },
+  ]);
+}
+```
+
+### Queries with Drizzle ORM
+
+```typescript
+import { db, Comment, Author, eq, like, and, or } from 'astro:db';
+
+// SELECT all
+const comments = await db.select().from(Comment);
+
+// SELECT with WHERE
+const userComments = await db.select()
+  .from(Comment)
+  .where(eq(Comment.authorId, 1));
+
+// SELECT with LIKE
+const searchResults = await db.select()
+  .from(Comment)
+  .where(like(Comment.body, '%Astro%'));
+
+// SELECT with JOIN
+const commentsWithAuthors = await db.select()
+  .from(Comment)
+  .innerJoin(Author, eq(Comment.authorId, Author.id));
+
+// INSERT
+await db.insert(Comment).values({
+  authorId: 1,
+  postId: 'new-post',
+  body: 'New comment'
+});
+
+// UPDATE
+await db.update(Comment)
+  .set({ body: 'Updated comment' })
+  .where(eq(Comment.id, 1));
+
+// DELETE
+await db.delete(Comment).where(eq(Comment.id, 1));
+
+// BATCH (single network request)
+await db.batch([
+  db.insert(Comment).values({ authorId: 1, postId: '1', body: 'A' }),
+  db.insert(Comment).values({ authorId: 2, postId: '1', body: 'B' }),
+]);
+```
+
+### Connect to Production (Turso)
+
+```bash
+# Environment variables
+ASTRO_DB_REMOTE_URL=libsql://your-db.turso.io
+ASTRO_DB_APP_TOKEN=eyJhbGciOiJF...
+
+# Push schema to production
+astro db push --remote
+
+# Run with remote DB
+astro dev --remote
+astro build --remote
+```
+
+### Use in Pages
+
+```astro
+---
+// src/pages/blog/[slug].astro
+import { db, Comment, eq } from 'astro:db';
+import { getEntry, render } from 'astro:content';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+const post = await getEntry('blog', slug);
+const comments = await db.select()
+  .from(Comment)
+  .where(eq(Comment.postId, slug));
+
+const { Content } = await render(post);
+---
+
+<h1>{post.data.title}</h1>
+<Content />
+
+<h2>Comments ({comments.length})</h2>
+{comments.map(c => (
+  <article>
+    <p>{c.body}</p>
+    <small>{c.createdAt.toLocaleDateString()}</small>
+  </article>
+))}
+```
+
+---
+
+## 15. Sessions
 
 ### Configuration
 
@@ -799,7 +1108,7 @@ await Astro.session.destroy();
 
 ---
 
-## 14. Authentication
+## 16. Authentication
 
 ### Supabase Auth
 
@@ -861,7 +1170,7 @@ export const auth = betterAuth({
 
 ---
 
-## 15. State Management
+## 17. State Management
 
 ### Nano Stores
 
@@ -942,7 +1251,7 @@ export function Counter() {
 
 ---
 
-## 16. Internationalization (i18n)
+## 18. Internationalization (i18n)
 
 ### Configuration
 
@@ -1014,7 +1323,7 @@ export default defineConfig({
 
 ---
 
-## 17. Testing
+## 19. Testing
 
 ### Vitest (Unit)
 
@@ -1064,7 +1373,7 @@ const { body } = await container.renderToString(MyComponent);
 
 ---
 
-## 18. Deployment
+## 20. Deployment
 
 ### Adapters
 
@@ -1113,7 +1422,7 @@ EXPOSE 8080
 
 ---
 
-## 19. CMS Integrations
+## 21. CMS Integrations
 
 ### Headless CMS Options (40+)
 
@@ -1161,7 +1470,7 @@ const entries = await client.getEntries({ content_type: 'blogPost' });
 
 ---
 
-## 20. Backend Services
+## 22. Backend Services
 
 ### Databases
 
@@ -1215,7 +1524,7 @@ export default defineConfig({
 
 ---
 
-## 21. Configuration Reference
+## 23. Configuration Reference
 
 ### Core Options
 
@@ -1287,7 +1596,7 @@ export default defineConfig({
 
 ---
 
-## 22. Integrations API
+## 24. Integrations API
 
 ### Integration Hooks
 
@@ -1345,7 +1654,7 @@ export default {
 
 ---
 
-## 23. Error Reference
+## 25. Error Reference
 
 ### Common Errors
 
@@ -1380,7 +1689,7 @@ import myImage from "../my_image.png";
 
 ---
 
-## 24. Common Patterns & Recipes
+## 26. Common Patterns & Recipes
 
 ### RSS Feed
 
@@ -1459,7 +1768,7 @@ export const POST: APIRoute = async ({ request }) => {
 
 ---
 
-## 25. Gotchas & Common Mistakes
+## 27. Gotchas & Common Mistakes
 
 ### 1. Client Directives Missing
 
