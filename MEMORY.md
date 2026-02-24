@@ -33,7 +33,22 @@ _Curated knowledge that persists across sessions. Update sparingly with high-val
 
 ## 📌 Active Projects
 
-_None yet — to be populated_
+### claudio-infinite (Astro 5)
+**Path:** `/root/projects/claudio-infinite/`
+**URL:** `http://100.87.200.4:4321/`
+**Stack:** Astro 5 + Hybrid Rendering + Node adapter
+**Features:**
+- Home page con CSS nativo (dark mode, animaciones)
+- Blog con Content Collections (2 posts en MD)
+- Contact form con POST processing + debug data
+- Learning section con progress bars
+
+**Commands:**
+```bash
+cd /root/projects/claudio-infinite
+npm run build    # Build con hybrid mode
+HOST=0.0.0.0 PORT=4321 node ./dist/server/entry.mjs  # Start server
+```
 
 ## ⚠️ Lessons Learned
 
@@ -124,6 +139,29 @@ HEARTBEAT.md = State Machine
 - Prioridad 2 — Mantenimiento: MEMORY.md updates, old logs cleanup
 - Prioridad 3 — Exploración: projects/, external repos
 - Prioridad 4 — Proactivo: tasks/todo.md, documentation improvements
+
+---
+
+## 📄 LLM-Optimized Documentation (2026-02-24)
+
+### Discovery
+Muchos frameworks ahora ofrecen archivos `.txt` optimizados para LLMs:
+- `https://docs.X.com/llms-full.txt` - Documentación completa
+- `https://docs.X.com/llms.txt` - Índice con links a archivos modulares
+
+### Why It Matters
+| Factor | LLM Files | Web Browsing |
+|--------|-----------|--------------|
+| Velocidad | ✅ Un download | ❌ Múltiples requests |
+| Completitud | ✅ 100% contenido | ❌ Truncado 50KB |
+| Tokens | ✅ Solo contenido | ❌ HTML noise |
+
+### Pattern
+> **Always check for `llms-full.txt` before web browsing documentation.**
+> 
+> ```bash
+> curl -o docs/llms-full.txt https://docs.X.com/llms-full.txt
+> ```
 
 ---
 
