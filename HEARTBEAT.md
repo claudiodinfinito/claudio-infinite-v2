@@ -110,7 +110,9 @@
 - **Stripe Store implementado** (store page, checkout API, success page)
 - **2 blog posts creados** (Stripe integration, Astro DB)
 - **SEO agregado** (sitemap.xml, robots.txt)
-- **Git commits:** b1af7c0, + builds
+- **About page creada** (personal info, workflow, learning progress)
+- **Projects page creada** (portfolio, skills)
+- **Git commits:** b1af7c0, 06e20d8, d7d6e48
 
 ### 2026-02-24 13:20-15:00 UTC ✅
 **Trigger:** Auto-activación (63 min inactividad)
