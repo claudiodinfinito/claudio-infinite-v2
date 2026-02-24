@@ -84,15 +84,21 @@
 
 ---
 
-## ⚪ MODO NORMAL
+## 🔴 MODO AUTÓNOMO
 
-**Desde:** 2026-02-23 23:00 UTC
-**Trigger:** Usuario envió mensaje
-**Sesión autónoma previa:** 22:13-23:00 UTC (47 min, auto-activada, terminada por usuario)
+**Desde:** 2026-02-24 18:46 UTC
+**Trigger:** Auto-activación (27 min inactividad)
+**Sesión normal previa:** 18:19-18:46 UTC (27 min, terminada por inactividad)
 
 ---
 
 ## 📋 Historial de Sesiones Autónomas
+
+### 2026-02-24 18:46-... UTC 🔄
+**Trigger:** Auto-activación (27 min inactividad)
+**Duración:** En progreso...
+**Completadas:**
+- Git commit: a05c401 (heartbeat update)
 
 ### 2026-02-24 13:20-15:00 UTC ✅
 **Trigger:** Auto-activación (63 min inactividad)
