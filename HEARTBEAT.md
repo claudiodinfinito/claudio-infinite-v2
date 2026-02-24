@@ -20,10 +20,11 @@
 | **Inactividad Actual** | 0 min (usuario activo) |
 | **Activación** | 2026-02-24 19:11 UTC (confirmado por usuario) |
 | **Proyecto activo** | Client 001: Spa Kommo CRM Setup (Feb 24-27) |
-| **Server** | ✅ Stable (PID from session) |
-| **Clients** | ✅ CLIENTS.md + KANBAN.md created |
-| **Billing** | $4,000 MXN (50% depositado, 50% al entregar) |
-| **Up-sale** | Google Ads $1,500 MXN/mes |
+| **Server** | ✅ Stable (PID 2566390) |
+| **Clients** | ✅ 1 Active, 1 Prospect (Tours) |
+| **Billing** | Client 001: $4,000 MXN (50% depositado) |
+| **Pipeline** | Prospect Tours: $3,000 MXN/mes potential |
+| **Up-sale** | Client 001: Google Ads $1,500 MXN/mes |
 | **Learning** | ✅ Stripe mastery complete (STRIPE.md created) |
 | **Tasks** | ✅ 15/15 completed (all phases done) |
 | **Learning** | ✅ Stripe mastery complete (STRIPE.md created) |
