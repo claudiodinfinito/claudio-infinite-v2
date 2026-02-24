@@ -66,11 +66,38 @@
 ### Progreso
 - [x] **Fase 1:** llms-small.txt + api-reference.txt → Secciones 1-3 ✅
 - [x] **Fase 2:** how-to-recipes → Secciones 4-8 ✅
-- [ ] **Fase 3:** deployment + cms + backend → Secciones 9-11
-- [ ] **Fase 4:** migration + additional → Secciones 12-16
+- [x] **Fase 3:** deployment + cms + backend → Secciones 19-21 ✅
+- [x] **Fase 4:** migration + additional → Secciones 22-25 ✅
 - [ ] **Fase 5:** Síntesis final ASTRO.md
 
-**ASTRO.md creado:** 16.5KB - 18 secciones comprehensivas
+**ASTRO.md completo:** ~30KB - 25 secciones comprehensivas
+
+**Contenido cubierto:**
+- Filosofía & Principios de Diseño
+- Islands Architecture (Deep Dive)
+- Estructura de Proyecto
+- Componentes .astro
+- Routing (File-based, Dynamic, SSR)
+- Content Collections
+- Integraciones UI Framework
+- Styling (CSS, Tailwind, CSS-in-JS)
+- Images Optimization
+- Performance Optimization
+- Routing & Rendering
+- View Transitions
+- Formularios
+- i18n
+- Configuración
+- Common Patterns & Recipes
+- Gotchas & Common Mistakes
+- CLI Commands
+- Deployment (30+ platforms)
+- CMS Integrations (40+ options)
+- Backend Services (Firebase, Supabase, Neon, Prisma, Sentry)
+- Migration Guides (CRA, Gatsby, Next.js, Docusaurus, etc.)
+- E-commerce & Payments (Stripe, Snipcart, Lemon Squeezy)
+- Testing (Vitest, Playwright)
+- Environment Variables
 
 **Ver plan detallado:** `tasks/astro-exploration.md`
 

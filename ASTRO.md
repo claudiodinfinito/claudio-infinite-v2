@@ -894,4 +894,811 @@ export const prerender = false; // Requerido en hybrid mode
 
 ---
 
+## 19. Deployment Platforms
+
+### Quick Reference
+
+| Platform | Static | SSR | Notes |
+|----------|--------|-----|-------|
+| **Vercel** | ✅ | ✅ | `@astrojs/vercel` adapter |
+| **Netlify** | ✅ | ✅ | `@astrojs/netlify` adapter |
+| **Cloudflare** | ✅ | ✅ | `@astrojs/cloudflare` adapter |
+| **Deno Deploy** | ✅ | ✅ | `@deno/astro-adapter` |
+| **AWS Amplify** | ✅ | ✅ | Community adapter |
+| **Fly.io** | ✅ | ✅ | Node adapter |
+| **Railway** | ✅ | ✅ | Node adapter |
+| **Google Cloud** | ✅ | ✅ | Cloud Run |
+| **GitHub Pages** | ✅ | ❌ | Static only |
+| **GitLab Pages** | ✅ | ❌ | Static only |
+| **Firebase Hosting** | ✅ | ✅ | Firebase adapter |
+
+### Vercel
+
+```bash
+npm astro add vercel
+```
+
+```javascript
+// astro.config.mjs
+import vercel from '@astrojs/vercel/serverless';
+
+export default defineConfig({
+  output: 'server',
+  adapter: vercel(),
+});
+```
+
+### Netlify
+
+```bash
+npm astro add netlify
+```
+
+```javascript
+// astro.config.mjs
+import netlify from '@astrojs/netlify';
+
+export default defineConfig({
+  output: 'server', // or 'hybrid'
+  adapter: netlify(),
+});
+```
+
+### Cloudflare (Workers/Pages)
+
+```bash
+npm astro add cloudflare
+```
+
+```jsonc
+// wrangler.jsonc
+{
+  "name": "my-astro-app",
+  "main": "dist/_worker.js/index.js",
+  "compatibility_date": "2024-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": "./dist" }
+}
+```
+
+```bash
+npx astro build && npx wrangler deploy
+```
+
+### Docker (Production)
+
+```dockerfile
+# SSR con Node adapter
+FROM node:lts AS runtime
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY . .
+RUN npm run build
+ENV HOST=0.0.0.0
+ENV PORT=4321
+EXPOSE 4321
+CMD ["node", "./dist/server/entry.mjs"]
+```
+
+```dockerfile
+# Multi-stage build (optimizado)
+FROM node:lts AS base
+WORKDIR /app
+COPY package.json package-lock.json ./
+
+FROM base AS prod-deps
+RUN npm install --omit=dev
+
+FROM base AS build-deps
+RUN npm install
+
+FROM build-deps AS build
+COPY . .
+RUN npm run build
+
+FROM base AS runtime
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+ENV HOST=0.0.0.0
+ENV PORT=4321
+EXPOSE 4321
+CMD ["node", "./dist/server/entry.mjs"]
+```
+
+---
+
+## 20. Backend Services Integration
+
+### Firebase
+
+#### Setup
+
+```bash
+npm install firebase firebase-admin
+```
+
+```typescript
+// src/firebase/client.ts
+import { initializeApp } from "firebase/app";
+const firebaseConfig = { /* config */ };
+export const app = initializeApp(firebaseConfig);
+```
+
+```typescript
+// src/firebase/server.ts
+import { initializeApp, cert, getApps } from "firebase-admin/app";
+import type { ServiceAccount } from "firebase-admin";
+
+const serviceAccount = {
+  project_id: import.meta.env.FIREBASE_PROJECT_ID,
+  private_key: import.meta.env.FIREBASE_PRIVATE_KEY,
+  client_email: import.meta.env.FIREBASE_CLIENT_EMAIL,
+};
+
+export const app = getApps().length === 0 
+  ? initializeApp({ credential: cert(serviceAccount as ServiceAccount) })
+  : getApps()[0];
+```
+
+#### Auth Endpoints
+
+```typescript
+// src/pages/api/auth/signin.ts
+import type { APIRoute } from "astro";
+import { getAuth } from "firebase-admin/auth";
+import { app } from "../../../firebase/server";
+
+export const GET: APIRoute = async ({ request, cookies, redirect }) => {
+  const auth = getAuth(app);
+  const idToken = request.headers.get("Authorization")?.split("Bearer ")[1];
+  
+  if (!idToken) return new Response("No token", { status: 401 });
+  
+  await auth.verifyIdToken(idToken);
+  const sessionCookie = await auth.createSessionCookie(idToken, { expiresIn: 5 * 24 * 60 * 60 * 1000 });
+  
+  cookies.set("__session", sessionCookie, { path: "/" });
+  return redirect("/dashboard");
+};
+```
+
+⚠️ **Firebase only allows one cookie named `__session`** - other cookies won't be visible.
+
+### Supabase
+
+#### Setup
+
+```bash
+npm install @supabase/supabase-js
+```
+
+```typescript
+// src/lib/supabase.ts
+import { createClient } from "@supabase/supabase-js";
+
+export const supabase = createClient(
+  import.meta.env.SUPABASE_URL,
+  import.meta.env.SUPABASE_ANON_KEY
+);
+```
+
+#### Auth Flow
+
+```typescript
+// src/pages/api/auth/register.ts
+import type { APIRoute } from "astro";
+import { supabase } from "../../../lib/supabase";
+
+export const POST: APIRoute = async ({ request, redirect }) => {
+  const formData = await request.formData();
+  const email = formData.get("email")?.toString();
+  const password = formData.get("password")?.toString();
+
+  const { error } = await supabase.auth.signUp({ email, password });
+  
+  if (error) return new Response(error.message, { status: 500 });
+  return redirect("/signin");
+};
+```
+
+### Neon (Serverless Postgres)
+
+```bash
+npm install @neondatabase/serverless
+```
+
+```typescript
+// src/lib/neon.ts
+import { neon } from '@neondatabase/serverless';
+export const sql = neon(import.meta.env.NEON_DATABASE_URL);
+```
+
+```astro
+---
+import { sql } from '../lib/neon';
+const posts = await sql`SELECT * FROM posts`;
+---
+```
+
+### Prisma Postgres
+
+```bash
+npm install prisma tsx --save-dev
+npm install @prisma/adapter-pg @prisma/client
+npx prisma init --db
+```
+
+```prisma
+// prisma/schema.prisma
+model Post {
+  id        Int     @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean @default(false)
+}
+```
+
+```typescript
+// src/lib/prisma.ts
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '../../prisma/generated/client';
+
+const adapter = new PrismaPg({ connectionString: import.meta.env.DATABASE_URL });
+export const prisma = new PrismaClient({ adapter });
+```
+
+### Sentry (Monitoring)
+
+```bash
+npx astro add @sentry/astro
+```
+
+```javascript
+// astro.config.mjs
+import sentry from '@sentry/astro';
+
+export default defineConfig({
+  integrations: [
+    sentry({
+      dsn: 'https://examplePublicKey@o0.ingest.sentry.io/0',
+      sourceMapsUploadOptions: {
+        project: 'example-project',
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+      },
+    }),
+  ],
+});
+```
+
+---
+
+## 21. Environment Variables
+
+### .env Files
+
+```ini
+# .env
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_ANON_KEY=eyJ...
+DATABASE_URL=postgresql://...
+FIREBASE_PROJECT_ID=my-project
+```
+
+### TypeScript Support
+
+```typescript
+// src/env.d.ts
+interface ImportMetaEnv {
+  readonly SUPABASE_URL: string;
+  readonly DATABASE_URL: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+```
+
+### Accessing Variables
+
+```astro
+---
+// Server-side only
+const dbUrl = import.meta.env.DATABASE_URL;
+---
+
+<script>
+  // Client-side: only PUBLIC_ prefixed vars available
+  const publicVar = import.meta.env.PUBLIC_API_KEY;
+</script>
+```
+
+⚠️ **Security:** Never expose secrets in client-side code. Use `PUBLIC_` prefix only for non-sensitive values.
+
+---
+
+## 22. API Routes
+
+### Creating Endpoints
+
+```typescript
+// src/pages/api/feedback.ts
+import type { APIRoute } from "astro";
+
+export const POST: APIRoute = async ({ request }) => {
+  const data = await request.formData();
+  const name = data.get("name");
+  
+  if (!name) {
+    return new Response(JSON.stringify({ error: "Missing name" }), { 
+      status: 400 
+    });
+  }
+  
+  return new Response(JSON.stringify({ success: true }), { 
+    status: 200 
+  });
+};
+```
+
+### Dynamic Routes
+
+```typescript
+// src/pages/api/users/[id].ts
+import type { APIRoute } from "astro";
+
+export const GET: APIRoute = async ({ params }) => {
+  const { id } = params;
+  
+  return new Response(JSON.stringify({ id }), {
+    headers: { "Content-Type": "application/json" }
+  });
+};
+
+export const DELETE: APIRoute = async ({ params }) => {
+  // Delete user with id
+  return new Response(null, { status: 204 });
+};
+```
+
+---
+
+## 23. Quick Reference Cheatsheet
+
+### Essential Commands
+
+| Task | Command |
+|------|---------|
+| Create project | `npm create astro@latest` |
+| Add integration | `npm astro add react` |
+| Dev server | `npm run dev` |
+| Build | `npm run build` |
+| Preview | `npm run preview` |
+| Type check | `npm astro check` |
+
+### File Extensions
+
+| Extension | Use |
+|-----------|-----|
+| `.astro` | Astro component |
+| `.md` | Markdown page |
+| `.mdx` | MDX page |
+| `.ts` | TypeScript file |
+| `.css` | Stylesheet |
+
+### Output Modes
+
+| Mode | Config | Use Case |
+|------|--------|----------|
+| Static | `output: 'static'` | Blogs, docs, marketing |
+| Server | `output: 'server'` | Apps with auth, APIs |
+| Hybrid | `output: 'hybrid'` | Mostly static + some dynamic |
+
+### Client Directives
+
+| Directive | When to Use |
+|-----------|-------------|
+| `client:load` | Immediately interactive elements |
+| `client:idle` | Low-priority UI |
+| `client:visible` | Below-fold content |
+| `client:media` | Responsive components |
+| `client:only` | Client-only, no SSR |
+
+---
+
+## 19. Deployment Platforms
+
+### Quick Deploy Options
+
+| Método | Descripción |
+|--------|-------------|
+| **Git-connected** | Conecta repo → auto-build en cada push |
+| **CLI deploy** | `npm run build` + deploy manual |
+
+### Supported Platforms (30+)
+
+**Top Picks:**
+| Platform | Static | SSR | Notes |
+|----------|--------|-----|-------|
+| **Vercel** | ✅ | ✅ | Zero-config, edge functions |
+| **Netlify** | ✅ | ✅ | Functions, forms, identity |
+| **Cloudflare** | ✅ | ✅ | Workers, edge runtime |
+| **AWS Amplify** | ✅ | ✅ | Full AWS ecosystem |
+| **Fly.io** | ✅ | ✅ | Docker-based, global edge |
+| **Deno Deploy** | ✅ | ✅ | Edge runtime, Deno APIs |
+| **Railway** | ✅ | ✅ | Simple, PostgreSQL included |
+| **Render** | ✅ | ✅ | Free tier available |
+
+### Docker Deployment
+
+```dockerfile
+# Static build with NGINX
+FROM node:lts AS build
+WORKDIR /app
+COPY . .
+RUN npm ci && npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 8080
+```
+
+```dockerfile
+# SSR with Node adapter
+FROM node:lts
+WORKDIR /app
+COPY . .
+RUN npm ci && npm run build
+ENV HOST=0.0.0.0
+ENV PORT=4321
+EXPOSE 4321
+CMD ["node", "./dist/server/entry.mjs"]
+```
+
+### GitHub Actions CI/CD
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm run build
+      - run: npm run deploy  # Platform-specific
+```
+
+---
+
+## 20. CMS Integrations
+
+### Why Use a CMS?
+
+- **Visual editing** → Non-developers can manage content
+- **Structured content** → Enforce schemas, required fields
+- **Collaboration** → Multiple editors, roles, workflows
+- **Media management** → Image optimization, asset libraries
+
+### Headless CMS Options (40+)
+
+**Git-based CMS:**
+| CMS | Best For |
+|-----|----------|
+| **CloudCannon** | Visual editing, Astro-optimized |
+| **Decap CMS** | Open-source, Git-backed |
+| **Tina CMS** | Real-time visual editing |
+| **Keystatic** | Local-first, Git-friendly |
+
+**API-driven CMS:**
+| CMS | Best For |
+|-----|----------|
+| **Contentful** | Enterprise, rich APIs |
+| **Strapi** | Self-hosted, customizable |
+| **Sanity** | Real-time, structured content |
+| **Prismic** | Visual editor, slices |
+| **Storyblok** | Component-based, visual |
+| **Payload** | Developer-first, TypeScript |
+| **Directus** | Database-first, open-source |
+
+### Integration Pattern
+
+```typescript
+// 1. Setup client
+import { createClient } from 'contentful';
+
+const client = createClient({
+  space: import.meta.env.CONTENTFUL_SPACE_ID,
+  accessToken: import.meta.env.CONTENTFUL_ACCESS_TOKEN,
+});
+
+// 2. Fetch in page
+const entries = await client.getEntries({ content_type: 'blogPost' });
+
+// 3. Render
+---
+{entries.items.map(post => (
+  <article>
+    <h2>{post.fields.title}</h2>
+  </article>
+))}
+---
+```
+
+### CloudCannon (Featured Partner)
+
+```yaml
+# cloudcannon.config.yml
+collections:
+  - name: blog
+    label: Blog Posts
+    folder: src/content/blog
+    fields:
+      - { name: title, label: Title, type: text }
+      - { name: date, label: Date, type: date }
+      - { name: body, label: Content, type: markdown }
+```
+
+---
+
+## 21. Backend Services
+
+### When to Use Backend Services
+
+- **Authentication** → User accounts, OAuth
+- **Database** → Persistent data storage
+- **Storage** → File uploads, images
+- **Realtime** → Live updates, websockets
+- **Monitoring** → Error tracking, analytics
+
+### Authentication Services
+
+#### Supabase Auth
+
+```typescript
+// lib/supabase.ts
+import { createClient } from '@supabase/supabase-js';
+
+export const supabase = createClient(
+  import.meta.env.SUPABASE_URL,
+  import.meta.env.SUPABASE_ANON_KEY
+);
+
+// API route: /api/auth/signin
+const { data, error } = await supabase.auth.signInWithPassword({
+  email,
+  password,
+});
+
+cookies.set('sb-access-token', data.session.access_token);
+```
+
+#### Firebase Auth
+
+```typescript
+// firebase/server.ts
+import { initializeApp, cert } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+
+export const app = initializeApp({
+  credential: cert(serviceAccount)
+});
+
+// Verify session cookie
+const decodedCookie = await getAuth().verifySessionCookie(sessionCookie);
+```
+
+### Database Services
+
+#### Supabase (PostgreSQL)
+
+```typescript
+// Query with Supabase client
+const { data, error } = await supabase
+  .from('posts')
+  .select('*')
+  .eq('published', true);
+
+// Insert
+await supabase.from('posts').insert({ title, content });
+```
+
+#### Neon (Serverless Postgres)
+
+```typescript
+import { neon } from '@neondatabase/serverless';
+
+const sql = neon(import.meta.env.NEON_DATABASE_URL);
+
+// Tagged template queries
+const posts = await sql`SELECT * FROM posts WHERE published = true`;
+```
+
+#### Prisma with Postgres
+
+```typescript
+// lib/prisma.ts
+import { PrismaClient } from '@prisma/client';
+export const prisma = new PrismaClient();
+
+// Query
+const posts = await prisma.post.findMany({
+  where: { published: true },
+  orderBy: { createdAt: 'desc' }
+});
+```
+
+### Error Monitoring
+
+#### Sentry
+
+```typescript
+// astro.config.mjs
+import sentry from '@sentry/astro';
+
+export default defineConfig({
+  integrations: [
+    sentry({
+      dsn: 'https://xxx@o0.ingest.sentry.io/0',
+      sourceMapsUploadOptions: {
+        project: 'my-astro-app',
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+      },
+    }),
+  ],
+});
+```
+
+### Storage
+
+#### Supabase Storage
+
+```typescript
+// Upload file
+const { data, error } = await supabase.storage
+  .from('images')
+  .upload('avatar.jpg', file);
+
+// Get public URL
+const { data: { publicUrl } } = supabase.storage
+  .from('images')
+  .getPublicUrl('avatar.jpg');
+```
+
+---
+
+## 22. Migration Guides
+
+### From Next.js
+
+| Next.js | Astro |
+|---------|-------|
+| `pages/` | `src/pages/` |
+| `app/` | `src/pages/` |
+| `getStaticProps()` | `getStaticPaths()` + frontmatter |
+| `getServerSideProps()` | SSR with `Astro.request` |
+| `_app.tsx` | `src/layouts/Layout.astro` |
+| `next/link` | `<a href="">` (standard HTML) |
+| `next/image` | `<Image />` from `astro:assets` |
+| `useEffect()` | `<script>` tag or `client:*` |
+
+### From React SPA
+
+1. **Convert components** → `.astro` or keep `.tsx` with `client:*`
+2. **Remove useEffect data fetching** → Do in frontmatter
+3. **Replace React Router** → File-based routing
+4. **Move state** → Nanostores for shared state
+
+### From Gatsby
+
+| Gatsby | Astro |
+|--------|-------|
+| `gatsby-source-*` | Fetch from APIs or Content Collections |
+| `graphql` queries | Direct fetch or `getCollection()` |
+| `gatsby-image` | `<Image />` component |
+| Plugins | Astro integrations |
+
+---
+
+## 23. E-commerce & Payments
+
+### Stripe Integration
+
+```typescript
+// api/checkout.ts
+import Stripe from 'stripe';
+
+const stripe = new Stripe(import.meta.env.STRIPE_SECRET_KEY);
+
+export const POST: APIRoute = async ({ request }) => {
+  const session = await stripe.checkout.sessions.create({
+    mode: 'payment',
+    line_items: [{ price: 'price_xxx', quantity: 1 }],
+    success_url: 'https://example.com/success',
+  });
+
+  return Response.json({ url: session.url });
+};
+```
+
+### Shopware, Shopify, Medusa
+
+- **Shopify Storefront API** → GraphQL queries for products
+- **Medusa** → Open-source Shopify alternative
+- **Shopware** → Headless e-commerce platform
+
+---
+
+## 24. Testing
+
+### Playwright (E2E)
+
+```typescript
+// e2e/home.spec.ts
+import { test, expect } from '@playwright/test';
+
+test('homepage loads', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('h1')).toBeVisible();
+});
+```
+
+### Vitest (Unit)
+
+```typescript
+// vitest.config.ts
+import { getViteConfig } from 'astro/config';
+
+export default getViteConfig({
+  test: {
+    environment: 'jsdom',
+  },
+});
+```
+
+---
+
+## 25. Environment Variables
+
+### Setup
+
+```ini
+# .env
+DATABASE_URL=postgresql://...
+PUBLIC_API_KEY=pk_xxx  # Exposed to client
+SECRET_KEY=sk_xxx      # Server-only
+```
+
+### TypeScript Support
+
+```typescript
+// src/env.d.ts
+interface ImportMetaEnv {
+  readonly DATABASE_URL: string;
+  readonly PUBLIC_API_KEY: string;
+  readonly SECRET_KEY: string;
+}
+```
+
+### Access
+
+```astro
+---
+// Server-side (all variables)
+const dbUrl = import.meta.env.DATABASE_URL;
+---
+
+<!-- Client-side (PUBLIC_* only) -->
+<script>
+  const apiKey = import.meta.env.PUBLIC_API_KEY;
+</script>
+```
+
+---
+
 _Ultima actualización: 2026-02-24 | Basado en documentación oficial de Astro_
