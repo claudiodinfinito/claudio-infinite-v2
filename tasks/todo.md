@@ -17,12 +17,12 @@
 - [x] Add 2 blog posts (Stripe, Astro DB)
 - [x] Add sitemap.xml (via @astrojs/sitemap)
 - [x] Add robots.txt
-- [ ] Add meta tags (Open Graph)
+- [x] Add meta tags (Open Graph) — Already in Layout.astro
 
-#### Phase 3: New Pages (PENDING)
-- [ ] Create /about page
-- [ ] Create /projects page
-- [ ] Add header/footer navigation
+#### Phase 3: New Pages ✅ COMPLETE
+- [x] Create /about page
+- [x] Create /projects page
+- [x] Add header/footer navigation (via nav in existing pages)
 
 #### Phase 4: Features (PENDING)
 - [ ] Dark mode toggle
