@@ -15,9 +15,9 @@
 | Campo | Valor |
 |-------|-------|
 | **Modo** | ⚪ Normal |
-| **Último Mensaje Usuario** | 2026-02-24 16:24 UTC |
-| **Último Message ID** | 5154 |
-| **Inactividad Actual** | 7 min |
+| **Último Mensaje Usuario** | 2026-02-24 16:26 UTC |
+| **Último Message ID** | 5156 |
+| **Inactividad Actual** | 0 min (conversación activa) |
 | **Proyecto activo** | claudio-infinite ✅ COMPLETE + Astro DB + Actions |
 | **Server** | ✅ Stable (PID 2535789, 16:22 UTC) |
 | **DB** | ✅ SQLite (.astro/db.sqlite) |
@@ -55,21 +55,20 @@
 
 ```
 0. LEER WORKFLOW_ORCHESTRATION.md (verificar adherencia a las 6 reglas)
-1. LEER estado actual
-2. CALCULAR inactividad = ahora - último_mensaje_usuario
+1. LEER estado actual (NO MODIFICAR)
+2. CALCULAR inactividad = ahora - último_mensaje_usuario (mentalmente)
 3. SI inactividad >= 20 min Y modo == Normal:
    → ACTIVAR modo autónomo indefinido
-   → REGISTRAR activación en historial
+   → ACTUALIZAR HEARTBEAT.md (solo en cambio de estado)
    → EJECUTAR tareas autónomas
 4. SI modo == Autónomo Y usuario envió mensaje:
    → DESACTIVAR modo autónomo
+   → ACTUALIZAR HEARTBEAT.md (solo en cambio de estado)
    → REPORTAR resumen
-   → ACTUALIZAR último_mensaje_usuario
 5. SI modo == Autónomo:
    → CONTINUAR ejecutando tareas
-   → REPORTAR progreso
 6. SI modo == Normal:
-   → HEARTBEAT_OK
+   → HEARTBEAT_OK (sin modificar archivo)
 ```
 
 ### Transiciones de Estado
