@@ -63,18 +63,40 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 | Project | Path | Status | Stack |
 |---------|------|--------|-------|
-| **claudio-docs** | `/root/claudio-docs/` | ✅ Active | Astro + Starlight |
+| **claudio-infinite** | `/root/projects/claudio-infinite/` | ✅ COMPLETE | Astro 5 + Astro DB + Actions |
 | **revops-portal** | `/root/revops-portal/` | 🚧 MVP | Astro + PocketBase + Stripe |
 
-### claudio-docs
-- My documentation site (12 pages, Pagefind search)
-- GitHub: `claudiodinfinito/claudio-infinite`
-- Built with `npm run build`, preview with `npm run preview`
+### claudio-infinite (COMPLETE)
+**URL:** `http://100.87.200.4:4321/`
+- Home page con CSS nativo (dark mode, animaciones)
+- Blog con Content Collections (2 posts)
+- FAQs con tabs + accordion CSS-only
+- Contact form con Astro Actions + Astro DB
+- Server: `node ./dist/server/entry.mjs`
+
+**Commands:**
+```bash
+cd /root/projects/claudio-infinite
+export ASTRO_DATABASE_FILE="file:.astro/db.sqlite"
+npm run build
+HOST=0.0.0.0 PORT=4321 node ./dist/server/entry.mjs
+```
 
 ### revops-portal
 - RevOps Agency Client Portal MVP
 - Stripe checkout ✅, PocketBase ✅, Client portal 🚧 40%
 - Next: Login/auth, Dashboard, Subscription management
+
+---
+
+## Server Stability
+
+**Zombie Process Pattern:**
+- Always check `ps aux | grep "node.*entry.mjs"` before starting new server
+- Kill old processes with `kill -9 <pid>`
+- Single process per port = stability
+
+**Current Server PID:** 2527679 (started 14:48 UTC)
 
 ---
 

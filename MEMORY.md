@@ -185,6 +185,33 @@ Muchos frameworks ahora ofrecen archivos `.txt` optimizados para LLMs:
 **Failure:** "Compaction timed out" — context too large, processing took too long.
 **Impact:** None — context continues working, just not compacted. Informational only.
 
+### Zombie Process Pattern
+**Problem:** Server crashes every ~30 min, assumed VPS or code issue.
+**Cause:** Old node process (4 days old, PID 1997754) still running, conflicting with new instance.
+**Solution:** Always check `ps aux | grep "node.*entry.mjs"` before starting new server. Kill old processes.
+**Pattern:** Multiple processes on same port = instability.
+
+---
+
+## 📋 WORKFLOW_ORCHESTRATION.md (2026-02-24)
+
+### Creation
+Created formal workflow document with 6 core rules for complex tasks:
+1. **Plan Node Default** — Enter plan mode for non-trivial tasks
+2. **Subagent Strategy** — Use liberally to keep main context clean
+3. **Self-Improvement Loop** — Update lessons.md after corrections
+4. **Verification Before Done** — Prove it works before marking complete
+5. **Demand Elegance** — Consult official docs first, not inventing solutions
+6. **Autonomous Bug Fixing** — Fix bugs without hand-holding
+
+### Integration
+- **HEARTBEAT.md:** Added Priority 0 check for workflow adherence
+- **Cron job:** "Workflow Adherence Check" every 4 hours (isolated agent)
+- **Tasks:** Verify adherence at start of every autonomous session
+
+### Key Insight
+> Following workflow prevents quickfixes and ensures elegant solutions.
+
 ---
 
 _Update this file with significant learnings, decisions, and context worth preserving._

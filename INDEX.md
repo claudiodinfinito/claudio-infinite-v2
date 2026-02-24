@@ -114,7 +114,8 @@ After context reset:
 
 | File | Purpose |
 |------|---------|
-| `CONFIG_REFERENCE.md` | OpenClaw JSON config quick reference (derived from official docs) |
+| `WORKFLOW_ORCHESTRATION.md` | 6 core rules for complex tasks |
+| `CONFIG_REFERENCE.md` | OpenClaw JSON config quick reference |
 | `MEMORY.md` | Long-term curated memories (main session only) |
 
 ## 🧠 Memory Search
@@ -134,4 +135,4 @@ Use `memory_search` tool (NOT exec/grep) to search memories semantically:
 
 ---
 
-_Last updated: 2026-02-23_
+_Last updated: 2026-02-24_
