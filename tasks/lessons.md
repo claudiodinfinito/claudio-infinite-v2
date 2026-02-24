@@ -150,6 +150,41 @@ result.data.name  // ✅ Correcto - data es el retorno del handler
 
 ---
 
+## 2026-02-24 - Zombie Process Causing Server Crashes
+
+### The Mistake
+Servidor crasheaba cada ~30 minutos. Assumí que era el VPS o el código.
+
+### Why It Was Wrong
+- No verifiqué procesos existentes antes de iniciar nuevo servidor
+- Había un proceso zombie de **4 días** (PID 1997754, iniciado Feb 20)
+- Múltiples procesos node causaban conflictos de puerto/recursos
+
+### The Correct Approach
+```bash
+# Antes de iniciar servidor:
+ps aux | grep "node.*entry.mjs"
+lsof -i:4321
+
+# Si hay proceso antiguo:
+kill -9 <old_pid>
+
+# Luego iniciar:
+node ./dist/server/entry.mjs
+```
+
+### The Pattern
+> **Always check for zombie processes before starting a new server instance.**
+> 
+> Symptoms:
+> - Server crashes after some time
+> - Multiple processes on same port
+> - Process started days/weeks ago still running
+> 
+> Fix: Kill old processes, then start fresh.
+
+---
+
 ## Template for Future Lessons
 
 ```markdown
