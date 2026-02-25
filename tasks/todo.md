@@ -2,6 +2,22 @@
 
 ## Active Tasks
 
+### 2026-02-25 - Workspace Maintenance Post-Consolidation
+**Contexto:** Después del desastre de consolidación de archivos, necesito limpieza y verificación completa.
+
+#### Plan (WORKFLOW ORCHESTRATION - Regla 1)
+
+- [ ] **Verificar estructura actual** - Confirmar que todos los archivos están en su lugar
+- [ ] **Verificar contenido de cada archivo root** - AGENTS.md, SOUL.md, USER.md, IDENTITY.md, HEARTBEAT.md, TOOLS.md
+- [ ] **Actualizar MEMORY.md** - Agregar lecciones de hoy al resumen
+- [ ] **Limpiar docs/ innecesarios** - Decidir si mantener archivos stripe-*.md crudos
+- [ ] **Verificar cron job** - Confirmar que usa rutas correctas
+- [ ] **Commit final** - Documentar estado limpio
+
+---
+
+## Completed Tasks (2026-02-24)
+
 ### 2026-02-24 - Astro Project Improvements
 **Proyecto:** claudio-infinite
 **URL:** http://100.87.200.4:4321/

@@ -412,4 +412,33 @@ Cuando el usuario exprese frustración:
 
 ---
 
+## 2026-02-25 - Ignoring Workflow When Explicitly Asked
+
+### The Mistake
+Usuario dijo: "Te pedi específicamente seguir todos y cada uno de los pasos del workflow orchestration". Yo no seguí el Task Management Flow: Plan → Verify → Execute.
+
+### Why It Was Wrong
+- WORKFLOW_ORCHESTRATION.md existe con 6 reglas y Task Management Flow
+- Yo leí el archivo pero NO ejecuté los pasos
+- Salté directo a "hacer cosas" sin plan en todo.md
+- No verifiqué el plan con el usuario
+
+### The Correct Approach
+```markdown
+Task Management Flow (OBLIGATORIO):
+1. Plan First → Write plan to tasks/todo.md with checkable items
+2. Verify Plan → Check in before starting implementation
+3. Track Progress → Mark items complete as you go
+4. Explain Changes → High-level summary at each step
+5. Document Results → Add review section to tasks/todo.md
+6. Capture Lessons → Update tasks/lessons.md after corrections
+```
+
+### The Pattern
+> **WORKFLOW_ORCHESTRATION.md no es de lectura, es de EJECUCIÓN.**
+> 
+> Cada paso debe ejecutarse. No saltarse. No asumir. Seguir el flujo.
+
+---
+
 ## Template for Future Lessons
