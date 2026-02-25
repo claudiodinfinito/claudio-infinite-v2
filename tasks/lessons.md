@@ -601,6 +601,49 @@ Opción B - write:
 > El problema es el contexto compactado. Solución:
 > - Leer inmediatamente antes de editar
 > - O usar write si quieres sobrescribir
+> - **MEJOR: usar exec con echo >> para append**
+
+---
+
+## 2026-02-25 - Usar exec para Append (NO edit)
+
+### The Problem
+`edit` falla constantemente con "oldText must match exactly". Contexto compactado, espacios, unicode, cualquier diferencia causa fail.
+
+### The Solution
+**Usar exec con comandos Unix:**
+
+```bash
+# Append al final
+exec: echo "nueva línea" >> archivo.md
+
+# Append múltiples líneas
+exec: cat >> archivo.md << 'EOF'
+contenido
+múltiples líneas
+EOF
+
+# Reemplazar texto
+exec: sed -i 's/viejo/nuevo/g' archivo.md
+
+# Borrar línea
+exec: sed -i '/patrón/d' archivo.md
+```
+
+### When to Use What
+| Situación | Herramienta |
+|-----------|-------------|
+| Append al final | `exec: echo >>` |
+| Modificar línea específica | `exec: sed -i` |
+| Sobrescribir archivo completo | `write` |
+| Leer archivo | `read` |
+| **EVITAR** | `edit` (falla demasiado) |
+
+### The Pattern
+> **exec + Unix tools > edit**
+>
+> echo, cat, sed, awk - herramientas probadas por 50 años.
+> No reinventar con edit que falla.
 
 ---
 
