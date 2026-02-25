@@ -2140,3 +2140,47 @@ Server caído → NO reiniciar → Reportar → Investigar → Preguntar → Act
 
 ---
 
+
+---
+
+## 2026-02-25 - Metodología Oficial vs Comandos Manuales
+
+### El Error
+Usaba comandos manuales (`node ./dist/server/entry.mjs`) en lugar de scripts oficiales de Astro (`npm run start`).
+
+### Por qué está mal
+- **No sigue documentación oficial** - Astro tiene scripts específicos
+- **Deuda técnica** - Comandos manuales no son reproducibles
+- **Falta --remote flag** - Build no incluía flag para Astro DB
+- **Variables de entorno manuales** - Deberían estar en scripts
+
+### Solución aplicada
+Seguir documentación oficial de Astro Node adapter:
+
+```json
+// package.json
+{
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build --remote",
+    "start": "NODE_ENV=production HOST=0.0.0.0 PORT=4321 node ./dist/server/entry.mjs"
+  }
+}
+```
+
+### Prevención
+> **SIEMPRE usar scripts oficiales del framework, nunca comandos manuales.**
+> 
+> Workflow:
+> 1. Leer documentación oficial
+> 2. Identificar scripts recomendados
+> 3. Configurar package.json
+> 4. Usar `npm run <script>` SIEMPRE
+
+### Pattern
+```
+Framework docs → Scripts oficiales → package.json → npm run <script>
+```
+
+---
+
