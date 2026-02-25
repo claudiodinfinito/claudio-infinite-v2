@@ -533,4 +533,39 @@ NUNCA: Cron modifica HEARTBEAT.md, MEMORY.md, u otros archivos del agente.
 
 ---
 
+## 2026-02-25 - Recurring Zombie Processes
+
+### The Pattern
+Zombie node processes appear frequently (every ~20-30 min). Multiple `node ./dist/server/entry.mjs` processes accumulate, causing port conflicts and server instability.
+
+### Root Cause
+- New server instances start without killing old ones
+- Build process may spawn multiple processes
+- No process management (systemd, pm2, etc.)
+
+### The Correct Approach
+```bash
+# BEFORE starting any server:
+ps aux | grep "node.*entry.mjs" | grep -v grep
+
+# If processes found, kill ALL before starting new:
+ps aux | grep "node.*entry.mjs" | grep -v grep | awk '{print $2}' | xargs -r kill -9
+
+# Then start fresh:
+nohup node ./dist/server/entry.mjs > /tmp/astro-server.log 2>&1 &
+```
+
+### Automated Prevention
+Add to HEARTBEAT.md autonomous tasks:
+- [ ] Check for zombie processes before every server operation
+- [ ] Kill all old processes if found
+- [ ] Verify single process running
+
+### The Pattern
+> **Always check `ps aux | grep "node.*entry.mjs"` before server operations.**
+>
+> Multiple processes = instability. Kill all, start one, verify HTTP 200.
+
+---
+
 ## Template for Future Lessons
