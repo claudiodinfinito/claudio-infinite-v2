@@ -1002,3 +1002,285 @@ git commit -m "Add Clawd workspace"
 
 ---
 
+
+---
+
+## 2026-02-25 - OpenClaw Sandbox Configuration
+
+### Sandbox modes
+
+| Mode | Qué hace |
+|------|----------|
+| `"off"` | Sin sandbox, todo corre en host (default actual) |
+| `"non-main"` | Solo sesiones no-main van a sandbox |
+| `"all"` | Todo en sandbox |
+
+### Scope (cuántos containers)
+
+| Scope | Containers |
+|-------|-----------|
+| `"session"` | Un container por sesión (default) |
+| `"agent"` | Un container por agente |
+| `"shared"` | Un container compartido |
+
+### Workspace access
+
+| Access | Qué ve el sandbox |
+|--------|------------------|
+| `"none"` | Sandbox workspace separado en `~/.openclaw/sandboxes` |
+| `"ro"` | Workspace montado read-only en `/agent` |
+| `"rw"` | Workspace montado read/write en `/workspace` |
+
+### Configuración mínima
+
+```json5
+{
+  agents: {
+    defaults: {
+      sandbox: {
+        mode: "non-main",
+        scope: "session",
+        workspaceAccess: "rw",
+        docker: {
+          image: "openclaw-sandbox:bookworm-slim",
+          network: "bridge",
+        }
+      }
+    }
+  }
+}
+```
+
+### Bind mounts
+
+- `docker.binds`: monta directorios host en container
+- Formato: `"host:container:mode"` (ej: `/home/user/src:/src:ro`)
+- **Seguridad**: binds BYPASEAN sandbox filesystem
+- `workspaceAccess: "ro"` para read-only, binds independientes
+
+### Imagen por defecto
+- `openclaw-sandbox:bookworm-slim`
+- NO incluye Node por defecto
+- Build: `scripts/sandbox-setup.sh`
+
+---
+
+## 2026-02-25 - Sandbox vs Tool Policy vs Elevated
+
+### Tres controles diferentes
+
+| Control | Decide | Config |
+|---------|--------|--------|
+| **Sandbox** | DÓNDE corren tools | `agents.defaults.sandbox.*` |
+| **Tool policy** | QUÉ tools están disponibles | `tools.allow/deny` |
+| **Elevated** | Escape hatch para exec en host | `tools.elevated.*` |
+
+### Reglas de precedencia
+
+1. **deny siempre gana**
+2. Si `allow` está seteado → todo lo demás bloqueado
+3. `/exec` NO puede override un tool deny
+4. Tool policy es el hard stop
+
+### Debug
+
+```bash
+openclaw sandbox explain
+openclaw sandbox explain --session agent:main:main
+openclaw sandbox explain --json
+```
+
+### Tool groups en sandbox
+
+```json5
+{
+  tools: {
+    sandbox: {
+      tools: {
+        allow: ["group:runtime", "group:fs", "group:sessions"],
+      }
+    }
+  }
+}
+```
+
+---
+
+
+---
+
+## 2026-02-25 - OpenClaw Memory System
+
+### Estructura de memoria
+
+| Archivo | Propósito | Cuándo leer |
+|---------|-----------|-------------|
+| `MEMORY.md` | Memoria largo plazo curada | Solo en sesión main (privada) |
+| `memory/YYYY-MM-DD.md` | Log diario append-only | Hoy + ayer al inicio |
+
+### Memory tools
+
+| Tool | Propósito |
+|------|-----------|
+| `memory_search` | Búsqueda semántica sobre snippets indexados |
+| `memory_get` | Lectura de archivo específico con offset/limit |
+
+**Importante:** `memory_get` retorna `{text: "", path}` si archivo no existe (no tira error).
+
+### Cuándo escribir memoria
+
+- Decisiones, preferencias, hechos durables → `MEMORY.md`
+- Notas del día, contexto actual → `memory/YYYY-MM-DD.md`
+- Si alguien dice "recuerda esto" → escribirlo (no guardarlo en RAM)
+
+### Automatic memory flush (pre-compaction)
+
+Antes de auto-compaction, OpenClaw dispara un turno silencioso para que el modelo escriba memoria.
+
+```json5
+{
+  agents: {
+    defaults: {
+      compaction: {
+        memoryFlush: {
+          enabled: true,
+          softThresholdTokens: 4000,
+          prompt: "Write lasting notes to memory/YYYY-MM-DD.md; reply NO_REPLY if nothing.",
+        }
+      }
+    }
+  }
+}
+```
+
+### Vector memory search
+
+- **Enabled by default**
+- Indexa `MEMORY.md` + `memory/*.md`
+- Providers: local, openai, gemini, voyage, mistral
+- Auto-selecciona provider basado en keys disponibles
+
+### QMD backend (experimental)
+
+```json5
+{
+  memory: {
+    backend: "qmd",
+    qmd: {
+      command: "qmd",
+      searchMode: "search", // search | vsearch | query
+      update: { interval: "5m" }
+    }
+  }
+}
+```
+
+---
+
+
+---
+
+## 2026-02-25 - OpenClaw Command Queue
+
+### Queue modes (por canal)
+
+| Mode | Comportamiento |
+|------|----------------|
+| `steer` | Inyecta inmediatamente en run actual (cancela tools pendientes) |
+| `followup` | Encola para siguiente turno |
+| `collect` | Coalesce todos los mensajes en un solo followup (default) |
+| `steer-backlog` | Steer + preserva para followup |
+
+### Configuración
+
+```json5
+{
+  messages: {
+    queue: {
+      mode: "collect",
+      debounceMs: 1000,  // Wait for quiet
+      cap: 20,           // Max queued per session
+      drop: "summarize", // Overflow: old | new | summarize
+    }
+  }
+}
+```
+
+### Per-session override
+
+```
+/queue collect debounce:2s cap:25
+/queue default  // Reset
+```
+
+---
+
+## 2026-02-25 - OpenClaw Sessions
+
+### Session keys
+
+- Direct chats: `agent:<agentId>:<mainKey>` (default `main`)
+- Groups/channels: keys separados
+
+### DM Scope (seguridad multi-user)
+
+**⚠️ CRÍTICO:** Si múltiples usuarios pueden DM al agente, aislar sesiones:
+
+```json5
+{
+  session: {
+    dmScope: "per-channel-peer",  // aísla por canal + sender
+  }
+}
+```
+
+| dmScope | Aislamiento |
+|---------|-------------|
+| `main` | Todos DMs comparten sesión (default, single-user) |
+| `per-peer` | Por sender id |
+| `per-channel-peer` | Por canal + sender (recomendado multi-user) |
+| `per-account-channel-peer` | Por cuenta + canal + sender |
+
+### Ubicación de sesiones
+
+```
+~/.openclaw/agents/<agentId>/sessions/
+├── sessions.json          # Store
+└── <SessionId>.jsonl      # Transcripts
+```
+
+---
+
+## 2026-02-25 - OpenClaw Retry Policy
+
+### Defaults
+
+- Attempts: 3
+- Max delay: 30000 ms
+- Jitter: 0.1 (10%)
+
+### Por provider
+
+| Provider | Min delay |
+|----------|-----------|
+| Telegram | 400 ms |
+| Discord | 500 ms |
+
+### Configuración
+
+```json5
+{
+  channels: {
+    telegram: {
+      retry: {
+        attempts: 3,
+        minDelayMs: 400,
+        maxDelayMs: 30000,
+      }
+    }
+  }
+}
+```
+
+---
+
