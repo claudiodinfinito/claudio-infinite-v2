@@ -1359,3 +1359,130 @@ openclaw cron remove <job-id>
 
 ---
 
+
+---
+
+## 2026-02-25 - OpenClaw Cron Jobs
+
+### Dos tipos de ejecución
+
+| sessionTarget | Qué hace | Payload |
+|---------------|----------|---------|
+| `main` | Encola system event, corre en heartbeat | `systemEvent` |
+| `isolated` | Corre agente dedicado en `cron:<jobId>` | `agentTurn` |
+
+### Schedule kinds
+
+| Kind | Uso | Ejemplo |
+|------|-----|---------|
+| `at` | One-shot | `{"kind": "at", "at": "2026-02-01T16:00:00Z"}` |
+| `every` | Intervalo fijo | `{"kind": "every", "everyMs": 3600000}` |
+| `cron` | Cron expression | `{"kind": "cron", "expr": "0 7 * * *", "tz": "America/Cancun"}` |
+
+### Delivery modes
+
+| Mode | Comportamiento |
+|------|----------------|
+| `announce` | Entrega a canal + summary en main session |
+| `webhook` | POST a URL |
+| `none` | Solo interno |
+
+### Wake modes
+
+| wakeMode | Cuándo corre |
+|----------|-------------|
+| `now` | Inmediato (trigger heartbeat) |
+| `next-heartbeat` | Espera próximo heartbeat |
+
+### CLI commands
+
+```bash
+# One-shot reminder
+openclaw cron add --name "Reminder" --at "2026-02-01T16:00:00Z" \
+  --session main --system-event "Reminder text" --wake now --delete-after-run
+
+# Recurring isolated job
+openclaw cron add --name "Morning brief" --cron "0 7 * * *" \
+  --tz "America/Cancun" --session isolated --message "Summarize overnight" \
+  --announce --channel telegram --to "1234567890"
+
+# List and run
+openclaw cron list
+openclaw cron run <job-id>
+openclaw cron runs --id <job-id>
+```
+
+### Ubicación de jobs
+
+```
+~/.openclaw/cron/jobs.json
+```
+
+### Model/thinking overrides (isolated jobs)
+
+```json
+{
+  "payload": {
+    "kind": "agentTurn",
+    "message": "Task",
+    "model": "anthropic/claude-sonnet-4-20250514",
+    "thinking": "minimal"
+  }
+}
+```
+
+---
+
+
+---
+
+## 2026-02-25 - Cron vs Heartbeat: Cuándo usar cada uno
+
+### Guía rápida
+
+| Use Case | Usar | Por qué |
+|----------|------|---------|
+| Check inbox cada 30 min | Heartbeat | Batch con otros checks, context-aware |
+| Reporte diario a las 9am exacto | Cron (isolated) | Timing exacto |
+| Recordatorio en 20 minutos | Cron (`--at`) | One-shot preciso |
+| Análisis semanal pesado | Cron (isolated) | Modelo diferente, standalone |
+| Monitoreo continuo | Heartbeat | Piggybacks en ciclo existente |
+
+### Heartbeat: Ventajas
+
+- **Batch múltiples checks** en un solo turno
+- **Reduce API calls** vs múltiples cron jobs
+- **Context-aware**: sabe qué es urgente
+- **Smart suppression**: `HEARTBEAT_OK` si nada importante
+
+### Cron: Ventajas
+
+- **Timing exacto** (cron expression + timezone)
+- **Session isolation**: no contamina main history
+- **Model overrides**: usar modelo diferente por job
+- **One-shot**: `--at` para recordatorios únicos
+- **Delivery control**: announce, webhook, o none
+
+### Configuración combinada óptima
+
+**HEARTBEAT.md** (cada 30 min):
+```markdown
+- Scan inbox urgent
+- Check calendar next 2h
+- Review pending tasks
+```
+
+**Cron jobs** (timing exacto):
+```bash
+# Daily briefing 7am
+openclaw cron add --cron "0 7 * * *" --session isolated --message "Briefing"
+
+# Weekly review Mondays 9am
+openclaw cron add --cron "0 9 * * 1" --session isolated --model opus
+
+# One-shot reminder
+openclaw cron add --at "2h" --session main --system-event "Call client"
+```
+
+---
+
