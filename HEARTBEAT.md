@@ -4,7 +4,7 @@
 
 | Parámetro | Valor |
 |-----------|-------|
-| **Inactivity Threshold** | 20 minutos |
+| **Inactivity Threshold** | 15 minutos |
 | **Heartbeat Interval** | 10 minutos |
 | **Auto-activation** | ✅ Habilitado |
 
@@ -217,13 +217,14 @@
 
 **Prioridad 1 — Sistema:**
 - [ ] Git status → commit si hay cambios
-- [ ] Verificar WORKFLOW_ORCHESTRATION.md alignment
+- [ ] Verificar zombie processes antes de iniciar servidor
 - [ ] Actualizar HEARTBEAT.md estado
 
-**Prioridad 2 — Aprendizaje Continuo:**
-- [x] **Astro Deep Dive** → COMPLETADO ✅ (llms-full.txt 100% leído)
-- [ ] Explorar otros frameworks (Svelte, Qwik, etc.)
-- [ ] Actualizar ASTRO.md según necesidades
+**Prioridad 2 — Self-Improving Loop (nocturno):**
+- [ ] **Consolidación:** Detectar info duplicada entre archivos → consolidar sin perder datos
+- [ ] **Research:** Aprender新技术 (frameworks, tools) → crear docs en docs/
+- [ ] **Mejoras:** Optimizar código en projects/ → refactor, performance
+- [ ] **Sincronización:** Actualizar sitio Astro con estado actual del proyecto
 
 **Prioridad 3 — Mantenimiento:**
 - [ ] MEMORY.md updates (append only)
@@ -237,7 +238,27 @@
 
 ---
 
+## 🧠 Self-Improving Loop Pattern
+
+**Objetivo:** Trabajar autónomamente mientras el usuario duerme, mejorando continuamente.
+
+**Tipos de trabajo:**
+| Tipo | Frecuencia | Ejemplo |
+|------|------------|---------|
+| **Consolidación** | Cada sesión | Detectar duplicados, unificar sin perder info |
+| **Research** | Semanal | Aprender Svelte, Qwik, Deno → crear docs |
+| **Mejoras** | Oportunista | Refactor código, optimizar queries |
+| **Sincronización** | Cada sesión | Actualizar Astro site con estado actual |
+
+**Principios:**
+1. **Incremental:** No descartar información, consolidar inteligentemente
+2. **Verificable:** Todo cambio debe ser commiteado con mensaje descriptivo
+3. **Reversible:** Git permite rollback si algo sale mal
+4. **Documentado:** Actualizar lessons.md si algo nuevo se aprende
+
+---
+
 _Uso:_
 _- `activa modo autonomo por [X] minutos` → temporal_
 _- `activa modo autonomo` → indefinido_
-_- Automático: 20 min inactividad → activación indefinida_
+_- Automático: 15 min inactividad → activación indefinida_

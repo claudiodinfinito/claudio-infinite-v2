@@ -60,21 +60,15 @@ HOST=0.0.0.0 PORT=4321 node ./dist/server/entry.mjs  # Start server
 
 ## ⚠️ Lessons Learned
 
-### Google OAuth vs API Keys
-- `GOCSPX-...` = OAuth Client Secret (NOT for API calls)
-- `AIza...` = Gemini/Google API Key (for API calls)
-- User had confusion about this — helped clarify
+**Fuente única de verdad:** `tasks/lessons.md` — contiene 17 lecciones detalladas con patrones de prevención.
 
-### Gemini CLI Status
-- Installed but not authenticated
-- Needs `GEMINI_API_KEY` env var with AIza... key
-- User mentioned "vector search" token (GOCSPX-...) — was OAuth secret
+Ver `tasks/lessons.md` para lecciones completas. Ejemplos clave:
+- Subagent Strategy (GLM5 unlimited tokens)
+- LLM Files vs Web Browsing
+- Edit Tool Race Condition
+- Acciones Destructivas en Cadena
 
-## 🔮 Future Considerations
-
-- Consider setting up cron jobs for periodic tasks
-- Explore subagent orchestration for complex workflows
-- May want to add Gemini API key for additional capabilities
+---
 
 ## 📚 Documentation Mastery (2026-02-23)
 
