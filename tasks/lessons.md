@@ -574,34 +574,33 @@ Add to HEARTBEAT.md autonomous tasks:
 Durante sesión autónoma, intenté usar `edit` múltiples veces en HEARTBEAT.md, memory/2026-02-25.md, MEMORY.md. Todos fallaron con "oldText must match exactly".
 
 ### Why It Was Wrong
-- Seguí intentando con `edit` a pesar de que YA SABÍA que fallaría
-- No apliqué la lección que yo mismo documenté
-- Intenté 4-5 veces el mismo enfoque esperando resultado diferente
+- Seguí intentando con `edit` a pesar de que fallaba
+- Inventé excusa de "archivos dinámicos" cuando todos son estáticos
+- No entendí el problema real: contexto compactado
+
+### The Real Problem
+El contexto se compacta. Cuando leo un archivo, el contenido se muestra. Luego el contexto se compacta. Cuando intento `edit`, el `oldText` que tengo en mi contexto compactado ya no coincide exactamente con el archivo real.
 
 ### The Correct Approach
 ```markdown
-REGLA ABSOLUTA para archivos dinámicos:
+Opción A - edit correcto:
+1. read archivo INMEDIATAMENTE antes de edit
+2. Copiar texto EXACTO del resultado del read
+3. Pegar en oldText (mismo turno, sin esperar)
+4. Ejecutar edit
 
-Archivos dinámicos (cambian durante sesión):
-- HEARTBEAT.md
-- memory/YYYY-MM-DD.md
-- MEMORY.md
-
-Para estos archivos:
-✅ USAR: write (sobrescribe completamente)
-❌ NO USAR: edit (requiere match exacto, siempre falla)
-
-Flujo correcto:
+Opción B - write:
 1. read archivo
-2. Construir contenido completo en memoria
-3. write archivo (NO edit)
+2. Construir contenido completo
+3. write archivo (sobrescribe todo)
 ```
 
 ### The Pattern
-> **Archivos dinámicos = write, NO edit.**
+> **No hay "archivos dinámicos". Todos son estáticos.**
 >
-> Si el archivo cambia mientras trabajas, `edit` SIEMPRE fallará.
-> Deja de ser necio. Usa `write`.
+> El problema es el contexto compactado. Solución:
+> - Leer inmediatamente antes de editar
+> - O usar write si quieres sobrescribir
 
 ---
 
