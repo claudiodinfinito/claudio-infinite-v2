@@ -1780,3 +1780,305 @@ my-hook/
 
 ---
 
+
+---
+
+## 2026-02-25 - OpenClaw Channels: BlueBubbles (iMessage)
+
+### Qué es
+Plugin para iMessage vía BlueBubbles macOS server (recomendado sobre legacy imsg).
+
+### Configuración básica
+
+```json5
+{
+  channels: {
+    bluebubbles: {
+      enabled: true,
+      serverUrl: "http://192.168.1.100:1234",
+      password: "xxx",
+      webhookPath: "/bluebubbles-webhook",
+    }
+  }
+}
+```
+
+### DM Policy
+
+| Policy | Comportamiento |
+|--------|---------------|
+| `pairing` | Unknown envía código, requiere aprobación |
+| `allowlist` | Solo approved senders |
+| `open` | Todos pueden DM |
+| `disabled` | DMs bloqueados |
+
+### Group Policy
+
+```json5
+{
+  channels: {
+    bluebubbles: {
+      groupPolicy: "allowlist",
+      groups: {
+        "*": { requireMention: true },  // Default
+        "iMessage;-;chat123": { requireMention: false },  // Override
+      }
+    }
+  }
+}
+```
+
+### Actions disponibles
+
+| Action | Descripción |
+|--------|-------------|
+| `react` | Tapbacks |
+| `edit` | Editar mensajes (macOS 13+) |
+| `unsend` | Desenviar mensajes |
+| `reply` | Reply threading |
+| `sendWithEffect` | Efectos iMessage |
+| `sendAttachment` | Media/voice memos |
+
+### Seguridad
+- **Siempre** setear webhook password
+- Webhook auth siempre requerido
+
+---
+
+
+---
+
+## 2026-02-25 - OpenClaw Channels: Telegram
+
+### Configuración básica
+
+```json5
+{
+  channels: {
+    telegram: {
+      enabled: true,
+      botToken: "123:abc",
+      dmPolicy: "pairing",
+      groups: { "*": { requireMention: true } },
+    }
+  }
+}
+```
+
+### DM Policy
+
+| Policy | Comportamiento |
+|--------|---------------|
+| `pairing` | Default - código de aprobación |
+| `allowlist` | Solo approved users |
+| `open` | Todos (requiere `allowFrom: ["*"]`) |
+| `disabled` | DMs bloqueados |
+
+### Group Policy
+
+Dos controles independientes:
+1. **`groups`** - Cuáles grupos están permitidos
+2. **`groupPolicy`** - Quién puede hablar en grupos (open/allowlist/disabled)
+
+### Privacy Mode (importante)
+
+Bots con Privacy Mode solo ven:
+- Comandos (`/cmd`)
+- Mensajes donde el bot es mencionado
+- Mensajes donde el bot es admin
+
+Para ver **todos** los mensajes:
+- Desactivar `/setprivacy` en BotFather, O
+- Hacer al bot admin del grupo
+
+### Message actions
+
+| Action | Descripción |
+|--------|-------------|
+| `send` | Enviar mensaje |
+| `react` | Reacciones |
+| `delete` | Borrar mensaje |
+| `edit` | Editar mensaje |
+| `sticker` | Enviar sticker |
+
+### Inline buttons
+
+```json5
+{
+  action: "send",
+  channel: "telegram",
+  to: "123456789",
+  message: "Elige:",
+  buttons: [
+    [{ text: "Sí", callback_data: "yes" }, { text: "No", callback_data: "no" }]
+  ]
+}
+```
+
+### Reply threading tags
+
+- `[[reply_to_current]]` - Responde al mensaje que disparó
+- `[[reply_to:<id>]]` - Responde a ID específico
+
+### Finding user ID
+
+```bash
+curl "https://api.telegram.org/bot<TOKEN>/getUpdates"
+# o
+openclaw logs --follow
+```
+
+---
+
+
+---
+
+## 2026-02-25 - OpenClaw Channels: Discord
+
+### Configuración básica
+
+```json5
+{
+  channels: {
+    discord: {
+      enabled: true,
+      token: "YOUR_BOT_TOKEN",
+      groupPolicy: "allowlist",
+      guilds: {
+        "SERVER_ID": {
+          requireMention: false,
+          users: ["YOUR_USER_ID"],
+        }
+      }
+    }
+  }
+}
+```
+
+### Privileged Intents (REQUERIDOS)
+
+En Discord Developer Portal → Bot:
+- ✅ **Message Content Intent** (requerido)
+- ✅ **Server Members Intent** (recomendado)
+- ⬜ Presence Intent (opcional)
+
+### Bot Permissions
+
+OAuth2 URL Generator:
+- `bot` + `applications.commands`
+- View Channels, Send Messages, Read Message History, Embed Links, Attach Files
+
+### Guild workspace
+
+Para servidor privado (tú + bot):
+```json5
+{
+  channels: {
+    discord: {
+      guilds: {
+        "SERVER_ID": { requireMention: false }
+      }
+    }
+  }
+}
+```
+
+Cada canal tiene su propia sesión aislada.
+
+### Forum channels
+
+Los foros solo aceptan threads:
+```bash
+# Auto-crear thread
+openclaw message send --channel discord --target channel:<forumId> \
+  --message "Título\nCuerpo del post"
+```
+
+### Interactive components
+
+Discord components v2:
+- `text`, `section`, `separator`, `actions`, `media-gallery`, `file`
+- Botones, select menus, modal forms
+- `components.reusable: true` para múltiples usos
+
+### Memory en guild channels
+
+- MEMORY.md NO se auto-carga en guild channels
+- Usar `memory_search` / `memory_get` si se necesita contexto
+- Poner instrucciones estables en AGENTS.md o USER.md
+
+---
+
+
+---
+
+## 2026-02-25 - OpenClaw Gateway Configuration
+
+### Ubicación del config
+- `~/.openclaw/openclaw.json` (JSON5 con comentarios y trailing commas)
+
+### Comandos CLI
+
+```bash
+openclaw config get agents.defaults.workspace
+openclaw config set agents.defaults.heartbeat.every "2h"
+openclaw config unset tools.web.search.apiKey
+openclaw onboard    # wizard completo
+openclaw configure  # wizard de config
+```
+
+### Config hot reload
+
+| Mode | Comportamiento |
+|------|----------------|
+| `hybrid` (default) | Hot-apply safe changes, auto-restart para críticos |
+| `hot` | Solo hot-apply, logs warning si necesita restart |
+| `restart` | Restart en cualquier cambio |
+| `off` | Sin watching, restart manual |
+
+### Qué hot-applies vs restart
+
+| Hot-applies (sin restart) | Restart requerido |
+|---------------------------|-------------------|
+| channels, agents, models | gateway.port |
+| hooks, cron, heartbeat | gateway.bind |
+| session, messages | gateway.auth |
+| tools, browser, skills | gateway.tls |
+| ui, logging | discovery, plugins |
+
+### config.patch vs config.apply
+
+- **config.patch** - Merge parcial (usar este)
+- **config.apply** - Reemplaza TODO (peligroso)
+
+```bash
+# Patch seguro
+openclaw gateway call config.patch --params '{
+  "raw": "{ channels: { telegram: { dmPolicy: \"open\" } } }",
+  "baseHash": "<hash>"
+}'
+```
+
+### $include - Split config
+
+```json5
+{
+  gateway: { port: 18789 },
+  agents: { $include: "./agents.json5" },
+  broadcast: {
+    $include: ["./clients/a.json5", "./clients/b.json5"],
+  }
+}
+```
+
+### Env var substitution
+
+```json5
+{
+  gateway: { auth: { token: "${OPENCLAW_GATEWAY_TOKEN}" } },
+  models: { providers: { custom: { apiKey: "${CUSTOM_API_KEY}" } } },
+}
+```
+
+---
+
