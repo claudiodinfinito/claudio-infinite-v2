@@ -209,6 +209,15 @@ Created formal workflow document with 6 core rules for complex tasks:
 - **Cron job:** "Workflow Adherence Check" every 4 hours (isolated agent)
 - **Tasks:** Verify adherence at start of every autonomous session
 
+### File Locations (2026-02-25 Reorganization)
+| File | Location |
+|------|----------|
+| WORKFLOW_ORCHESTRATION.md | `system/` |
+| todo.md | `tasks/` |
+| lessons.md | `tasks/` |
+| HEARTBEAT.md | root (loaded by OpenClaw) |
+| AGENTS.md, SOUL.md, USER.md, IDENTITY.md | root (loaded by OpenClaw) |
+
 ### Key Insight
 > Following workflow prevents quickfixes and ensures elegant solutions.
 
