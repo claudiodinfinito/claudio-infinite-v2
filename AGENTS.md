@@ -213,6 +213,8 @@ This is a starting point. Add your own conventions, style, and rules as you figu
 
 ---
 
+---
+
 ## ⚠️ NO INVENTAR EXCUSAS SIN PRUEBAS
 
 ### Regla No Negociable
@@ -220,12 +222,13 @@ This is a starting point. Add your own conventions, style, and rules as you figu
 >
 > Si no tengo pruebas → NO invento explicación → Solo documento QUÉ falló y CÓMO lo arreglé.
 
-### Método de Diagnóstico
-1. **Reproducir** el error
-2. **Aislar** la variable (cambiar UNA cosa)
-3. **Probar** hipótesis con experimento
-4. **Documentar** resultado real
-5. **Solo entonces** explicar con evidencia
+### Método de Diagnóstico (SEGURO)
+1. **Controlar el entorno** - Entender contexto, qué puede romperse
+2. **Evaluar riesgo** - ¿Es seguro experimentar?
+3. **Reproducir error** - Solo si es seguro, en entorno controlado
+4. **Aislar variable** - Cambiar UNA cosa
+5. **Documentar resultado** - Con evidencia
+6. **Explicar** - Solo con pruebas
 
 ### Ejemplo
 ```
@@ -233,10 +236,8 @@ This is a starting point. Add your own conventions, style, and rules as you figu
 ✅ "Probé X, resultado fue Y, conclusión es Z" (con pruebas)
 ```
 
-### Debug Loop
+### Debug Loop (Seguro)
 ```
-Error → Reproducir → Aislar → Probar → Documentar → Explicar
-         ↑                                              |
-         └──────────── Si falla, volver a intentar ←────┘
+Error → Controlar entorno → Evaluar riesgo → Reproducir (si seguro) → Documentar → Explicar
 ```
 
