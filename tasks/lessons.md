@@ -740,3 +740,265 @@ Punto. Sin teorías fantasiosas.
 > Si algo falla, observar qué pasó, probar soluciones, documentar resultados reales.
 > No crear teorías técnicas sin evidencia.
 
+
+---
+
+## 2026-02-25 - OpenClaw Tools: Browser Control
+
+### Lecciones de documentación oficial
+
+**Browser profiles:**
+- `openclaw`: Perfil aislado, controlado por agente (recomendado para automatización)
+- `chrome`: Extension relay, usa Chrome existente (requiere extensión instalada)
+
+**Best practices:**
+- **NO dar credenciales al modelo** - logins manuales en el navegador
+- Para X/Twitter: usar el navegador host, no sandbox
+- Snapshot antes de click/type: `openclaw browser snapshot --interactive`
+- Refs no son estables entre navegaciones - re-snapshot si falla
+
+**Seguridad:**
+- `browser.evaluateEnabled=false` si no necesito JS evaluation
+- Gateway debe estar en red privada
+- CDP remotos usar HTTPS y tokens efímeros
+
+---
+
+## 2026-02-25 - OpenClaw Tools: Agent Send
+
+### Uso de `openclaw agent`
+
+**Comando:** Ejecuta un turn de agente sin mensaje inbound.
+
+```bash
+openclaw agent --to +15555550123 --message "status update"
+openclaw agent --agent ops --message "Summarize logs"
+openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
+```
+
+**Parámetros clave:**
+- `--to <dest>`: Target de la sesión
+- `--agent <id>`: Agente específico
+- `--session-id <id>`: Reusar sesión existente
+- `--deliver`: Enviar respuesta al canal
+- `--thinking`: Persistir nivel de thinking
+
+---
+
+## 2026-02-25 - OpenClaw AGENTS.md Default Template
+
+### Estructura obligatoria en session start
+
+**Leer ANTES de responder:**
+1. `SOUL.md` - Identidad y tono
+2. `USER.md` - Perfil del usuario
+3. `MEMORY.md` + `memory/YYYY-MM-DD.md` (hoy + ayer)
+
+### Memoria del agente
+
+- **Daily log:** `memory/YYYY-MM-DD.md`
+- **Long-term:** `MEMORY.md` para hechos durables
+- **Capture:** decisiones, preferencias, constraints, open loops
+- **Avoid:** secrets (a menos que explícitamente pedido)
+
+### Backup
+
+Tratar workspace como "memoria" → git repo para backup
+
+```bash
+cd ~/.openclaw/workspace
+git init
+git add AGENTS.md
+git commit -m "Add Clawd workspace"
+```
+
+---
+
+
+---
+
+## 2026-02-25 - OpenClaw Exec Tool
+
+### Configuración crítica
+
+**Sandbox está OFF por defecto.** Para activarlo:
+
+```json5
+{
+  sandbox: {
+    mode: "all" | "tools" | "agent",
+    scope: "agent",
+    docker: { image: "openclaw-sandbox" }
+  }
+}
+```
+
+### Parámetros importantes
+
+| Parámetro | Default | Propósito |
+|-----------|---------|-----------|
+| `host` | `sandbox` | Dónde ejecutar (sandbox/gateway/node) |
+| `security` | `deny` (sandbox) / `allowlist` (gateway) | Modo de seguridad |
+| `ask` | `on-miss` | Aprobación para gateway/node |
+| `yieldMs` | 10000 | Auto-background después de X ms |
+| `timeout` | 1800 | Kill después de X segundos |
+| `pty` | false | Usar pseudo-terminal (TTY CLIs) |
+
+### Tool groups (shorthands)
+
+| Group | Tools incluidas |
+|-------|-----------------|
+| `group:runtime` | exec, bash, process |
+| `group:fs` | read, write, edit, apply_patch |
+| `group:sessions` | sessions_list, sessions_history, sessions_send, sessions_spawn |
+| `group:memory` | memory_search, memory_get |
+| `group:web` | web_search, web_fetch |
+| `group:ui` | browser, canvas |
+| `group:automation` | cron, gateway |
+| `group:messaging` | message |
+
+### Tool profiles
+
+| Profile | Tools permitidas |
+|---------|------------------|
+| `minimal` | session_status only |
+| `coding` | group:fs, group:runtime, group:sessions, group:memory, image |
+| `messaging` | group:messaging, sessions_list, sessions_history, sessions_send |
+| `full` | Sin restricción |
+
+### Ejemplo: configurar coding profile
+
+```json5
+{
+  tools: {
+    profile: "coding",
+    deny: ["group:runtime"], // Sin exec/process
+  }
+}
+```
+
+---
+
+## 2026-02-25 - Process Tool (Background Sessions)
+
+### Acciones disponibles
+
+| Acción | Propósito |
+|--------|-----------|
+| `list` | Listar sesiones activas |
+| `poll` | Obtener output + status |
+| `log` | Ver líneas con offset/limit |
+| `write` | Escribir a stdin |
+| `kill` | Matar proceso |
+| `clear` | Limpiar sesiones terminadas |
+
+### Patrón foreground → background
+
+```json
+// Iniciar
+{"tool":"exec","command":"npm run build","yieldMs":1000}
+
+// Poll para ver progreso
+{"tool":"process","action":"poll","sessionId":"<id>"}
+
+// Enviar teclas
+{"tool":"process","action":"send-keys","sessionId":"<id>","keys":["C-c"]}
+```
+
+---
+
+## 2026-02-25 - Loop Detection (Tool Call Loops)
+
+### Configuración
+
+```json5
+{
+  tools: {
+    loopDetection: {
+      enabled: true,
+      warningThreshold: 10,
+      criticalThreshold: 20,
+      globalCircuitBreakerThreshold: 30,
+    }
+  }
+}
+```
+
+### Detectores
+
+| Detector | Qué detecta |
+|----------|-------------|
+| `genericRepeat` | Misma tool + mismos params repetidos |
+| `knownPollNoProgress` | Polls sin progreso |
+| `pingPong` | Alternancia A/B/A/B sin progreso |
+
+**Importante:** Previene loops infinitos de tool calls.
+
+---
+
+
+---
+
+## 2026-02-25 - OpenClaw Agent Workspace
+
+### Estructura del workspace
+
+| Archivo | Propósito | Cuándo se lee |
+|---------|-----------|---------------|
+| `AGENTS.md` | Reglas operativas | Cada sesión |
+| `SOUL.md` | Persona, tono, límites | Cada sesión |
+| `USER.md` | Perfil del usuario | Cada sesión |
+| `IDENTITY.md` | Nombre, vibe, emoji | Cada sesión |
+| `TOOLS.md` | Notas de herramientas | Cada sesión |
+| `HEARTBEAT.md` | Checklist para heartbeats | Cada heartbeat |
+| `BOOTSTRAP.md` | Ritual primera vez | Una vez, luego borrar |
+| `MEMORY.md` | Memoria largo plazo | Solo sesión main (privada) |
+| `memory/YYYY-MM-DD.md` | Log diario | Leer hoy + ayer |
+
+### Ubicación default
+- `~/.openclaw/workspace`
+- Si `OPENCLAW_PROFILE` está seteado → `~/.openclaw/workspace-<profile>`
+
+### Boot sequence
+1. Resuelve workspace
+2. Carga bootstrap files (AGENTS.md, SOUL.md, USER.md, etc.)
+3. Carga skills (bundled → managed → workspace)
+4. Inicia sesión
+
+---
+
+## 2026-02-25 - OpenClaw Sessions
+
+### Ubicación de sesiones
+```
+~/.openclaw/agents/<agentId>/sessions/<SessionId>.jsonl
+```
+
+### Session steering
+
+| Queue mode | Comportamiento |
+|------------|----------------|
+| `steer` | Mensaje inyectado después de tool call |
+| `followup` | Mensaje después del turno actual |
+| `collect` | Mensajes acumulados hasta fin de turno |
+
+### Block streaming
+- **Off por defecto**: `agents.defaults.blockStreamingDefault: "off"`
+- Emite bloques completos de texto cuando termina párrafo
+- Reduce spam de mensajes cortos
+
+---
+
+## 2026-02-25 - OpenClaw Model Refs
+
+### Formato
+- `provider/model` (split en primer `/`)
+- Ejemplo: `openai/gpt-4`, `anthropic/claude-3-opus`
+- Si hay `/` en el model ID, incluir provider prefix
+  - Ejemplo: `openrouter/moonshotai/kimi-k2`
+
+### Model aliases
+- Si no hay `/`, se trata como alias para default provider
+
+---
+

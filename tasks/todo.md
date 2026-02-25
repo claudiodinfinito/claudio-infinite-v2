@@ -2,53 +2,36 @@
 
 ## Active Tasks
 
-_No active tasks at the moment._
+### 2026-02-25 - Entender documentación OpenClaw y crear lecciones
+**Contexto:** Tengo 1.9MB de documentación OpenClaw (54,895 líneas) que debo leer, entender y extraer lecciones útiles.
+
+#### Plan (WORKFLOW ORCHESTRATION - Regla 1)
+
+**Fase 1: Análisis de contenido**
+- [ ] Identificar secciones principales del llm-full.txt
+- [ ] Mapear categorías: Tools, Channels, Gateway, Automation, etc.
+- [ ] Priorizar qué leer primero
+
+**Fase 2: Lectura por categorías**
+- [ ] Leer sección Tools (exec, browser, subagents, etc.)
+- [ ] Leer sección Channels (telegram, whatsapp, etc.)
+- [ ] Leer sección Gateway (configuration, security)
+- [ ] Leer sección Automation (cron, hooks)
+- [ ] Leer sección Concepts (sessions, memory, etc.)
+
+**Fase 3: Extraer lecciones**
+- [ ] Documentar patrones importantes
+- [ ] Documentar configuraciones críticas
+- [ ] Documentar mejores prácticas
+- [ ] Agregar a tasks/lessons.md
+
+**Fase 4: Verificación**
+- [ ] Confirmar que entendí el sistema completo
+- [ ] Actualizar mis archivos de configuración si es necesario
+- [ ] Commit
 
 ---
 
-## Completed Tasks (2026-02-25)
+## Pendiente de Confirmación
 
-### Crear Skill: OpenClaw Docs → llm-full.txt ✅ COMPLETE
-
-**Siguiendo skill-creator workflow:**
-
-**Fase 1: Análisis** ✅
-- [x] Visitar docs.openclaw.ai
-- [x] Descubrir que YA existe llms.txt oficial
-- [x] Mapear 281 páginas de documentación
-
-**Fase 2: Inicializar Skill** ✅
-- [x] Usar init_skill.py para crear estructura
-- [x] Crear script fetch-docs.sh
-- [x] Crear SKILL.md con instrucciones
-
-**Fase 3: Descargar Documentación** ✅
-- [x] Ejecutar script
-- [x] Descargar 281 páginas
-- [x] Crear llm-full.txt (1.9MB, 54,895 líneas)
-
-**Fase 4: Commit** ✅
-- [x] Commit: `22ad57b`
-
-**Resultado:**
-```
-skills/openclaw-docs/
-├── SKILL.md
-├── scripts/fetch-docs.sh
-└── references/
-    ├── llms.txt (288 líneas)
-    └── llm-full.txt (54,895 líneas, 1.9MB)
-```
-
-**Uso:**
-```bash
-# Actualizar documentación
-cd skills/openclaw-docs && ./scripts/fetch-docs.sh
-
-# Leer documentación
-read skills/openclaw-docs/references/llm-full.txt
-```
-
----
-
-## Completed Tasks (2026-02-25 - Earlier)
+**¿Confirmas el plan?** Voy a leer toda la documentación y extraer lecciones útiles para mi operación.
