@@ -4,13 +4,13 @@ _Curated knowledge that persists across sessions. Update sparingly with high-val
 
 ## 👤 User Profile
 
-**Name:** Gamble
-**Timezone:** America/Cancun (EST/EDT, UTC-5/-4) — user is in Cancún, Mexico
-**Preferences:**
-- Wants proactive tool usage (agents, subagents, cronjobs)
-- Values token efficiency
-- Interested in orchestration and automation
-- Wants me to know my capabilities thoroughly
+**Fuente principal:** `USER.md` — ver ahí para detalles completos.
+
+**Resumen:**
+- **Name:** Gamble
+- **Location:** Cancún, Mexico (UTC-5/-6)
+- **Style:** Directo, valora proactividad correcta y token efficiency
+- **Key rule:** "Valida antes de actuar en cosas destructivas"
 
 ## 🏠 Environment
 
