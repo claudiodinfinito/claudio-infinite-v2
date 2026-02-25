@@ -1545,3 +1545,56 @@ openclaw hooks install <pkg>  # Instalar hook pack
 
 ---
 
+
+---
+
+## 2026-02-25 - OpenClaw Channel Routing
+
+### Session keys
+
+| Tipo | Formato |
+|------|---------|
+| DM (main) | `agent:<agentId>:main` |
+| Group | `agent:<agentId>:<channel>:group:<id>` |
+| Channel | `agent:<agentId>:<channel>:channel:<id>` |
+| Thread | `...:thread:<threadId>` |
+| Telegram topic | `...:topic:<topicId>` |
+
+### Routing rules (precedencia)
+
+1. Exact peer match (bindings con peer.kind + peer.id)
+2. Parent peer match (thread inheritance)
+3. Guild + roles match (Discord)
+4. Guild match (Discord)
+5. Team match (Slack)
+6. Account match (accountId)
+7. Channel match (cualquier cuenta en ese canal)
+8. Default agent
+
+### Broadcast groups (múltiples agentes)
+
+```json5
+{
+  broadcast: {
+    strategy: "parallel",
+    "120363403215116621@g.us": ["alfred", "baerbel"],
+  }
+}
+```
+
+### Bindings example
+
+```json5
+{
+  agents: {
+    list: [{ id: "support", workspace: "~/.openclaw/workspace-support" }],
+  },
+  bindings: [
+    { match: { channel: "slack", teamId: "T123" }, agentId: "support" },
+    { match: { channel: "telegram", peer: { kind: "group", id: "-100123" } }, agentId: "support" },
+  ],
+}
+```
+
+---
+
