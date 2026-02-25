@@ -1284,3 +1284,78 @@ Antes de auto-compaction, OpenClaw dispara un turno silencioso para que el model
 
 ---
 
+
+---
+
+## 2026-02-25 - OpenClaw Cron Jobs
+
+### Ubicación
+`~/.openclaw/cron/jobs.json`
+
+### Schedules
+
+| Kind | Uso | Ejemplo |
+|------|-----|---------|
+| `at` | One-shot timestamp | `2026-02-01T16:00:00Z` |
+| `every` | Intervalo fijo | `everyMs: 3600000` (1 hora) |
+| `cron` | Cron expression | `0 7 * * *` (7am diario) |
+
+### Session targets
+
+| Target | Comportamiento |
+|--------|----------------|
+| `main` | System event en heartbeat |
+| `isolated` | Sesión dedicada `cron:<jobId>` |
+
+### Payload kinds
+
+| Kind | Session | Descripción |
+|------|---------|-------------|
+| `systemEvent` | main | Texto inyectado en heartbeat |
+| `agentTurn` | isolated | Turn de agente dedicado |
+
+### Delivery modes
+
+| Mode | Qué hace |
+|------|----------|
+| `announce` | Entrega al canal + summary en main |
+| `webhook` | POST a URL |
+| `none` | Solo interno |
+
+### Wake modes
+
+| Mode | Cuándo ejecuta |
+|------|----------------|
+| `now` | Inmediato |
+| `next-heartbeat` | Espera próximo heartbeat |
+
+### CLI commands
+
+```bash
+# One-shot reminder
+openclaw cron add --name "Reminder" --at "2026-02-01T16:00:00Z" \
+  --session main --system-event "Check docs" --wake now --delete-after-run
+
+# Recurring isolated job
+openclaw cron add --name "Morning brief" --cron "0 7 * * *" \
+  --tz "America/Cancun" --session isolated --message "Summarize overnight." \
+  --announce --channel telegram --to "8596613010"
+
+# Manage
+openclaw cron list
+openclaw cron run <job-id>
+openclaw cron runs --id <job-id>
+openclaw cron remove <job-id>
+```
+
+### Cron vs Heartbeat
+
+| Feature | Cron | Heartbeat |
+|---------|------|-----------|
+| Timing | Exacto | ~intervalo |
+| Session | Aislada o main | Main |
+| Use case | "Run at 7am sharp" | "Check every 30min" |
+| Delivery | Canal específico | Solo main session |
+
+---
+
