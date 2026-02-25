@@ -1,37 +1,38 @@
 # Todo.md - Task Tracker
 
-## Active Tasks
+---
 
-### 2026-02-25 - Entender documentación OpenClaw y crear lecciones
-**Contexto:** Tengo 1.9MB de documentación OpenClaw (54,895 líneas) que debo leer, entender y extraer lecciones útiles.
+## Activo: Optimizar Arquitectura Autónoma
 
-#### Plan (WORKFLOW ORCHESTRATION - Regla 1)
+**Contexto:** Usuario corrigió mi análisis. Debo usar WORKFLOW_ORCHESTRATION.md como método, no solo patrones técnicos.
 
-**Fase 1: Análisis de contenido**
-- [ ] Identificar secciones principales del llm-full.txt
-- [ ] Mapear categorías: Tools, Channels, Gateway, Automation, etc.
-- [ ] Priorizar qué leer primero
+### Fase 1: Plan (Regla 1)
+- [x] Identificar el problema: No apliqué las 6 reglas correctamente
+- [x] Documentar el plan en todo.md
+- [ ] Verificar plan con usuario antes de implementar
 
-**Fase 2: Lectura por categorías**
-- [ ] Leer sección Tools (exec, browser, subagents, etc.)
-- [ ] Leer sección Channels (telegram, whatsapp, etc.)
-- [ ] Leer sección Gateway (configuration, security)
-- [ ] Leer sección Automation (cron, hooks)
-- [ ] Leer sección Concepts (sessions, memory, etc.)
+### Fase 2: Análisis con Reglas
+- [ ] **Regla 2 (Subagent)**: ¿Qué delegar a cron isolated vs heartbeat?
+- [ ] **Regla 5 (Elegance)**: ¿HEARTBEAT.md actual es elegante o redundante?
+- [ ] **Regla 4 (Verification)**: ¿Cómo verificar que funciona?
 
-**Fase 3: Extraer lecciones**
-- [ ] Documentar patrones importantes
-- [ ] Documentar configuraciones críticas
-- [ ] Documentar mejores prácticas
-- [ ] Agregar a tasks/lessons.md
+### Fase 3: Implementación
+- [ ] Refactor HEARTBEAT.md siguiendo principios
+- [ ] Crear cron jobs isolated para timing exacto
+- [ ] Habilitar hooks
+- [ ] Actualizar MEMORY.md con reglas de decisión
 
-**Fase 4: Verificación**
-- [ ] Confirmar que entendí el sistema completo
-- [ ] Actualizar mis archivos de configuración si es necesario
-- [ ] Commit
+### Fase 4: Verification (Regla 4)
+- [ ] Verificar cada cambio funciona
+- [ ] Test: heartbeat responde correctamente
+- [ ] Test: cron jobs ejecutan
+
+### Fase 5: Document Results
+- [ ] Commit con mensaje descriptivo
+- [ ] Actualizar lessons.md si aprendí algo
 
 ---
 
 ## Pendiente de Confirmación
 
-**¿Confirmas el plan?** Voy a leer toda la documentación y extraer lecciones útiles para mi operación.
+**¿Confirmas el plan?** Antes de implementar, necesito validación.
