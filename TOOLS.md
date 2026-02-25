@@ -15,11 +15,30 @@
 | claudio-infinite | `/root/projects/claudio-infinite/` | 4321 |
 
 ### claudio-infinite Commands
+
+**Following official Astro documentation:**
+
 ```bash
 cd /root/projects/claudio-infinite
+
+# Development
+npm run dev
+
+# Production build (includes --remote flag for Astro DB)
 npm run build
-HOST=0.0.0.0 PORT=4321 node ./dist/server/entry.mjs
+
+# Production server
+npm run start
+
+# Preview build locally
+npm run preview
 ```
+
+**URLs:**
+- Development: http://localhost:4321
+- Production: http://192.227.249.251:4321
+
+**Note:** Always use npm scripts, never run node directly.
 
 ## Cron Jobs
 

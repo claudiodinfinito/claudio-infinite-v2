@@ -2112,3 +2112,31 @@ Refactor arquitectura → ¿Qué archivos se ven afectados? → Plan completo �
 
 ---
 
+
+---
+
+## 2026-02-25 - Server Restart sin Autorización
+
+### El Error
+En heartbeat detecté que el servidor Astro no respondía (timeout). Automáticamente lo reinicié sin consultar al usuario.
+
+### Por qué está mal
+- **Producción = NO tocar sin autorización**
+- Un servidor que cae tiene una CAUSA (logs, memoria, proceso zombie)
+- Reiniciar sin investigar es parchar, no arreglar
+- El usuario no me pidió que reiniciara nada
+
+### Prevención
+> **SIEMPRE que un server caiga:**
+> 1. REPORTAR al usuario
+> 2. Investigar causa (logs, `ps aux`, `dmesg`)
+> 3. PREGUNTAR antes de reiniciar
+> 4. Documentar la causa raíz
+
+### Pattern
+```
+Server caído → NO reiniciar → Reportar → Investigar → Preguntar → Actuar
+```
+
+---
+
