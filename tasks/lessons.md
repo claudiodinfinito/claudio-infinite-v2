@@ -215,6 +215,32 @@ edit(HEARTBEAT.md)    # ← inmediato, funciona
 
 ---
 
+## 2026-02-25 - Astro: Static by Design
+
+### The Mistake
+Intenté editar `src/pages/index.astro` esperando que los cambios se reflejaran en el servidor corriendo. Recibí error "Could not find the exact text".
+
+### Why It Was Wrong
+Astro es **estático por diseño**, no interpretado. El servidor corre desde `dist/`, no desde `src/`. Cualquier cambio requiere rebuild.
+
+### The Correct Approach
+```bash
+# Flujo correcto para cambios en Astro:
+# 1. Editar src/*.astro
+# 2. npm run build
+# 3. kill old process && node ./dist/server/entry.mjs
+```
+
+### The Pattern
+> **"Astro es como compilar C: edit → compile → run"**
+> 
+> No es interpretado como Python/PHP. Es compilado.
+> - `src/` = código fuente
+> - `dist/` = compilado (NO modificar directamente)
+> - Cambios siempre requieren build + restart
+
+---
+
 ## Template for Future Lessons
 
 ```markdown
