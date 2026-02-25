@@ -2082,3 +2082,33 @@ openclaw gateway call config.patch --params '{
 
 ---
 
+
+---
+
+## 2026-02-25 - Plan Incompleto: Faltó AGENTS.md
+
+### El Error
+Durante refactor de arquitectura autónoma, no incluí AGENTS.md en el plan inicial. Usuario tuvo que señalarme.
+
+### Por qué importó
+- AGENTS.md tenía 50+ líneas redundantes con MEMORY.md
+- Violaba principio "Single Source of Truth"
+- Debilitaba la arquitectura
+
+### Corrección
+- Agregué AGENTS.md al alcance
+- Eliminé sección redundante "Heartbeat vs Cron"
+- Reduje 12KB → 6.3KB
+
+### Prevención futura
+> **En refactorings de arquitectura, SIEMPRE revisar TODOS los archivos del workspace para redundancias.**
+> 
+> Checklist: AGENTS.md, USER.md, IDENTITY.md, HEARTBEAT.md, TOOLS.md, MEMORY.md
+
+### Pattern
+```
+Refactor arquitectura → ¿Qué archivos se ven afectados? → Plan completo → Ejecutar
+```
+
+---
+
