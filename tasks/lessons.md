@@ -1738,3 +1738,45 @@ openclaw hooks info session-memory
 
 ---
 
+
+---
+
+## 2026-02-25 - OpenClaw Hooks
+
+### Qué son
+Scripts que corren cuando algo pasa en el agente (comandos, eventos lifecycle).
+
+### Hooks incluidos
+
+| Hook | Qué hace |
+|------|----------|
+| `session-memory` | Salva contexto a memory/ con `/new` |
+| `command-logger` | Log de comandos a `~/.openclaw/logs/commands.log` |
+| `bootstrap-extra-files` | Inyecta archivos adicionales en bootstrap |
+| `boot-md` | Corre `BOOT.md` al iniciar gateway |
+
+### CLI commands
+
+```bash
+openclaw hooks list
+openclaw hooks enable session-memory
+openclaw hooks check
+```
+
+### Estructura de un hook
+
+```
+my-hook/
+├── HOOK.md      # Metadata + docs
+└── handler.ts   # Implementación
+```
+
+### Eventos disponibles
+
+- `command:new`, `command:reset`, `command:stop`
+- `session:start`, `session:end`
+- `agent:bootstrap`
+- `message:received`, `message:sent`
+
+---
+
