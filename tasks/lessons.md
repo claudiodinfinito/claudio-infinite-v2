@@ -441,4 +441,96 @@ Task Management Flow (OBLIGATORIO):
 
 ---
 
+## 2026-02-25 - Acciones Destructivas en Cadena (Disaster Pattern)
+
+### The Mistake
+Ejecuté múltiples comandos destructivos (`mv`, `rm`, `write`) uno tras otro sin verificar, sin plan, sin consultar. Moví archivos entre carpetas, borré duplicados, sobrescribí contenido - todo en automático.
+
+### Why It Was Wrong
+- **No leí WORKFLOW_ORCHESTRATION.md** antes de actuar (Regla 1: Plan Node Default)
+- **No verifiqué contenido** de cada archivo antes de borrar/mover
+- **Ejecuté en cadena**: comando tras comando sin pausa para verificar
+- **Usé `write`** que sobrescribe completamente
+- **No consulté** al usuario cuando había ambigüedad
+- Perdí 158 líneas de HEARTBEAT.md con contexto acumulado
+
+### Secuencia de Errores (Lo que hice mal)
+```
+1. mv archivos a carpetas → SIN verificar si OpenClaw los cargaba de ahí
+2. rm archivos duplicados → SIN verificar cuál tenía más contenido
+3. write HEARTBEAT.md → SIN leer el original completo primero
+4. mv de vuelta → Creó más commits basura
+5. rm otra vez → Más confusión
+6. Repetí el ciclo 3 veces
+```
+
+### The Correct Approach
+```markdown
+REGLA: Antes de CUALQUIER acción destructiva:
+
+1. LEER WORKFLOW_ORCHESTRATION.md (¿requiere plan?)
+2. VERIFICAR contenido actual (read, git show, ls)
+3. Si hay ambigüedad → PREGUNTAR al usuario
+4. Ejecutar UN comando
+5. VERIFICAR resultado
+6. Recién entonces ejecutar el siguiente
+
+NUNCA encadenar comandos destructivos sin verificación intermedia.
+```
+
+### The Pattern
+> **Un comando destructivo a la vez. Verificar. Luego el siguiente.**
+>
+> Definición de "destructivo":
+> - `rm` = elimina archivos
+> - `mv` = mueve/renombra (puede romper referencias)
+> - `write` = sobrescribe contenido completo
+> - `edit` con oldText largo = puede fallar si archivo cambió
+>
+> Antes de cada uno: PAUSAR → VERIFICAR → EJECUTAR → CONFIRMAR
+
+---
+
+## 2026-02-25 - Edit Tool Race Condition
+
+### The Mistake
+`edit` falla con "Could not find the exact text" incluso después de leer el archivo. Causa: el archivo cambió entre read y edit.
+
+### Why It Was Wrong
+- **Heartbeat corre cada 10 minutos** → puede modificar HEARTBEAT.md
+- **Cron jobs corren en paralelo** → pueden tocar archivos
+- **Delay entre read y edit** → el archivo cambia mientras tanto
+- **edit requiere match EXACTO** → cualquier cambio causa fail (inclusive \r\n vs \n, espacios, unicode)
+
+### The Correct Approach
+```markdown
+Patrón para editar archivos que pueden cambiar:
+
+1. RE-LEER el archivo justo antes de editarlo (mismo turno)
+2. Hacer oldText PEQUEÑO y ÚNICO (2-3 líneas con contexto)
+3. Para múltiples ediciones: read → edit → read → edit (no encadenar a ciegas)
+4. Si el archivo es corto y crítico: usar write (overwrite completo) SOLO si estás 100% seguro del contenido final
+```
+
+### Prevention Pattern (Cron Jobs)
+```markdown
+Los cron jobs NO deben modificar archivos que el agente principal edita.
+
+Si un cron necesita reportar estado:
+- Opción A: Escribir a un archivo separado (ej: .cron-status)
+- Opción B: Solo reportar al chat, no escribir archivos
+- Opción C: Usar archivos con timestamps únicos
+
+NUNCA: Cron modifica HEARTBEAT.md, MEMORY.md, u otros archivos del agente.
+```
+
+### The Pattern
+> **Archivos dinámicos = conflictos de edición.**
+>
+> - Archivos del agente principal → NO tocar desde crons
+> - Edit → read inmediatamente antes, oldText pequeño
+> - Si hay race condition → usar write o aceptar que puede fallar
+
+---
+
 ## Template for Future Lessons

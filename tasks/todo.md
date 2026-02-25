@@ -2,17 +2,17 @@
 
 ## Active Tasks
 
-### 2026-02-25 - Workspace Maintenance Post-Consolidation
-**Contexto:** Después del desastre de consolidación de archivos, necesito limpieza y verificación completa.
+### 2026-02-25 - Fix Cron Conflicts + Document Lessons
+**Contexto:** El cron "Workflow Adherence Check" modifica archivos y causa conflictos de edición. Además, debo documentar la lección completa de acciones destructivas.
 
 #### Plan (WORKFLOW ORCHESTRATION - Regla 1)
 
-- [ ] **Verificar estructura actual** - Confirmar que todos los archivos están en su lugar
-- [ ] **Verificar contenido de cada archivo root** - AGENTS.md, SOUL.md, USER.md, IDENTITY.md, HEARTBEAT.md, TOOLS.md
-- [ ] **Actualizar MEMORY.md** - Agregar lecciones de hoy al resumen
-- [ ] **Limpiar docs/ innecesarios** - Decidir si mantener archivos stripe-*.md crudos
-- [ ] **Verificar cron job** - Confirmar que usa rutas correctas
-- [ ] **Commit final** - Documentar estado limpio
+- [ ] **Ver cron jobs activos** - Ver qué hace cada uno
+- [ ] **Modificar cron para NO tocar archivos** - Solo leer y reportar
+- [ ] **Documentar lección: Acciones destructivas en cadena** - Todo lo que hice mal moviendo/borrando
+- [ ] **Documentar lección: Edit tool race condition** - El patrón que el usuario me explicó
+- [ ] **Actualizar MEMORY.md** - Sintetizar lo aprendido hoy
+- [ ] **Commit final** - Estado limpio documentado
 
 ---
 
