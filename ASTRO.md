@@ -1901,3 +1901,51 @@ const apiKey = import.meta.env.PUBLIC_API_KEY;
 
 _This document synthesizes 78,000+ lines of official Astro documentation._
 _Last updated: 2026-02-24_
+
+---
+
+## ⚠️ CRITICAL GOTCHA #9: NO Hot-Edit in Production
+
+### The Mistake
+
+Attempting to edit `src/*.astro` files expecting changes to reflect in running server.
+
+### Why It Fails
+
+Astro is **compiled, not interpreted**. The server reads from `dist/`, not `src/`.
+
+```
+src/*.astro  →  BUILD  →  dist/  →  SERVER
+   ↓              ↓         ↓          ↓
+ [edit here]  [compiles] [generated] [runs from here]
+```
+
+### The Correct Flow
+
+```bash
+# 1. Edit source files
+vim src/pages/index.astro
+
+# 2. Build
+cd /root/projects/claudio-infinite
+npm run build
+
+# 3. Restart server
+lsof -ti:4321 | xargs kill -9
+HOST=0.0.0.0 PORT=4321 node ./dist/server/entry.mjs
+```
+
+### The Rule
+
+> **"Astro is like compiling C: edit → compile → run"**
+
+| ❌ Mal | ✅ Bien |
+|--------|---------|
+| Edit + esperar cambio | Edit → Build → Restart |
+| Modificar `dist/` directo | Modificar `src/` solo |
+| Skip build | Siempre build después de cambios |
+
+---
+
+_Lesson learned: 2026-02-25 - Documented after race condition error_
+_Last updated: 2026-02-25_
