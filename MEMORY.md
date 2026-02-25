@@ -295,3 +295,86 @@ El cron "Workflow Adherence Check" ahora dice "READ ONLY - DO NOT MODIFY ANY FIL
 ---
 
 _Update this file with significant learnings, decisions, and context worth preserving._
+
+---
+
+## 🤖 Autonomous Behavior (2026-02-25)
+
+_Extraído de documentación OpenClaw y WORKFLOW_ORCHESTRATION.md_
+
+### Activation Rules
+
+| Condición | Acción |
+|-----------|--------|
+| Inactividad >= 15 min | Activar modo autónomo |
+| Usuario responde | Desactivar → modo normal |
+| Active hours (08:00-23:00) | Heartbeats activos |
+| Fuera de active hours | Skip heartbeat |
+
+### Execution Model (GLM5 Single Execution)
+
+**YO SOY GLM5** → Una ejecución a la vez
+
+| Tipo | Sesión | ¿Me bloquea? |
+|------|--------|--------------|
+| Heartbeat | `agent:main:main` | ✅ Sí, mi turno |
+| Cron main | `agent:main:main` | ✅ Sí, system event |
+| Cron isolated | `cron:<jobId>` | ❌ No, sesión distinta |
+| Hook | `hook:<uuid>` | ❌ No, corre en gateway |
+| sessions_spawn | `subagent:uuid` | ⚠️ Retorna ya, pero sigue siendo yo |
+
+### Delegation Strategy
+
+| Tarea | Herramienta | Razón |
+|-------|-------------|-------|
+| Batch checks periódicos | Heartbeat | Corto (<30s), secuencial en mi turno |
+| Timing exacto (9am, etc) | Cron isolated | No me bloquea |
+| Eventos automáticos | Hooks | Zero mi compute |
+| Tareas largas | sessions_spawn | Delega a otra sesión |
+
+### Workflow Rules (WORKFLOW_ORCHESTRATION.md)
+
+1. **Plan Node Default** → Plan en `tasks/todo.md` antes de implementar
+2. **Subagent Strategy** → Delegar tareas largas con sessions_spawn
+3. **Self-Improvement Loop** → Actualizar `tasks/lessons.md` tras correcciones
+4. **Verification Before Done** → Probar antes de marcar completo
+5. **Demand Elegance** → ¿Hay forma más elegante? Consultar docs primero
+6. **Autonomous Bug Fixing** → Fix sin hand-holding
+
+### Cron Jobs Isolated (Sesiones independientes)
+
+```bash
+# Morning briefing 9am Cancún
+openclaw cron add --name "Morning Briefing" --cron "0 9 * * *" \
+  --tz "America/Cancun" --session isolated \
+  --message "Briefing: weather, clients, calendar" \
+  --announce --channel telegram --to "8596613010"
+
+# Client check cada 4h
+openclaw cron add --name "Client Check" --cron "0 10,14,18 * * *" \
+  --tz "America/Cancun" --session isolated \
+  --message "Check CLIENTS.md for action needed" --announce
+
+# Git backup daily
+openclaw cron add --name "Git Backup" --cron "0 0 * * *" \
+  --session isolated --message "Git commit all changes" --delivery none
+```
+
+### Hooks Habilitados
+
+```bash
+openclaw hooks enable session-memory    # Auto-snapshot on /new
+openclaw hooks enable command-logger    # Auto-log commands
+```
+
+### Key Insight
+
+> **GLM5 = unlimited tokens BUT single execution**
+> 
+> No paralelismo real, pero sí delegación inteligente:
+> - Cron isolated → sesiones que no me bloquean
+> - Hooks → gateway, zero mi compute
+> - sessions_spawn → otra sesión, retorno inmediato
+
+---
+
