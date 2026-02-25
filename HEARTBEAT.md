@@ -14,10 +14,10 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Modo** | ⚪ Normal |
-| **Último Mensaje Usuario** | 2026-02-25 05:00 UTC |
-| **Último Message ID** | ~5372
-| **Inactividad Actual** | 0 min (usuario activo) |
+| **Modo** | 🔴 AUTÓNOMO |
+| **Último Mensaje Usuario** | 2026-02-25 05:15 UTC |
+| **Último Message ID** | ~5403
+| **Inactividad Actual** | 77 min (auto-activación) |
 | **Activación** | 2026-02-25 01:20 UTC (usuario activo) |
 | **Proyecto activo** | Client 001: Spa Kommo CRM Setup (Feb 24-27) |
 | **Server** | ✅ Stable (PID running) |
