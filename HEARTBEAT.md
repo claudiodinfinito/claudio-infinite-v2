@@ -15,10 +15,13 @@
 | Campo | Valor |
 |-------|-------|
 | **Modo** | ⚪ Normal |
-| **Último Mensaje Usuario** | 2026-02-25 04:30 UTC |
+| **Último Mensaje Usuario** | 2026-02-25 04:45 UTC |
 | **Inactividad Actual** | 0 min (usuario activo) |
+| **Proyecto activo** | Client 001: Spa Kommo CRM Setup (Feb 24-27) |
 | **Server** | ✅ Stable |
 | **Clients** | ✅ 1 Active, 1 Prospect |
+| **Billing** | Client 001: $4,000 MXN (50% depositado) |
+| **Tasks** | ✅ 15/15 completed (all phases done) |
 
 ---
 
@@ -43,6 +46,24 @@
 6. SI modo == Normal:
    → HEARTBEAT_OK
 ```
+
+### Transiciones de Estado
+
+```
+┌─────────────┐     20 min inactividad     ┌─────────────┐
+│   NORMAL    │ ────────────────────────► │  AUTÓNOMO   │
+│  (waiting)  │                           │ (working)   │
+└─────────────┘ ◄──────────────────────── └─────────────┘
+                    Usuario mensaje
+```
+
+### Comandos de Activación
+
+| Comando | Duración | Exit Trigger |
+|---------|----------|--------------|
+| `activa modo autonomo por [X] minutos` | Limitado (X min) | Tiempo O usuario mensaje |
+| `activa modo autonomo` | Indefinido | Usuario mensaje |
+| **20 min inactividad** | Indefinido | Auto-activación hasta usuario input |
 
 ---
 
@@ -101,21 +122,30 @@
 
 ## 📋 Tareas Autónomas (por defecto)
 
-**Prioridad 0 — Workflow Adherence:**
+**Prioridad 0 — Workflow Adherence (cada heartbeat):**
 - [ ] Leer `system/WORKFLOW_ORCHESTRATION.md`
 - [ ] Verificar adherencia a las 6 reglas
+- [ ] Si hay desviación → re-planear
 
 **Prioridad 1 — Sistema:**
 - [ ] Git status → commit si hay cambios
 - [ ] Verificar HEARTBEAT.md estado
+- [ ] Actualizar `memory/YYYY-MM-DD.md` con progreso
 
 **Prioridad 2 — Mantenimiento:**
-- [ ] MEMORY.md updates
+- [ ] MEMORY.md updates (append only)
 - [ ] Limpiar logs antiguos (>7 días)
+- [ ] Verificar documentación
 
 **Prioridad 3 — Exploración:**
 - [ ] Revisar projects/
 - [ ] Status de repos externos
+- [ ] Documentar observaciones
+
+**Prioridad 4 — Proactivo:**
+- [ ] Revisar `tasks/todo.md`
+- [ ] Revisar `business/CLIENTS.md` para follow-ups
+- [ ] Mejoras de documentación
 
 ---
 
