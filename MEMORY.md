@@ -213,10 +213,13 @@ Created formal workflow document with 6 core rules for complex tasks:
 | File | Location |
 |------|----------|
 | WORKFLOW_ORCHESTRATION.md | `system/` |
+| HEARTBEAT.md | `system/` |
+| TOOLS.md | `system/` |
+| AGENTS.md, SOUL.md, USER.md, IDENTITY.md | `core/` |
 | todo.md | `tasks/` |
 | lessons.md | `tasks/` |
-| HEARTBEAT.md | root (loaded by OpenClaw) |
-| AGENTS.md, SOUL.md, USER.md, IDENTITY.md | root (loaded by OpenClaw) |
+| CLIENTS.md, KANBAN.md | `business/` |
+| MEMORY.md, INDEX.md | `./` (root) |
 
 ### Key Insight
 > Following workflow prevents quickfixes and ensures elegant solutions.

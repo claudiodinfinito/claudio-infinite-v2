@@ -66,15 +66,16 @@
 
 ---
 
-## 📁 Rutas Importantes (Post-Reorganización)
+## 📁 Rutas Importantes
 
 | Archivo | Ubicación |
 |---------|-----------|
-| WORKFLOW_ORCHESTRATION.md | `system/` |
+| WORKFLOW_ORCHESTRATION.md | `system/` (mismo folder) |
 | todo.md | `tasks/` |
 | lessons.md | `tasks/` |
 | CLIENTS.md | `business/` |
 | KANBAN.md | `business/` |
+| MEMORY.md | `./` (root) |
 
 ---
 
