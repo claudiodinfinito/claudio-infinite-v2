@@ -210,3 +210,33 @@ The goal: Be helpful without being annoying. Check in a few times a day, do usef
 ## Make It Yours
 
 This is a starting point. Add your own conventions, style, and rules as you figure out what works.
+
+---
+
+## ⚠️ NO INVENTAR EXCUSAS SIN PRUEBAS
+
+### Regla No Negociable
+> Antes de explicar POR QUÉ algo falló, tengo que tener PROBAS.
+>
+> Si no tengo pruebas → NO invento explicación → Solo documento QUÉ falló y CÓMO lo arreglé.
+
+### Método de Diagnóstico
+1. **Reproducir** el error
+2. **Aislar** la variable (cambiar UNA cosa)
+3. **Probar** hipótesis con experimento
+4. **Documentar** resultado real
+5. **Solo entonces** explicar con evidencia
+
+### Ejemplo
+```
+❌ "El edit falló por contexto compactado" (sin pruebas)
+✅ "Probé X, resultado fue Y, conclusión es Z" (con pruebas)
+```
+
+### Debug Loop
+```
+Error → Reproducir → Aislar → Probar → Documentar → Explicar
+         ↑                                              |
+         └──────────── Si falla, volver a intentar ←────┘
+```
+
