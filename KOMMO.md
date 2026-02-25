@@ -1,292 +1,394 @@
 # KOMMO.md - Kommo CRM Reference
 
-_Guía de referencia para integraciones y automatizaciones con Kommo CRM._
+_Complete guide for Kommo CRM setup and automation._
 
 ---
 
-## 📋 Overview
+## 📚 Overview
 
-**Kommo** es un CRM diseñado para ventas multicanal (messenger-first). Combina mensajería, pipelines y automatización en una sola plataforma.
-
-**Sitio:** https://www.kommo.com
-**Docs:** https://developers.kommo.com
-**API Base:** `https://{subdomain}.kommo.com/api/v4/`
-
----
-
-## 🔑 Autenticación
-
-### Private Integration (Recomendado para Client 001)
-
-Para integraciones dentro de una sola cuenta:
-
-1. **Long-lived Token** — Token permanente para acceso API
-2. No requiere moderación
-3. Solo funciona en la cuenta donde fue creado
-
-### OAuth2 (Para integraciones públicas)
-
-- `client_id`
-- `client_secret`
-- `authorization_code`
+Kommo (formerly AmoCRM) is a messaging-centric CRM designed for sales teams. Key features:
+- **Multi-channel messaging**: WhatsApp, Facebook, Instagram, Telegram
+- **Pipelines**: Visual sales pipelines with stages
+- **SalesBot**: Automated conversation flows
+- **Digital Pipeline**: Event-based automation
+- **API**: REST API for custom integrations
+- **Widgets**: Custom JS extensions in the interface
 
 ---
 
-## 🏗️ Arquitectura de Kommo
+## 🔑 Authentication
 
-### Componentes Principales
+### Private Integration (Single Account)
 
-| Componente | Descripción |
-|------------|-------------|
-| **Leads** | Oportunidades de venta en pipelines |
-| **Contacts** | Personas/empresas relacionadas |
-| **Companies** | Empresas |
-| **Tasks** | Tareas asociadas a leads |
-| **Notes** | Notas en leads/contactos |
-| **Tags** | Etiquetas para segmentación |
+```bash
+# Long-lived token (simplest for single account)
+# Get from: Settings > Integrations > Create Integration
 
-### Pipelines
-
-Los pipelines son el core de Kommo. Cada pipeline tiene **etapas (statuses)**:
-
-```
-Pipeline: Ventas Spa
-├── Nueva consulta (status_id: 1)
-├── En seguimiento (status_id: 2)
-├── Cotizado (status_id: 3)
-├── Pagado (status_id: 4) ← Tag: "pagado"
-├── Cancelado (status_id: 5) ← Tag: "cancelado"
-└── Parcialidades (status_id: 6) ← Tag: "en parcialidades"
+# API calls with Bearer token
+curl -X GET "https://YOUR_SUBDOMAIN.kommo.com/api/v4/leads" \
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
----
+### OAuth2 (Public Integration)
 
-## 🤖 Automatización
-
-### SalesBot
-
-Lenguaje visual para crear escenarios automatizados:
-- Respuestas automáticas en chats
-- NLP para detectar intención
-- Acciones con leads/contactos
-
-### Digital Pipeline
-
-Constructor de automatizaciones basado en eventos:
-- Cambio de etapa en pipeline
-- Visitas al sitio web
-- Creación de tareas
-- Envío de emails
-
-**Ejemplo para Client 001:**
-```
-Trigger: Lead creado desde WhatsApp
-↓
-Action: Asignar a vendedor
-↓
-Action: Enviar mensaje de bienvenida
-↓
-Action: Crear tarea "Seguimiento 24h"
-```
+For public marketplace integrations:
+1. Create integration in Kommo
+2. Get `client_id` and `client_secret`
+3. Exchange authorization code for tokens
+4. Refresh tokens automatically
 
 ---
 
-## 📱 Canales Multicanal
+## 📊 Core Entities
 
-### Mensajería Soportada
+| Entity | Description | API Endpoint |
+|--------|-------------|--------------|
+| **Leads** | Opportunities/deals | `/api/v4/leads` |
+| **Contacts** | People/organizations | `/api/v4/contacts` |
+| **Companies** | Business entities | `/api/v4/companies` |
+| **Pipelines** | Sales process stages | `/api/v4/leads/pipelines` |
+| **Tags** | Labels for categorization | `/api/v4/leads/tags` |
+| **Tasks** | Follow-ups/actions | `/api/v4/tasks` |
+| **Notes** | Comments on entities | `/api/v4/{entity}/notes` |
+| **Webhooks** | Event subscriptions | `/api/v4/webhooks` |
 
-| Canal | Status | Notas |
-|-------|--------|-------|
-| WhatsApp | ✅ | Via API oficial o integradores |
-| Facebook Messenger | ✅ | Directo |
-| Instagram DM | ✅ | Directo |
-| Telegram | ✅ | Directo |
-| Email | ✅ | IMAP/SMTP |
+---
 
-### Configuración para Client 001
+## 🔄 Pipelines & Stages
 
-1. **WhatsApp Business API** — Requiere proveedor externo
-2. **Facebook Page** — Conectar página de Facebook
-3. **Instagram Business** — Conectar cuenta de Instagram
+### Pipeline Structure
+
+```json
+{
+  "id": 12345,
+  "name": "Spa Treatments",
+  "sort": 1,
+  "is_main": true,
+  "_embedded": {
+    "statuses": [
+      {"id": 1, "name": "New Lead", "sort": 1},
+      {"id": 2, "name": "Consultation", "sort": 2},
+      {"id": 3, "name": "Booking Confirmed", "sort": 3},
+      {"id": 4, "name": "Completed", "sort": 4},
+      {"id": 5, "name": "Payment Received", "sort": 5}
+    ]
+  }
+}
+```
+
+### API: Create Pipeline
+
+```bash
+POST /api/v4/leads/pipelines
+Content-Type: application/json
+
+{
+  "name": "Spa Treatments Pipeline",
+  "is_main": false,
+  "statuses": [
+    {"name": "New Inquiry", "sort": 10},
+    {"name": "Quote Sent", "sort": 20},
+    {"name": "Confirmed", "sort": 30},
+    {"name": "In Progress", "sort": 40},
+    {"name": "Completed", "sort": 50},
+    {"name": "Paid", "sort": 60}
+  ]
+}
+```
+
+---
+
+## 🏷️ Tags
+
+Tags categorize leads for filtering and reporting.
+
+### API: Create Tags
+
+```bash
+POST /api/v4/leads/tags
+Content-Type: application/json
+
+[
+  {"name": "pagado", "color": "4CAF50"},
+  {"name": "cancelado", "color": "F44336"},
+  {"name": "parcialidades", "color": "FF9800"},
+  {"name": "pendiente-pago", "color": "FFC107"}
+]
+```
+
+### Apply Tag to Lead
+
+```bash
+PATCH /api/v4/leads/{lead_id}
+Content-Type: application/json
+
+{
+  "_embedded": {
+    "tags": [
+      {"name": "pagado"}
+    ]
+  }
+}
+```
+
+---
+
+## 📅 Calendar Integration
+
+### Google Calendar Integration Steps
+
+1. **Enable Calendar Widget** in Kommo (Settings > Integrations)
+2. **Connect Google Account** via OAuth
+3. **Configure Sync**:
+   - Bidirectional sync
+   - Default calendar selection
+   - Event type mapping
+
+### Appointment Booking Flow
+
+```
+Lead Created → SalesBot asks preferred date/time
+     ↓
+SalesBot creates Google Calendar event
+     ↓
+Google sends invitation to contact
+     ↓
+Webhook receives calendar response
+     ↓
+Update lead stage to "Confirmed"
+```
+
+---
+
+## 🤖 SalesBot Automation
+
+SalesBot is Kommo's visual automation builder for conversations.
+
+### Common Automation Patterns
+
+#### 1. Appointment Reminders
+
+```
+Trigger: Lead stage = "Confirmed"
+Wait: 2 days before appointment
+Action: Send WhatsApp message "Your appointment is in 2 days"
+
+Trigger: Lead stage = "Confirmed"
+Wait: 3 hours before appointment
+Action: Send WhatsApp message "Your appointment is in 3 hours"
+```
+
+#### 2. Payment Reminders
+
+```
+Trigger: Tag = "pendiente-pago"
+Condition: Lead created > 7 days ago
+Action: Send message "Reminder: pending payment of $X"
+Wait: 3 days
+Loop: Send again (max 3 times)
+```
+
+#### 3. Lead Qualification
+
+```
+Trigger: New lead from Instagram/Facebook
+Action: Ask "What service are you interested in?"
+Wait: User response
+Branch: Based on response, assign to treatment pipeline
+Action: Ask "Preferred date?"
+Wait: User response
+Action: Create calendar event
+Action: Update lead stage to "Confirmed"
+```
 
 ---
 
 ## 🔔 Webhooks
 
-Kommo puede enviar webhooks a tu servidor cuando ocurren eventos:
+Subscribe to events for external automation.
 
-### Eventos Disponibles
+### Available Events
 
-- `lead_added` — Nuevo lead
-- `lead_status_changed` — Cambio de etapa
-- `contact_added` — Nuevo contacto
-- `task_added` — Nueva tarea
-- `message_received` — Nuevo mensaje
+| Event | Description |
+|-------|-------------|
+| `leads:add` | New lead created |
+| `leads:update` | Lead modified |
+| `leads:status` | Stage changed |
+| `leads:deleted` | Lead deleted |
+| `contacts:add` | New contact |
+| `tasks:add` | Task created |
+| `tasks:complete` | Task completed |
 
-### Configuración
+### Register Webhook
 
 ```bash
-# Registrar webhook
 POST /api/v4/webhooks
+Content-Type: application/json
+
 {
-  "destination": "https://tu-servidor.com/webhook",
-  "settings": ["lead_added", "lead_status_changed"]
-}
-```
-
----
-
-## 📅 Integración con Google Calendar
-
-Para agendamiento de citas:
-
-### Opción 1: Widget de Kommo
-Kommo tiene widget nativo para Google Calendar.
-
-### Opción 2: API + Webhook
-1. Crear lead con fecha/hora deseada
-2. Webhook detecta `lead_added`
-3. Tu servidor crea evento en Google Calendar API
-4. Actualizar lead con link al evento
-
----
-
-## 🏷️ Sistema de Tags
-
-Los tags permiten segmentar y filtrar leads:
-
-### API de Tags
-
-```bash
-# Agregar tags a un lead
-PUT /api/v4/leads/{lead_id}
-{
-  "tags": [
-    {"name": "pagado"},
-    {"name": "VIP"}
+  "destination": "https://your-server.com/webhook",
+  "settings": [
+    {"action": "leads:add"},
+    {"action": "leads:status"},
+    {"action": "tasks:complete"}
   ]
 }
 ```
 
-### Tags para Client 001
+---
 
-| Tag | Uso |
-|-----|-----|
-| `pagado` | Lead con pago completo |
-| `cancelado` | Lead cancelado |
-| `en_parcialidades` | Lead con pagos parciales |
-| `VIP` | Cliente recurrente |
-| `nuevo` | Primera consulta |
+## 📱 Multi-Channel Messaging
+
+### Supported Channels
+
+| Channel | Setup Method | Notes |
+|---------|--------------|-------|
+| **WhatsApp** | WhatsApp Business API or Kommo's official integration | Requires verified business |
+| **Facebook Messenger** | Connect FB Page | Instant setup |
+| **Instagram DM** | Connect Instagram Business account | Requires linked FB Page |
+| **Telegram** | Create bot via @BotFather | Requires bot token |
+
+### Channel Configuration
+
+1. Go to **Settings > Messaging Channels**
+2. Click **+ Add Channel**
+3. Select channel type
+4. Follow OAuth flow for social channels
+5. Test by sending message from that platform
 
 ---
 
-## 📊 API Reference
+## 🎯 Client 001: Spa Kommo Setup Plan
 
-### Endpoints Principales
+### Project: Spa - Kommo CRM Setup
+**Timeline:** Feb 24-27 (4 days)
+**Deliverables:**
+
+#### Phase 1: Channels ✅ (Completed)
+- [x] Facebook Messenger connected
+- [x] WhatsApp Business connected
+- [x] Instagram DM connected
+
+#### Phase 2: Pipeline Setup
+- [ ] Create pipeline for treatments:
+  - Masajes
+  - Faciales
+  - Corporales
+  - Paquetes
+- [ ] Define stages for each:
+  - Nueva consulta → Cotización enviada → Confirmada → Completada → Pagada
+
+#### Phase 3: Tags
+- [ ] Create payment tags:
+  - `pagado` (green) - Full payment received
+  - `cancelado` (red) - Appointment cancelled
+  - `parcialidades` (orange) - Payment plan active
+  - `pendiente-pago` (yellow) - Awaiting payment
+
+#### Phase 4: Calendar Integration
+- [ ] Connect Google Calendar
+- [ ] Configure appointment types
+- [ ] Set up booking flow in SalesBot
+
+#### Phase 5: Automations
+- [ ] Appointment reminders:
+  - 2 days before: "Tu cita es en 2 días"
+  - 3 hours before: "Tu cita es en 3 horas"
+- [ ] Payment reminders:
+  - Weekly reminder for pending payments
+  - Max 3 attempts before marking "no response"
+
+#### Phase 6: Testing
+- [ ] Test complete flow:
+  - Lead from Instagram → Pipeline → Booking → Reminder → Payment → Tag
+- [ ] Document procedures for client
+
+---
+
+## 🔧 API Quick Reference
+
+### Base URL
+```
+https://{subdomain}.kommo.com/api/v4/
+```
+
+### Headers
+```
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
+### Rate Limits
+- 7 requests per second
+- Batch operations available for bulk actions
+
+### Common Endpoints
 
 ```bash
-# Listar leads
-GET /api/v4/leads
+# Get all leads
+GET /leads
 
-# Crear lead
-POST /api/v4/leads
+# Get leads in pipeline stage
+GET /leads?filter[pipeline_id]={pipeline_id}&filter[status_id]={status_id}
+
+# Create lead
+POST /leads
 {
-  "name": "Tratamiento facial",
-  "pipeline_id": 123,
+  "name": "Juan Pérez - Masaje Relajante",
+  "pipeline_id": 12345,
   "status_id": 1,
-  "price": 1500,
-  "contacts": [{"id": 456}]
+  "_embedded": {
+    "contacts": [{"id": 67890}],
+    "tags": [{"name": "pendiente-pago"}]
+  }
 }
 
-# Obtener pipelines
-GET /api/v4/leads/pipelines
-
-# Listar contactos
-GET /api/v4/contacts
-
-# Crear contacto
-POST /api/v4/contacts
+# Update lead stage
+PATCH /leads/{lead_id}
 {
-  "name": "Juan Pérez",
-  "custom_fields_values": [
-    {"field_id": 123, "values": [{"value": "+525512345678"}]}
-  ]
+  "pipeline_id": 12345,
+  "status_id": 3  # "Confirmed" stage
+}
+
+# Add note
+POST /leads/{lead_id}/notes
+{
+  "note_type": "common",
+  "params": {
+    "text": "Cliente confirmó cita para el viernes 28 Feb a las 3pm"
+  }
+}
+
+# Create task
+POST /tasks
+{
+  "entity_type": "leads",
+  "entity_id": {lead_id},
+  "task_type_id": 1,  # Follow-up
+  "complete_till": 1708876800,  # Unix timestamp
+  "text": "Send payment reminder"
 }
 ```
 
 ---
 
-## 💡 Recetas para Client 001
+## 📖 Resources
 
-### 1. Pipeline por Tratamientos
-
-Crear pipeline con etapas:
-1. Nueva consulta
-2. En seguimiento
-3. Cotizado
-4. Confirmado
-5. Pagado
-6. Cancelado
-
-### 2. Recordatorios Automáticos
-
-Usar Digital Pipeline:
-```
-Trigger: Lead en etapa "Confirmado"
-↓
-Wait: 2 días antes de cita
-↓
-Action: Enviar WhatsApp recordatorio
-↓
-Wait: 3 horas antes
-↓
-Action: Enviar WhatsApp recordatorio final
-```
-
-### 3. Sistema de Pagos
-
-```
-Trigger: Lead movido a "Pagado"
-↓
-Action: Agregar tag "pagado"
-↓
-Action: Crear factura (integración externa)
-↓
-Action: Notificar al vendedor
-```
+- **Official Docs**: https://developers.kommo.com/
+- **API Reference**: https://developers.kommo.com/reference/
+- **YouTube Tutorials**: Search "Kommo CRM tutorial" for video guides
+- **Community**: Discord server for developers
 
 ---
 
-## 🔧 Herramientas Disponibles
+## ⚠️ Gotchas
 
-| Herramienta | Uso |
-|-------------|-----|
-| **REST API** | CRUD de leads, contacts, etc. |
-| **Webhooks** | Eventos en tiempo real |
-| **SalesBot** | Chatbots automatizados |
-| **Digital Pipeline** | Automatizaciones visuales |
-| **Widgets** | Extensiones de UI |
-| **Chats API** | Integrar nuevos canales |
+1. **Rate Limits**: 7 req/sec - use batch endpoints for bulk operations
+2. **Status IDs**: Specific to each pipeline, not global
+3. **Webhooks**: Must respond with 200 OK within 3 seconds
+4. **Token Expiry**: Long-lived tokens can expire, implement refresh logic
+5. **Entity Links**: Use `_embedded` for linking contacts/tags to leads
 
 ---
 
-## 📚 Recursos
-
-- [Developer Portal](https://developers.kommo.com)
-- [API Reference](https://developers.kommo.com/reference)
-- [Recipes](https://developers.kommo.com/docs/recipes)
-- [Discord Community](https://discord.gg/kommo)
-
----
-
-## ⚠️ Notas Importantes
-
-1. **Rate Limits** — Kommo tiene límites de requests por minuto
-2. **Private vs Public** — Private es más simple para un solo cliente
-3. **WhatsApp** — Requiere proveedor externo (no es directo)
-4. **Timezone** — Configurar timezone de la cuenta para citas
-
----
-
-_Documentación creada: 2026-02-25_
-_Próxima actualización: Según necesidades del proyecto_
+_Update this file as you learn more about Kommo CRM._
