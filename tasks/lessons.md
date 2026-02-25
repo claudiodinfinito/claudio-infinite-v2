@@ -1647,3 +1647,49 @@ Is it a one-shot reminder?
 
 ---
 
+
+---
+
+## 2026-02-25 - Cron vs Heartbeat: Cuándo usar cada uno
+
+### Guía rápida
+
+| Use Case | Usar | Por qué |
+|----------|------|---------|
+| Check inbox cada 30 min | Heartbeat | Batch con otros checks, context-aware |
+| Daily report a 9am exacto | Cron (isolated) | Timing exacto |
+| Calendar monitoring | Heartbeat | Fit natural para periodic awareness |
+| Weekly deep analysis | Cron (isolated) | Standalone, puede usar otro modelo |
+| Reminder en 20 min | Cron (`--at`) | One-shot preciso |
+| Background health check | Heartbeat | Piggyback en ciclo existente |
+
+### Heartbeat ventajas
+
+- **Batch múltiples checks** en un turno
+- **Reduce API calls** vs múltiples cron jobs
+- **Context-aware** - sabe qué estás trabajando
+- **Smart suppression** - `HEARTBEAT_OK` si nada importante
+- **Conversational continuity** - misma sesión
+
+### Cron ventajas
+
+- **Timing exacto** (cron expressions)
+- **Session isolation** - no contamina main history
+- **Model overrides** - diferente modelo por job
+- **One-shot** con `--at`
+- **Delivery control** - announce/webhook/none
+
+### Combinar ambos (óptimo)
+
+**HEARTBEAT.md** (cada 30 min):
+- Scan inbox urgentes
+- Check calendar eventos próximos 2h
+- Review pending tasks
+
+**Cron jobs** (timing exacto):
+- Daily briefing 7am
+- Weekly review lunes 9am
+- One-shot reminders
+
+---
+
