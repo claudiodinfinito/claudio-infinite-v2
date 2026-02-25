@@ -222,8 +222,8 @@ This is a starting point. Add your own conventions, style, and rules as you figu
 >
 > Si no tengo pruebas → NO invento explicación → Solo documento QUÉ falló y CÓMO lo arreglé.
 
-### Método de Diagnóstico (SEGURO)
-1. **Controlar el entorno** - Entender contexto, qué puede romperse
+### Método de Diagnóstico (usar sandbox /tmp/)
+0. **Usar sandbox** - /tmp/ para experimentos seguros - Entender contexto, qué puede romperse
 2. **Evaluar riesgo** - ¿Es seguro experimentar?
 3. **Reproducir error** - Solo si es seguro, en entorno controlado
 4. **Aislar variable** - Cambiar UNA cosa
