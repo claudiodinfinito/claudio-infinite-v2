@@ -8,17 +8,18 @@ _Estructura: 2026-02-25_
 
 ```
 /root/.openclaw/workspace/
-├── 📄 Archivos de Sistema (cargados por OpenClaw)
+├── core/                    # Archivos fundamentales del agente
 │   ├── AGENTS.md           # Reglas de operación
 │   ├── SOUL.md             # Identidad y personalidad
 │   ├── USER.md             # Perfil del usuario (Gamble)
-│   ├── IDENTITY.md         # Datos de identidad
-│   ├── HEARTBEAT.md        # Estado y modo autónomo
-│   ├── TOOLS.md            # Notas técnicas del servidor
-│   ├── MEMORY.md           # Memoria a largo plazo
-│   └── INDEX.md            # Este archivo
+│   └── IDENTITY.md         # Datos de identidad
 │
-├── 📂 docs/                # Documentación técnica
+├── system/                  # Sistema y orquestación
+│   ├── HEARTBEAT.md        # Estado y modo autónomo
+│   ├── WORKFLOW_ORCHESTRATION.md  # 6 reglas de workflow
+│   └── TOOLS.md            # Notas técnicas del servidor
+│
+├── docs/                    # Documentación técnica
 │   ├── ASTRO.md            # Astro framework (38KB, 26 secciones)
 │   ├── ASTRO-SYNTHESIS.md  # Metodología de síntesis
 │   ├── STRIPE.md           # Stripe integration (12KB)
@@ -26,24 +27,24 @@ _Estructura: 2026-02-25_
 │   ├── CONFIG_REFERENCE.md # OpenClaw config (15KB)
 │   └── astro-llms-full.txt # Docs Astro completas (2.6MB)
 │
-├── 📂 business/            # Gestión de clientes
+├── business/               # Gestión de clientes
 │   ├── CLIENTS.md          # Clientes activos y pipeline
 │   └── KANBAN.md           # Tablero de proyectos
 │
-├── 📂 system/              # Orquestación
-│   └── WORKFLOW_ORCHESTRATION.md  # 6 reglas de workflow
-│
-├── 📂 tasks/               # Gestión de tareas
+├── tasks/                   # Gestión de tareas
 │   ├── todo.md             # Tareas pendientes
 │   └── lessons.md          # Lecciones aprendidas
 │
-├── 📂 lessons/             # Lecciones detalladas
+├── lessons/                 # Lecciones detalladas
 │   └── astro-critical-gotcha.md
 │
-├── 📂 memory/              # Memoria diaria
+├── memory/                  # Memoria diaria
 │   └── YYYY-MM-DD.md       # Logs diarios
 │
-└── 📂 archive/             # Archivos obsoletos
+├── archive/                 # Archivos obsoletos
+│
+├── MEMORY.md               # Memoria a largo plazo
+└── INDEX.md                # Este archivo
 ```
 
 ---
@@ -52,9 +53,9 @@ _Estructura: 2026-02-25_
 
 | Propósito | Archivo | Ubicación |
 |-----------|---------|-----------|
-| ¿Quién soy? | SOUL.md | `./` (root) |
-| ¿Qué hago? | AGENTS.md | `./` (root) |
-| ¿Estado actual? | HEARTBEAT.md | `./` (root) |
+| ¿Quién soy? | SOUL.md | `core/` |
+| ¿Qué hago? | AGENTS.md | `core/` |
+| ¿Estado actual? | HEARTBEAT.md | `system/` |
 | ¿Qué aprendí? | MEMORY.md | `./` (root) |
 | ¿Clientes? | CLIENTS.md | `business/` |
 | ¿Tareas? | todo.md | `tasks/` |
