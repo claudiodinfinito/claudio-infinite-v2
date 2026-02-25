@@ -1486,3 +1486,62 @@ openclaw cron add --at "2h" --session main --system-event "Call client"
 
 ---
 
+
+---
+
+## 2026-02-25 - OpenClaw Hooks
+
+### Qué son los Hooks
+
+Hooks son scripts que corren cuando algo pasa (eventos como `/new`, `/reset`, `/stop`).
+
+### Ubicación de hooks (precedencia)
+
+1. `<workspace>/hooks/` - Por agente (máxima precedencia)
+2. `~/.openclaw/hooks/` - Usuario instalados
+3. `<openclaw>/dist/hooks/bundled/` - Bundled con OpenClaw
+
+### Estructura de un hook
+
+```
+my-hook/
+├── HOOK.md       # Metadata (YAML frontmatter) + docs
+└── handler.ts    # Implementación
+```
+
+### HOOK.md format
+
+```markdown
+---
+name: my-hook
+description: "What it does"
+metadata:
+  openclaw:
+    emoji: "💾"
+    events: ["command:new", "command:reset"]
+    requires: { bins: ["node"] }
+---
+```
+
+### CLI commands
+
+```bash
+openclaw hooks list           # Listar disponibles
+openclaw hooks enable <name>  # Habilitar
+openclaw hooks disable <name> # Deshabilitar
+openclaw hooks check          # Ver estado
+openclaw hooks info <name>    # Detalles
+openclaw hooks install <pkg>  # Instalar hook pack
+```
+
+### Bundled hooks
+
+| Hook | Qué hace |
+|------|----------|
+| `session-memory` | Guarda contexto en `/new` |
+| `bootstrap-extra-files` | Inyecta archivos bootstrap |
+| `command-logger` | Loguea comandos a archivo |
+| `boot-md` | Corre BOOT.md al inicio |
+
+---
+
