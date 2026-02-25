@@ -648,3 +648,33 @@ exec: sed -i '/patrón/d' archivo.md
 ---
 
 ## Template for Future Lessons
+
+---
+
+## 2026-02-25 - NUNCA usar write, usar exec para append
+
+### The Problem
+`edit` falla constantemente. `write` sobrescribe todo y PIERDE INFORMACIÓN.
+
+### The Solution
+**Solo usar exec con comandos Unix:**
+
+| Comando | Uso | Ejemplo |
+|---------|-----|---------|
+| `echo >>` | Append al final | `echo "texto" >> archivo.md` |
+| `cat >> << 'EOF'` | Append múltiples líneas | Ver abajo |
+| `sed -i 's/viejo/nuevo/g'` | Reemplazar texto | Modifica sin perder info |
+| `sed -i '/patrón/d'` | Borrar línea | Elimina línea específica |
+
+### REGLA ABSOLUTA
+```markdown
+✅ USAR: exec (echo, sed, cat)
+❌ EVITAR: edit (falla por contexto compactado)
+❌ NUNCA: write (PIERDE INFORMACIÓN)
+```
+
+### The Pattern
+> **exec + Unix tools = SEGURO**
+> 
+> echo append, sed modifica. NUNCA sobrescribir con write.
+

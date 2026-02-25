@@ -2,21 +2,26 @@
 
 ## Active Tasks
 
-_No active tasks at the moment._
+### 2026-02-25 - Documentar herramientas correctamente
+**Contexto:** Usuario pide tabla de comandos con pros/contras para solucionar problema de edit.
+
+#### Plan (WORKFLOW ORCHESTRATION - Regla 1)
+
+**Fase 1: Análisis**
+- [ ] Identificar todas las herramientas disponibles para modificar archivos
+- [ ] Documentar cuándo usar cada una
+- [ ] Pros y contras de cada enfoque
+
+**Fase 2: Solución al problema de edit**
+- [ ] Patrones que funcionan
+- [ ] Patrones que NO funcionan
+
+**Fase 3: Verificación**
+- [ ] Confirmar que la tabla es útil
+- [ ] Commit
 
 ---
 
-## Completed Tasks (2026-02-25)
+## Pendiente de Confirmación
 
-### Fix Edit Tool Race Condition Pattern ✅ COMPLETE
-
-**Lección agregada:** "Usar write, NO edit para Archivos Dinámicos"
-
-**Regla absoluta:**
-- HEARTBEAT.md, memory/*.md, MEMORY.md = archivos dinámicos
-- ✅ USAR: `write`
-- ❌ NO USAR: `edit`
-
----
-
-## Completed Tasks (2026-02-25 - Earlier)
+**¿Confirmas el plan?**
