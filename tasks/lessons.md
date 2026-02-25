@@ -2184,3 +2184,62 @@ Framework docs → Scripts oficiales → package.json → npm run <script>
 
 ---
 
+
+---
+
+## 2026-02-25 - Astro: Build ≠ Start
+
+### El Error
+Levanté el servidor de producción sin hacer build. El usuario tuvo que corregirme: "después del build se debe hacer restart".
+
+### Por qué importó
+- El servidor corre desde `dist/`
+- Si `dist/` está vacío o desactualizado → 404/500 errors
+- Build genera los archivos que start sirve
+
+### Flujo Correcto (Documentación Astro)
+```bash
+npm run build  # Genera dist/
+npm run start  # Sirve desde dist/
+```
+
+### Prevención
+> **SIEMPRE:**
+> 1. Build primero
+> 2. Verificar dist/ existe
+> 3. Start segundo
+> 4. Verificar HTTP 200
+
+### Pattern
+```
+Código cambia → Build → Start → Verificar
+```
+
+---
+
+## 2026-02-25 - Astro DB: Rutas Absolutas Obligatorias
+
+### El Error
+Usé ruta relativa en ASTRO_DB_REMOTE_URL:
+```bash
+ASTRO_DB_REMOTE_URL=file:.astro/db.sqlite  # MAL
+```
+
+### Síntomas
+- Error: "Invalid URL"
+- Páginas que usan DB: 500
+- createClient() falla
+
+### Solución
+```bash
+ASTRO_DB_REMOTE_URL=file:/root/projects/claudio-infinite/.astro/db.sqlite  # BIEN
+```
+
+### Documentación Oficial
+> "file: will use a local file. The host is the path to the file (`file:path/to/file.db`)."
+
+### Prevención
+> **SIEMPRE usar rutas absolutas para ASTRO_DB_REMOTE_URL**
+
+---
+

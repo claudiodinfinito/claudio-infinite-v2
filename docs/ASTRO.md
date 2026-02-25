@@ -1,7 +1,29 @@
 # ASTRO.md - Comprehensive Reference Guide
 
 > **Deep dive synthesis from official Astro documentation (2.6MB, 78,186 lines)**
-> Last updated: 2026-02-24
+> Last updated: 2026-02-25
+
+---
+
+## 📚 Guías Disponibles
+
+| Guía | Propósito | Ubicación |
+|------|-----------|-----------|
+| **ASTRO-PRACTICAL.md** | Producción, comandos, troubleshooting | `docs/ASTRO-PRACTICAL.md` |
+| **ASTRO.md** | Referencia técnica completa | Este archivo |
+
+---
+
+## ⚡ Inicio Rápido
+
+### Flujo de Trabajo Oficial
+```bash
+npm run dev      # Desarrollo
+npm run build    # Build producción
+npm run start    # Servidor producción
+```
+
+**Ver ASTRO-PRACTICAL.md para guía completa de producción.**
 
 ---
 
