@@ -678,3 +678,32 @@ exec: sed -i '/patrón/d' archivo.md
 > 
 > echo append, sed modifica. NUNCA sobrescribir con write.
 
+
+---
+
+## 2026-02-25 - Edit Correcto: read → edit → read → edit
+
+### El Error Real
+Concateno edits sin releer. El contexto muestra el archivo como estaba en el primer read, pero el archivo ya cambió.
+
+```
+❌ INCORRECTO:
+read archivo
+edit archivo (OK - primer edit)
+edit archivo (FALLA - archivo cambió, oldText no coincide)
+
+✅ CORRECTO:
+read archivo
+edit archivo (OK)
+read archivo (RELEO - obtengo estado actual)
+edit archivo (OK - oldText coincide con archivo actual)
+```
+
+### La Regla
+> **Un edit por read. Si necesitas otro edit, releer primero.**
+>
+> read → edit → read → edit (NO read → edit → edit)
+
+### Alternativa: Un Solo Edit Grande
+Si necesitas cambiar múltiples secciones, hacer UN solo edit con un oldText grande que incluya todas las secciones a modificar, en lugar de múltiples edits pequeños.
+
