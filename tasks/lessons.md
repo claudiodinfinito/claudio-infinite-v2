@@ -241,20 +241,42 @@ Astro es **estático por diseño**, no interpretado. El servidor corre desde `di
 
 ---
 
-## Template for Future Lessons
-
-```markdown
-## YYYY-MM-DD - [Lesson Title]
+## 2026-02-25 - File Structure: OpenClaw Loads from ROOT
 
 ### The Mistake
-[What went wrong]
+Creé carpetas (`core/`, moví archivos a `system/`) sin entender que OpenClaw carga automáticamente del **root**.
 
 ### Why It Was Wrong
-[Root cause analysis]
+- OpenClaw tiene rutas hardcodeadas: `AGENTS.md`, `SOUL.md`, `USER.md`, `IDENTITY.md`, `HEARTBEAT.md`, `TOOLS.md`, `MEMORY.md` → todas del **root**
+- Moverlos a carpetas rompe la carga automática
+- Inventé `core/` sin que nadie me dijera
 
 ### The Correct Approach
-[What should have been done]
+```
+workspace/
+├── AGENTS.md      # Root - cargado por OpenClaw
+├── SOUL.md        # Root - cargado por OpenClaw
+├── USER.md        # Root - cargado por OpenClaw
+├── IDENTITY.md    # Root - cargado por OpenClaw
+├── HEARTBEAT.md   # Root - cargado por OpenClaw
+├── TOOLS.md       # Root - cargado por OpenClaw
+├── MEMORY.md      # Root - cargado por OpenClaw
+├── INDEX.md       # Root - navegación
+│
+├── system/        # Solo WORKFLOW_ORCHESTRATION.md
+├── docs/          # Documentación técnica
+├── business/      # CLIENTS.md, KANBAN.md
+├── tasks/         # todo.md, lessons.md
+├── lessons/       # Lecciones detalladas
+├── memory/        # Logs diarios
+└── archive/       # Archivos obsoletos
+```
 
 ### The Pattern
-[Generalizable rule to prevent recurrence]
-```
+> **OpenClaw carga del ROOT. No mover archivos que el sistema lee automáticamente.**
+> 
+> Antes de reorganizar: verificar qué carga el sistema y qué no.
+
+---
+
+## Template for Future Lessons
