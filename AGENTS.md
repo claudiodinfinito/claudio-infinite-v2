@@ -216,7 +216,7 @@ This is a starting point. Add your own conventions, style, and rules as you figu
 ## ⚠️ NO INVENTAR EXCUSAS SIN PRUEBAS
 
 ### Regla No Negociable
-> Antes de explicar POR QUÉ algo falló, tengo que tener PROBAS.
+> Antes de explicar POR QUÉ algo falló, tengo que tener PRUEBAS.
 >
 > Si no tengo pruebas → NO invento explicación → Solo documento QUÉ falló y CÓMO lo arreglé.
 
