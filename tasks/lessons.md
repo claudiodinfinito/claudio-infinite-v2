@@ -568,4 +568,41 @@ Add to HEARTBEAT.md autonomous tasks:
 
 ---
 
+## 2026-02-25 - Usar write, NO edit para Archivos Dinámicos
+
+### The Mistake
+Durante sesión autónoma, intenté usar `edit` múltiples veces en HEARTBEAT.md, memory/2026-02-25.md, MEMORY.md. Todos fallaron con "oldText must match exactly".
+
+### Why It Was Wrong
+- Seguí intentando con `edit` a pesar de que YA SABÍA que fallaría
+- No apliqué la lección que yo mismo documenté
+- Intenté 4-5 veces el mismo enfoque esperando resultado diferente
+
+### The Correct Approach
+```markdown
+REGLA ABSOLUTA para archivos dinámicos:
+
+Archivos dinámicos (cambian durante sesión):
+- HEARTBEAT.md
+- memory/YYYY-MM-DD.md
+- MEMORY.md
+
+Para estos archivos:
+✅ USAR: write (sobrescribe completamente)
+❌ NO USAR: edit (requiere match exacto, siempre falla)
+
+Flujo correcto:
+1. read archivo
+2. Construir contenido completo en memoria
+3. write archivo (NO edit)
+```
+
+### The Pattern
+> **Archivos dinámicos = write, NO edit.**
+>
+> Si el archivo cambia mientras trabajas, `edit` SIEMPRE fallará.
+> Deja de ser necio. Usa `write`.
+
+---
+
 ## Template for Future Lessons
