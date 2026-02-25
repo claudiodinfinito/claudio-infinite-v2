@@ -26,7 +26,7 @@
 | **Billing** | Client 001: $4,000 MXN (50% depositado) |
 | **Pipeline** | Prospect Tours: $3,000 MXN/mes potential |
 | **Up-sale** | Client 001: Google Ads $1,500 MXN/mes |
-| **Learning** | ✅ Stripe mastery complete (STRIPE.md created) |
+| **Learning** | ✅ Stripe + Kommo mastery complete (STRIPE.md, KOMMO.md created) |
 | **Tasks** | ✅ 15/15 completed (all phases done) |
 | **Learning** | ✅ Stripe mastery complete (STRIPE.md created) |
 
