@@ -1693,3 +1693,48 @@ Is it a one-shot reminder?
 
 ---
 
+
+---
+
+## 2026-02-25 - OpenClaw Hooks
+
+### Qué son
+Hooks son scripts que corren cuando algo pasa (eventos: `/new`, `/reset`, `/stop`, lifecycle events).
+
+### Hook Discovery (precedencia)
+1. `<workspace>/hooks/` - por agente (máxima precedencia)
+2. `~/.openclaw/hooks/` - user-installed
+3. `<openclaw>/dist/hooks/bundled/` - bundled
+
+### Estructura
+```
+my-hook/
+├── HOOK.md      # Metadata + docs (YAML frontmatter)
+└── handler.ts   # Handler implementation
+```
+
+### Event Types
+| Type | Actions |
+|------|---------|
+| `command` | `new`, `reset`, `stop` |
+| `session` | `start`, `end` |
+| `agent` | `bootstrap`, `heartbeat` |
+| `gateway` | `start`, `shutdown` |
+| `message` | `received`, `sent` |
+
+### CLI
+```bash
+openclaw hooks list
+openclaw hooks enable session-memory
+openclaw hooks check
+openclaw hooks info session-memory
+```
+
+### Bundled hooks
+- `session-memory`: Save session context on `/new`
+- `command-logger`: Log all commands
+- `bootstrap-extra-files`: Inject extra bootstrap files
+- `boot-md`: Run `BOOT.md` on gateway start
+
+---
+
