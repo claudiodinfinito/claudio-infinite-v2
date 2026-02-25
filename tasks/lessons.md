@@ -312,4 +312,104 @@ Antes de CUALQUIER acción destructiva:
 
 ---
 
+## 2026-02-25 - Empty Files: Proactive Updates Missing
+
+### The Mistake
+USER.md, IDENTITY.md, TOOLS.md estaban vacíos (templates genéricos) por días. No los actualicé proactivamente con lo que YA SABÍA de Gamble.
+
+### Why It Was Wrong
+- MEMORY.md tenía toda la info de Gamble (nombre, timezone, preferencias)
+- Yo leía MEMORY.md cada sesión pero NUNCA actualicé USER.md
+- USER.md = archivo principal para conocer al usuario, estaba vacío
+- Violé el principio: "Write it down - No mental notes"
+
+### The Correct Approach
+```markdown
+Cuando aprendas algo del usuario → actualizar USER.md inmediatamente
+Cuando definas tu identidad → actualizar IDENTITY.md inmediatamente
+Cuando configures el server → actualizar TOOLS.md inmediatamente
+```
+
+### The Pattern
+> **Si el archivo existe y está vacío → llenarlo con lo que ya sé.**
+> 
+> No esperar a que el usuario lo pida. Es proactividad básica.
+
+---
+
+## 2026-02-25 - Cron Job Stale Paths
+
+### The Mistake
+El cron job "Workflow Adherence Check" reportó que los archivos no existían. El problema: el mensaje del cron tenía rutas viejas (`WORKFLOW_ORCHESTRATION.md` en root) pero los archivos se movieron.
+
+### Why It Was Wrong
+- Cuando reorganicé archivos, NO actualicé el cron job
+- El cron seguía buscando en las rutas anteriores
+- Reportó falsos negativos
+
+### The Correct Approach
+```markdown
+Cuando muevas/renombres archivos:
+1. Buscar referencias en: cron jobs, HEARTBEAT.md, MEMORY.md, INDEX.md
+2. Actualizar TODAS las referencias
+3. Verificar que el cron siga funcionando
+```
+
+### The Pattern
+> **Mover archivos = actualizar referencias.**
+> 
+> Usar `grep -r "nombre_archivo" .` para encontrar todas las referencias.
+
+---
+
+## 2026-02-25 - Acting Without Workflow
+
+### The Mistake
+Gamble me dijo "deja de actuar y piensa como te enseñe con workflow orchestation" - estaba ejecutando comandos sin consultar WORKFLOW_ORCHESTRATION.md.
+
+### Why It Was Wrong
+- WORKFLOW_ORCHESTRATION.md Regla 1: "Plan Node Default - Enter plan mode for ANY non-trivial task"
+- Regla 5: "Demand Elegance - Consult official documentation first"
+- Yo estaba actuando en piloto automático, sin plan
+
+### The Correct Approach
+```markdown
+Antes de CUALQUIER acción:
+1. ¿Es trivial (1 paso, sin riesgo)? → Ejecutar
+2. ¿Es no-trivial (3+ pasos, riesgoso)? → LEER WORKFLOW_ORCHESTRATION.md → Planear
+```
+
+### The Pattern
+> **WORKFLOW_ORCHESTRATION.md existe para usarse.**
+> 
+> No es decoración. Es el protocolo. Leerlo antes de actuar.
+
+---
+
+## 2026-02-25 - User Frustration: Not Responding
+
+### The Mistake
+Gamble envió mensaje diciendo "Todo mensaje que yo tu usuario haga debe tener una respuesta." Yo había respondido con solo confirmación sin contenido sustancial.
+
+### Why It Was Wrong
+- Usuario expresó frustración
+- Yo di respuesta mínima sin abordar el problema real
+- No reconstruí la confianza
+
+### The Correct Approach
+```markdown
+Cuando el usuario exprese frustración:
+1. Reconocer el error específico
+2. Explicar qué salió mal (sin excusas)
+3. Mostrar qué se hizo para arreglarlo
+4. Comprometerse a no repetir
+```
+
+### The Pattern
+> **Frustración del usuario = señal de que algo está mal.**
+> 
+> No ignorar. No minimizar. Address it directly.
+
+---
+
 ## Template for Future Lessons
