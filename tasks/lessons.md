@@ -1598,3 +1598,52 @@ openclaw hooks install <pkg>  # Instalar hook pack
 
 ---
 
+
+---
+
+## 2026-02-25 - Cron vs Heartbeat: When to Use Each
+
+### Guía rápida
+
+| Use Case | Recommended | Why |
+|----------|-------------|-----|
+| Check inbox every 30 min | **Heartbeat** | Batches with other checks, context-aware |
+| Send daily report at 9am sharp | **Cron (isolated)** | Exact timing needed |
+| Monitor calendar for upcoming events | **Heartbeat** | Natural fit for periodic awareness |
+| Run weekly deep analysis | **Cron (isolated)** | Standalone task, different model |
+| Remind me in 20 minutes | **Cron (main, --at)** | One-shot with precise timing |
+| Background project health check | **Heartbeat** | Piggybacks on existing cycle |
+
+### Heartbeat: Periodic Awareness
+- Corre en main session cada 30 min (default)
+- **Ventajas:** Batches múltiples checks, reduce API calls, context-aware
+- Smart suppression: `HEARTBEAT_OK` si nada importante
+
+### Cron: Precise Scheduling
+- Corre a tiempo exacto
+- **Ventajas:** Session isolation, model overrides, one-shot support
+- Isolated jobs default to `announce` (summary)
+
+### Decision Flowchart
+
+```
+Does task need EXACT time?
+  YES -> Use cron
+  NO -> Can it be batched with other periodic checks?
+         YES -> Use heartbeat
+         NO -> Use cron
+
+Is it a one-shot reminder?
+  YES -> Use cron with --at
+  NO -> Does it need different model?
+         YES -> Use cron (isolated)
+         NO -> Use heartbeat
+```
+
+### Best Practice: Combine Both
+
+1. **Heartbeat** (HEARTBEAT.md): routine monitoring batched
+2. **Cron**: precise schedules, one-shot reminders, heavy analysis
+
+---
+
