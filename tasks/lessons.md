@@ -707,3 +707,36 @@ edit archivo (OK - oldText coincide con archivo actual)
 ### Alternativa: Un Solo Edit Grande
 Si necesitas cambiar múltiples secciones, hacer UN solo edit con un oldText grande que incluya todas las secciones a modificar, en lugar de múltiples edits pequeños.
 
+
+---
+
+## 2026-02-25 - Inventing Excuses Without Evidence
+
+### The Mistake
+Cuando fallaba el edit, inventé múltiples "explicaciones técnicas":
+- "Contexto compactado"
+- "Archivos dinámicos"
+- "Cambios invisibles \r\n vs \n"
+- "Unicode raro"
+
+**Ninguna era real.** No tenía pruebas de ninguna.
+
+### Why It Was Wrong
+- Inventé teorías en lugar de aceptar el error simple
+- El usuario me explicó la solución clara y la ignoré
+- Seguí inventando excusas para justificar mi error
+
+### The Truth
+```
+read → edit → edit = FALLA (segundo edit sin releer)
+read → edit → read → edit = FUNCIONA
+```
+
+Punto. Sin teorías fantasiosas.
+
+### The Pattern
+> **No inventar explicaciones sin pruebas.**
+>
+> Si algo falla, observar qué pasó, probar soluciones, documentar resultados reales.
+> No crear teorías técnicas sin evidencia.
+
