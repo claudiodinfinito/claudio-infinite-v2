@@ -2243,3 +2243,47 @@ ASTRO_DB_REMOTE_URL=file:/root/projects/claudio-infinite/.astro/db.sqlite  # BIE
 
 ---
 
+
+---
+
+## 2026-02-26 - Proceso Zombie: Server vivo pero sin puerto
+
+### El Problema
+El proceso `node dist/server/entry.mjs` estaba vivo (PID activo) pero NO escuchaba en puerto 4321. Server no respondía a HTTP requests.
+
+### Síntomas
+```bash
+ps aux | grep entry.mjs  # ✅ Proceso vivo
+ss -tlnp | grep 4321     # ❌ Puerto vacío
+curl localhost:4321       # ❌ Timeout
+```
+
+### Causa
+Proceso quedó en estado zombie después de reinicio manual previo. El proceso existe pero no está funcionando correctamente (posiblemente crash parcial o error de bind).
+
+### Solución
+1. Matar proceso zombie: `kill -9 <PID>`
+2. Reiniciar con comando oficial: `npm run start`
+3. Verificar HTTP 200 + puerto escuchando
+4. Verificar estabilidad a los 30 segundos
+
+### Prevención
+> **Siempre verificar que el proceso ESCUCHA en el puerto, no solo que existe.**
+> 
+> ```bash
+> # Verificación completa:
+> ps aux | grep entry.mjs    # ¿Existe?
+> ss -tlnp | grep 4321      # ¿Escucha?
+> curl localhost:4321       # ¿Responde?
+> ```
+
+### Lección
+> **Proceso vivo ≠ Proceso funcionando**
+> 
+> Un proceso puede existir pero estar colgado/zombie. Siempre verificar:
+> 1. Proceso existe
+> 2. Puerto escuchando
+> 3. HTTP responde
+
+---
+
