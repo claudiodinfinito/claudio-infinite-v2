@@ -18,7 +18,7 @@
 | **Modo** | 🟡 Autónomo (comando usuario) |
 | **Último Mensaje Usuario** | 2026-02-26 19:45 UTC |
 | **Último Message ID** | 5746 |
-| **Inactividad Actual** | 0 min |
+| **Inactividad Actual** | 66 min |
 
 ---
 
@@ -103,7 +103,7 @@ Ejecutar secuencial, reportar si hay alertas:
 |-------|-------------|----------|-------------------|-----------|
 | 2026-02-26 | 14:12 UTC | 19:50 UTC | Lessons, docs, checklist, commit | 🟡 Esperando credenciales usuario |
 | 2026-02-26 | 19:50 UTC | — | Modo autónomo activado por comando | 🟡 Ejecutando tareas proactivas |
-| 2026-02-26 | 19:51 UTC | 20:05 UTC | Todo.md, git commit, MEMORY.md update, OPENCLAW.md | 🟡 Sin nuevas tareas ejecutables |
+| 2026-02-26 | 19:51 UTC | 20:25 UTC | Todo.md, git commits, MEMORY.md, OPENCLAW.md, KOMMO.md, lessons.md, analysis | 🟡 Sin nuevas tareas ejecutables |
 
 ---
 
