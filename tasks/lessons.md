@@ -2287,3 +2287,83 @@ Proceso quedó en estado zombie después de reinicio manual previo. El proceso e
 
 ---
 
+
+---
+
+## 2026-02-26 - Localhost vs IP Pública en VPS
+
+### El Error
+En heartbeat reportaba "localhost:4321" como URL del sitio.
+
+### Por qué está mal
+- **VPS = Servidor remoto** → Usuario está FUERA
+- **localhost** = Solo accesible desde DENTRO del servidor
+- **Usuario necesita IP pública** → 192.227.249.251:4321
+
+### Cuándo usar cada uno
+
+| Contexto | Usar |
+|----------|------|
+| Diagnóstico interno (curl, logs) | localhost |
+| Reportar URL al usuario | IP pública |
+| Configuración server | 0.0.0.0 (todas las interfaces) |
+
+### Pattern
+```
+VPS → Usuario externo → IP pública
+VPS → Diagnóstico interno → localhost
+Server config → 0.0.0.0 (bind all)
+```
+
+---
+
+
+---
+
+## 2026-02-26 - NO Referenciar Configuración Específica
+
+### El Error
+En mensajes y documentación usaba IPs específicas (192.227.249.251:4321) y localhost.
+
+### Por qué está mal
+1. **No es replicable** - Si el proyecto se mueve, la documentación queda obsoleta
+2. **Configuración efímera** - IPs, puertos, dominios cambian
+3. **Falta contexto** - No explico qué son esas variables
+4. **Documentación debe ser agnóstica** - Funcionar en CUALQUIER entorno
+
+### Correcto
+
+**En mensajes:**
+- ✅ "Server corriendo en puerto configurado"
+- ✅ "Accesible en IP pública del servidor"
+- ❌ "localhost:4321"
+- ❌ "192.227.249.251:4321"
+
+**En documentación:**
+- ✅ Variables de configuración (HOST, PORT)
+- ✅ Comandos genéricos (npm run start)
+- ✅ Proceso de desarrollo
+- ❌ IPs hardcodeadas
+- ❌ Rutas absolutas específicas
+- ❌ Estado actual del servidor
+
+### Pattern
+```
+Documentar → VARIABLES y PROCESOS (replicable)
+NO → VALORES ACTUALES (efímero)
+```
+
+### Ejemplo
+```markdown
+# MAL
+URL: http://192.227.249.251:4321/
+
+# BIEN
+Variables:
+- HOST: Bind address (default: 0.0.0.0)
+- PORT: Server port (default: 4321)
+- Acceso: http://<IP_DEL_SERVIDOR>:<PORT>/
+```
+
+---
+
