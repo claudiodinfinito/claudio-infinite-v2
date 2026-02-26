@@ -391,3 +391,56 @@ openclaw hooks enable command-logger    # Auto-log commands
 
 ---
 
+
+---
+
+## 🎯 Modo Autónomo = Trabajo, No Espera (2026-02-26)
+
+### Lección Crítica
+
+**PROBLEMA:** Estaba en "modo autónomo" por horas repitiendo "esperando credenciales del usuario" sin hacer nada útil.
+
+**SOLUCIÓN:**
+
+| Situación | Acción |
+|-----------|--------|
+| Bloqueado por input usuario → hay trabajo útil | Ejecutar trabajo en modo autónomo |
+| Bloqueado por input usuario → NO hay trabajo | Volver a modo Normal, alertar una vez |
+
+### Trabajo Útil en Modo Autónomo (cuando bloqueado)
+
+1. **Documentar frameworks** — Kommo, Astro, Stripe docs
+2. **Preparar templates** — Mensajes, fichas, checklists
+3. **Revisar código** — Buscar bugs, mejoras
+4. **Crear documentación** — Cuestionarios, guías
+5. **Limpiar archivos** — Logs, obsoletos
+6. **Actualizar lessons.md** — Documentar lo aprendido
+
+### Patrones de Trabajo Autónomo Exitoso
+
+```
+Input usuario: "Empieza modo autónomo"
+    ↓
+Verificar: ¿Hay tareas ejecutables SIN input adicional?
+    ↓
+SÍ → Ejecutar UNA tarea, reportar progreso, esperar siguiente heartbeat
+NO → Alertar una vez, volver a Normal
+```
+
+### Ejemplo de Sesión Autónoma Productiva
+
+**2026-02-26 (19:50 UTC):**
+1. ✅ Updated lessons.md (2 lecciones)
+2. ✅ Reviewed claudio-infinite code
+3. ✅ Cleaned logs (ninguno > 7 días)
+4. ✅ Improved ASTRO.md (+Astro Actions)
+5. ✅ Improved STRIPE.md (+patrones)
+6. ✅ Created LANDING_QUESTIONNAIRE.md
+7. ✅ Built + restarted website
+8. ✅ Documented in memory/2026-02-26.md
+
+**Resultado:** 7 tareas completadas mientras esperaba credenciales.
+
+---
+
+_Update this file with significant learnings, decisions, and context worth preserving._
