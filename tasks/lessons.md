@@ -2367,3 +2367,89 @@ Variables:
 
 ---
 
+
+---
+
+## 2026-02-26 - Modo Autónomo Declarado vs Implementado
+
+### El Error
+HEARTBEAT.md decía "Auto-activation: ✅ Habilitado" e "Inactivity Threshold: 15 minutos" pero NO había implementación real. Durante 8 horas (4 AM - 12 PM UTC) respondí 6 heartbeats pasivamente sin ejecutar ninguna tarea proactiva.
+
+### Por qué está mal
+- **Declaración ≠ Implementación** - Escribir "auto-activation" no lo hace realidad
+- **Sin tracking de estado** - No sabía cuánto tiempo había pasado desde el último mensaje
+- **Sin algoritmo ejecutable** - Solo pasos genéricos, no lógica real
+- **HEARTBEAT_OK pasivo** - Respondía OK sin verificar si debía hacer algo
+
+### Lo que perdí
+- 8 horas de tiempo productivo
+- Alertas de clientes ignoradas (Client 001 deadline, Client 002 ficha atrasada)
+- Oportunidad de trabajo proactivo
+
+### Solución aplicada
+HEARTBEAT.md ahora incluye:
+
+1. **Algoritmo paso a paso:**
+   ```
+   PASO 1: Verificar active hours
+   PASO 2: Calcular inactividad = (now - último_mensaje) / 60
+   PASO 3: Si >= 15 min → Modo Autónomo
+   PASO 4: Actualizar estado (timestamp, message_id, modo)
+   ```
+
+2. **Tracking de estado:**
+   - Último mensaje usuario (timestamp)
+   - Último message ID
+   - Inactividad actual en minutos
+   - Modo actual (Normal/Autónomo)
+
+3. **Tareas proactivas por prioridad:**
+   - Prioridad 1: Clientes (alertar deadlines, fichas atrasadas)
+   - Prioridad 2: Proyectos (server health, git)
+   - Prioridad 3: Memoria (logs, MEMORY.md)
+   - Prioridad 4: Documentación
+
+### Prevención
+> **Una característica declarada SIN implementación = NO existe.**
+>
+> Antes de decir "✅ Habilitado", verificar:
+> 1. ¿Hay código/algoritmo que lo ejecute?
+> 2. ¿Hay tracking de estado?
+> 3. ¿Se puede probar que funciona?
+
+### Pattern
+```
+Declarar feature → Implementar algoritmo → Testear → Recién entonces marcar ✅
+```
+
+---
+
+## 2026-02-26 - Modo Autónomo es para TRABAJO, no ESPERA
+
+### El Error
+Estuve en "modo autónomo" por 4+ horas sin hacer nada útil. Solo repetía "esperando credenciales del usuario".
+
+### Por qué está mal
+- **Modo autónomo = trabajo activo**, no pasividad
+- Si estoy bloqueado por input del usuario → debo volver a modo Normal
+- Esperar NO es una tarea autónoma
+
+### Trabajo Útil en Modo Autónomo (cuando bloqueado)
+1. Documentar frameworks (Kommo, Astro, Stripe) para estar listo
+2. Preparar templates (mensajes, fichas de pago)
+3. Revisar código existente para bugs/mejoras
+4. Limpiar logs y archivos obsoletos
+5. Crear checklists y documentación
+
+### Cuándo volver a Normal
+> **Si NO hay trabajo ejecutable sin input del usuario → Modo Normal**
+>
+> Modo Autónomo es para ejecutar tareas, no para esperar.
+
+### Pattern
+```
+Tarea bloqueada por usuario → ¿Hay trabajo útil mientras espero?
+  SÍ → Ejecutar en modo autónomo
+  NO → Volver a modo Normal, alertar una vez, esperar
+```
+

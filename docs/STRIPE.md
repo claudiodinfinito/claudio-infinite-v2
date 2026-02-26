@@ -590,3 +590,364 @@ for await (const customer of stripe.customers.list()) {
 ---
 
 _Created: 2026-02-24 | Based on official Stripe documentation v2024+_
+
+---
+
+## 🆕 Modern Features (2024+)
+
+### Stripe Tax (Built-in Tax Calculation)
+
+```typescript
+const session = await stripe.checkout.sessions.create({
+  mode: 'payment',
+  line_items: [{
+    price_data: {
+      currency: 'usd',
+      product_data: { name: 'Product' },
+      unit_amount: 2000,
+      tax_behavior: 'exclusive', // or 'inclusive'
+    },
+    quantity: 1,
+  }],
+  automatic_tax: { enabled: true },
+  success_url: 'https://example.com/success',
+});
+```
+
+**Enable in Dashboard:**
+1. Settings → Tax → Activate
+2. Add origin address
+3. Stripe calculates tax automatically
+
+---
+
+### Stripe Link (Fast Checkout)
+
+Link remembers customer payment details across sites.
+
+```typescript
+const session = await stripe.checkout.sessions.create({
+  mode: 'payment',
+  payment_method_types: ['card', 'link'], // Add link
+  line_items: [...],
+  success_url: '...',
+});
+```
+
+**Benefits:**
+- 4x faster checkout
+- Pre-filled customer info
+- Works across all Stripe merchants
+
+---
+
+### Apple Pay & Google Pay
+
+Enable in Checkout Sessions:
+
+```typescript
+const session = await stripe.checkout.sessions.create({
+  mode: 'payment',
+  payment_method_types: ['card', 'apple_pay', 'google_pay'],
+  line_items: [...],
+  success_url: '...',
+});
+```
+
+**Payment Element (client-side):**
+
+```javascript
+const paymentElement = elements.create('payment', {
+  wallets: {
+    applePay: 'auto',
+    googlePay: 'auto',
+  },
+});
+```
+
+---
+
+### Payment Element vs Elements
+
+| Feature | Payment Element | Elements (Legacy) |
+|---------|-----------------|-------------------|
+| Setup | Single component | Multiple components |
+| Payment methods | 40+ automatic | Manual configuration |
+| Dynamic | Yes | No |
+| Recommended | ✅ Yes | ❌ Legacy |
+
+**Payment Element (Recommended):**
+
+```javascript
+const elements = stripe.elements({ clientSecret });
+const paymentElement = elements.create('payment');
+paymentElement.mount('#payment-element');
+```
+
+**Elements (Legacy - Avoid):**
+
+```javascript
+const cardElement = elements.create('card');
+cardElement.mount('#card-element');
+```
+
+---
+
+### Embedded Checkout (No Redirect)
+
+Keep users on your site with embedded checkout:
+
+```typescript
+// Server
+const session = await stripe.checkout.sessions.create({
+  mode: 'payment',
+  line_items: [...],
+  ui_mode: 'embedded',
+  return_url: 'https://example.com/return',
+});
+
+// Client
+const stripe = Stripe(publishableKey);
+const checkout = await stripe.initEmbeddedCheckout({
+  clientSecret: session.client_secret,
+});
+checkout.mount('#checkout');
+```
+
+---
+
+### Checkout with Customer Email
+
+Pre-fill customer email:
+
+```typescript
+const session = await stripe.checkout.sessions.create({
+  mode: 'payment',
+  customer_email: 'customer@example.com',
+  line_items: [...],
+  success_url: '...',
+});
+```
+
+---
+
+### Promotion Codes
+
+Enable coupon input:
+
+```typescript
+const session = await stripe.checkout.sessions.create({
+  mode: 'payment',
+  allow_promotion_codes: true, // Enable coupon field
+  line_items: [...],
+  success_url: '...',
+});
+```
+
+---
+
+## 🧪 Testing
+
+### Test Card Numbers
+
+| Card Number | Scenario |
+|-------------|----------|
+| `4242 4242 4242 4242` | Success |
+| `4000 0000 0000 0002` | Decline |
+| `4000 0025 0000 3155` | 3D Secure |
+| `4000 0000 0000 9995` | Insufficient funds |
+
+**Any future expiry date, any CVC.**
+
+### Test Webhooks Locally
+
+```bash
+# Install CLI
+stripe login
+
+# Forward webhooks
+stripe listen --forward-to localhost:4321/webhook
+
+# Triggers test events
+stripe trigger payment_intent.succeeded
+```
+
+---
+
+## 📱 Mobile Integration
+
+### Stripe React Native
+
+```typescript
+import { useStripe } from '@stripe/stripe-react-native';
+
+const { initPaymentSheet, presentPaymentSheet } = useStripe();
+
+// Initialize
+await initPaymentSheet({
+  merchantDisplayName: 'My Store',
+  paymentIntentClientSecret: clientSecret,
+});
+
+// Present
+const { error } = await presentPaymentSheet();
+```
+
+---
+
+_Updated: 2026-02-26 - Added modern features (Tax, Link, Apple Pay, Payment Element, Embedded Checkout)_
+
+---
+
+## 🚀 Advanced Patterns
+
+### Stripe Checkout with Custom Line Items
+
+```typescript
+const session = await stripe.checkout.sessions.create({
+  mode: 'payment',
+  line_items: [
+    {
+      price_data: {
+        currency: 'mxn',
+        product_data: {
+          name: 'Consulta Spa - 60 min',
+          description: 'Sesión de masaje relajante',
+          images: ['https://example.com/massage.jpg'],
+        },
+        unit_amount: 150000, // $1,500 MXN
+      },
+      quantity: 1,
+    },
+    {
+      price_data: {
+        currency: 'mxn',
+        product_data: {
+          name: 'Propina sugerida (10%)',
+        },
+        unit_amount: 15000, // $150 MXN
+      },
+      quantity: 1,
+    },
+  ],
+  success_url: `${domain}/success?session_id={CHECKOUT_SESSION_ID}`,
+  cancel_url: `${domain}/cancel`,
+  metadata: {
+    booking_id: 'booking_123',
+    client_id: 'client_456',
+  },
+});
+```
+
+### Deposit + Balance Payment Flow
+
+```typescript
+// Step 1: Collect 50% deposit
+const depositSession = await stripe.checkout.sessions.create({
+  mode: 'payment',
+  line_items: [{
+    price_data: {
+      currency: 'mxn',
+      product_data: { name: 'Depósito - Paquete Spa' },
+      unit_amount: 200000, // $2,000 MXN (50%)
+    },
+    quantity: 1,
+  }],
+  success_url: `${domain}/booking/confirmed?booking_id={CHECKOUT_SESSION_ID}`,
+  metadata: { type: 'deposit', total_amount: 400000 },
+});
+
+// Step 2: After service, charge remaining balance
+const balanceSession = await stripe.checkout.sessions.create({
+  mode: 'payment',
+  customer: 'cus_xxx', // Same customer
+  line_items: [{
+    price_data: {
+      currency: 'mxn',
+      product_data: { name: 'Saldo restante - Paquete Spa' },
+      unit_amount: 200000,
+    },
+    quantity: 1,
+  }],
+  success_url: `${domain}/payment/complete`,
+});
+```
+
+### Payment Link (No Code)
+
+```typescript
+const paymentLink = await stripe.paymentLinks.create({
+  line_items: [{
+    price: 'price_xxx',
+    quantity: 1,
+  }],
+});
+
+// Share paymentLink.url directly - no backend needed for simple payments
+```
+
+---
+
+## 📊 Stripe Dashboard Best Practices
+
+### 1. Test Mode Checklist
+
+Before going live, test:
+
+- [ ] Successful payment with `4242 4242 4242 4242`
+- [ ] Failed payment with `4000 0000 0000 0002`
+- [ ] 3D Secure with `4000 0025 0000 3155`
+- [ ] Webhook events received
+- [ ] Refunds work
+- [ ] Customer created correctly
+
+### 2. Going Live Checklist
+
+- [ ] Replace test keys with live keys
+- [ ] Update webhook endpoint in Stripe Dashboard
+- [ ] Verify webhook signing secret matches
+- [ ] Test with real card (small amount)
+- [ ] Enable fraud protection (Radar)
+
+### 3. Monitoring
+
+```typescript
+// Log important events
+switch (event.type) {
+  case 'checkout.session.completed':
+    console.log(`✅ Payment success: ${session.id} - $${session.amount_total/100}`);
+    break;
+  case 'payment_intent.payment_failed':
+    console.log(`❌ Payment failed: ${paymentIntent.id} - ${paymentIntent.last_payment_error?.message}`);
+    break;
+}
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### Common Errors
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| `Invalid request: amount` | Amount not in cents | Multiply by 100 |
+| `No such payment_intent` | Wrong ID format | Check `pi_` prefix |
+| `Customer has no payment method` | PM not attached | Use `paymentMethods.attach` |
+| `Webhook signature verification failed` | Wrong secret | Check `STRIPE_WEBHOOK_SECRET` |
+| `Rate limit exceeded` | Too many requests | Implement retry with backoff |
+
+### Debug Mode
+
+```typescript
+const stripe = new Stripe(key, {
+  apiVersion: '2023-10-16',
+  typescript: true,
+  timeout: 30000, // 30s timeout
+  maxNetworkRetries: 2, // Auto-retry
+});
+```
+
+---
+
+_Updated: 2026-02-26 - Added advanced patterns, dashboard best practices, troubleshooting_

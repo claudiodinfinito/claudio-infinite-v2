@@ -1971,3 +1971,140 @@ HOST=0.0.0.0 PORT=4321 node ./dist/server/entry.mjs
 
 _Lesson learned: 2026-02-25 - Documented after race condition error_
 _Last updated: 2026-02-25_
+
+---
+
+## 28. Astro Actions (Astro 5.0+)
+
+Actions son la forma type-safe de manejar formularios y llamadas API en Astro 5.
+
+### Setup
+
+```typescript
+// astro.config.mjs
+export default defineConfig({
+  output: 'server',  // or 'hybrid'
+});
+```
+
+### Define Actions
+
+```typescript
+// src/actions/index.ts
+import { defineAction } from 'astro:actions';
+import { z } from 'astro:schema';
+
+export const server = {
+  contact: defineAction({
+    accept: 'form',  // or 'json'
+    input: z.object({
+      name: z.string().min(1),
+      email: z.string().email(),
+      message: z.string().min(10),
+    }),
+    handler: async (input) => {
+      // input is fully typed and validated
+      await saveToDatabase(input);
+      return { success: true, id: generateId() };
+    },
+  }),
+  
+  newsletter: defineAction({
+    accept: 'json',
+    input: z.object({
+      email: z.string().email(),
+    }),
+    handler: async ({ email }) => {
+      await subscribe(email);
+      return { subscribed: true };
+    },
+  }),
+};
+```
+
+### Use in Pages (Forms)
+
+```astro
+---
+import { actions } from 'astro:actions';
+
+// Check for result after submission
+const result = Astro.getActionResult(actions.contact);
+---
+
+<form action={actions.contact} method="POST">
+  <input name="name" required />
+  <input name="email" type="email" required />
+  <textarea name="message" required></textarea>
+  <button type="submit">Send</button>
+</form>
+
+{result?.error && <p class="error">{result.error.message}</p>}
+{result?.data && <p class="success">Message sent! ID: {result.data.id}</p>}
+```
+
+### Use in Client (JavaScript)
+
+```typescript
+import { actions } from 'astro:actions';
+
+// Client-side call
+const result = await actions.newsletter({ email: 'user@example.com' });
+
+if (result.error) {
+  console.error(result.error.message);
+} else {
+  console.log('Subscribed!', result.data);
+}
+```
+
+### CSRF Protection
+
+Actions incluyen CSRF protection automático en forms:
+
+```astro
+<!-- Astro adds hidden _csrf field automatically -->
+<form action={actions.contact}>
+  <!-- rendered as: -->
+  <input type="hidden" name="_csrf" value="..." />
+</form>
+```
+
+### Redirect After Success
+
+```typescript
+handler: async (input, context) => {
+  await saveToDatabase(input);
+  return context.redirect('/thank-you');
+},
+```
+
+### Error Handling
+
+```typescript
+import { ActionError } from 'astro:actions';
+
+handler: async ({ email }) => {
+  const exists = await checkEmail(email);
+  if (exists) {
+    throw new ActionError({
+      code: 'CONFLICT',
+      message: 'Email already registered',
+    });
+  }
+  // ...
+},
+```
+
+### Pattern: Actions vs API Routes
+
+| Use Actions When | Use API Routes When |
+|------------------|---------------------|
+| Form submissions | Webhook endpoints |
+| Type-safe validated input | Third-party API proxy |
+| CSRF protection needed | Custom response formats |
+| Simple CRUD operations | Complex business logic |
+
+---
+
+_Updated: 2026-02-26 - Added Astro Actions section_

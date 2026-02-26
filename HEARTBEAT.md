@@ -15,9 +15,9 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Modo** | ⚪ Normal |
-| **Último Mensaje Usuario** | 2026-02-26 16:13 UTC |
-| **Último Message ID** | 5733 |
+| **Modo** | 🟡 Autónomo (comando usuario) |
+| **Último Mensaje Usuario** | 2026-02-26 19:45 UTC |
+| **Último Message ID** | 5746 |
 | **Inactividad Actual** | 0 min |
 
 ---
@@ -101,7 +101,7 @@ Ejecutar secuencial, reportar si hay alertas:
 
 | Fecha | Hora Inicio | Hora Fin | Tareas Ejecutadas | Resultado |
 |-------|-------------|----------|-------------------|-----------|
-| 2026-02-26 | 14:12 UTC | — | Git commit + state update | 🟡 Esperando credenciales usuario |
+| 2026-02-26 | 14:12 UTC | 18:03 UTC | Git commit, revisado docs Kommo | 🟡 Esperando credenciales usuario |
 
 ---
 
