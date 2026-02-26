@@ -15,10 +15,10 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Modo** | ⚪ Normal |
+| **Modo** | 🟡 Autónomo |
 | **Último Mensaje Usuario** | 2026-02-26 21:05 UTC |
 | **Último Message ID** | 5771 |
-| **Inactividad Actual** | 0 min |
+| **Inactividad Actual** | 26 min |
 
 ---
 
