@@ -392,3 +392,122 @@ POST /tasks
 ---
 
 _Update this file as you learn more about Kommo CRM._
+
+---
+
+## 💻 API Examples - Real Commands
+
+### Crear Lead
+
+```bash
+curl -X POST "https://{SUBDOMAIN}.kommo.com/api/v4/leads" \
+  -H "Authorization: Bearer {TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Juan Pérez - Masaje Relajante",
+    "pipeline_id": 12345,
+    "status_id": 1,
+    "_embedded": {
+      "tags": [{"name": "pendiente-pago"}]
+    }
+  }'
+```
+
+### Crear Pipeline con Stages
+
+```bash
+curl -X POST "https://{SUBDOMAIN}.kommo.com/api/v4/leads/pipelines" \
+  -H "Authorization: Bearer {TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Tratamientos Spa",
+    "is_main": false,
+    "statuses": [
+      {"name": "Nueva Consulta", "sort": 10, "color": "99CCFF"},
+      {"name": "Cotización Enviada", "sort": 20, "color": "FFCC66"},
+      {"name": "Confirmada", "sort": 30, "color": "99FF66"},
+      {"name": "Completada", "sort": 40, "color": "66CC66"},
+      {"name": "Pagada", "sort": 50, "color": "339933"}
+    ]
+  }'
+```
+
+### Crear Tags
+
+```bash
+curl -X POST "https://{SUBDOMAIN}.kommo.com/api/v4/leads/tags" \
+  -H "Authorization: Bearer {TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '[
+    {"name": "pagado", "color": "4CAF50"},
+    {"name": "cancelado", "color": "F44336"},
+    {"name": "parcialidades", "color": "FF9800"},
+    {"name": "pendiente-pago", "color": "FFC107"}
+  ]'
+```
+
+### Obtener Todos los Leads
+
+```bash
+curl -X GET "https://{SUBDOMAIN}.kommo.com/api/v4/leads" \
+  -H "Authorization: Bearer {TOKEN}"
+```
+
+### Actualizar Status de Lead
+
+```bash
+curl -X PATCH "https://{SUBDOMAIN}.kommo.com/api/v4/leads/{LEAD_ID}" \
+  -H "Authorization: Bearer {TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "pipeline_id": 12345,
+    "status_id": 3
+  }'
+```
+
+### Agregar Tag a Lead Existente
+
+```bash
+curl -X PATCH "https://{SUBDOMAIN}.kommo.com/api/v4/leads/{LEAD_ID}" \
+  -H "Authorization: Bearer {TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "_embedded": {
+      "tags": [{"name": "pagado"}]
+    }
+  }'
+```
+
+### Crear Tarea (Follow-up)
+
+```bash
+curl -X POST "https://{SUBDOMAIN}.kommo.com/api/v4/tasks" \
+  -H "Authorization: Bearer {TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entity_type": "leads",
+    "entity_id": {LEAD_ID},
+    "task_type_id": 1,
+    "complete_till": 1735689600,
+    "text": "Enviar recordatorio de pago"
+  }'
+```
+
+### Registrar Webhook
+
+```bash
+curl -X POST "https://{SUBDOMAIN}.kommo.com/api/v4/webhooks" \
+  -H "Authorization: Bearer {TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "destination": "https://your-server.com/webhook",
+    "settings": [
+      {"action": "leads:add"},
+      {"action": "leads:status"}
+    ]
+  }'
+```
+
+---
+
+_Ejemplos agregados: 2026-02-26 | Listos para copiar-pegar_

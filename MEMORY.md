@@ -2,6 +2,38 @@
 
 _Curated knowledge that persists across sessions. Update sparingly with high-value insights._
 
+---
+
+## 📑 Quick Index
+
+| Sección | Líneas | Tema |
+|---------|--------|------|
+| **User Profile** | 5-15 | Gamble, Cancún, preferencias |
+| **Environment** | 17-25 | VPS, CapRover, OpenClaw |
+| **Key Insights** | 27-50 | Architecture, Token Strategy |
+| **Active Projects** | 52-90 | claudio-infinite |
+| **Lessons Learned** | 92-140 | 17 lessons reference |
+| **Documentation Mastery** | 142-200 | Config, Memory Search |
+| **Critical Thinking** | 202-215 | Evaluate rules vs environment |
+| **HEARTBEAT.md Architecture** | 217-280 | Autonomous mode design |
+| **LLM-Optimized Docs** | 282-320 | .txt files for LLMs |
+| **Technical Gotchas** | 322-380 | Edit Tool, Compaction, Zombies |
+| **File Consolidation** | 382-450 | Disaster lessons, final structure |
+| **Autonomous Behavior** | 452-550 | Activation rules, delegation |
+| **Modo Autónomo = Trabajo** | 552-end | Lessons, patterns |
+
+---
+
+## 🔍 Quick Search
+
+- **¿Credenciales Kommo?** → Active Projects > claudio-infinite
+- **¿Reglas workflow?** → Lessons Learned
+- **¿Config heartbeat?** → HEARTBEAT.md Architecture
+- **¿Token efficiency?** → Key Insights + Token Efficiency Strategy
+- **¿Lecciones de errores?** → Lessons Learned + Technical Gotchas
+
+---
+
 ## 👤 User Profile
 
 **Fuente principal:** `USER.md` — ver ahí para detalles completos.

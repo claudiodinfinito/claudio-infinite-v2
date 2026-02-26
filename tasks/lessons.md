@@ -4,6 +4,31 @@ _Corrections and patterns to prevent repeat mistakes._
 
 ---
 
+## 📂 Categories Index
+
+| Categoría | Lecciones | Fecha |
+|-----------|-----------|-------|
+| **🛠️ Tools** | Edit Tool Race Condition, Compaction Timeout, Zombie Process | 2026-02-24+ |
+| **📝 Documentation** | LLM Files vs Web, Declaración ≠ Implementación | 2026-02-24+ |
+| **🤖 Autonomous** | Mode = Work Not Wait, HEARTBEAT_OK Not Enough | 2026-02-26+ |
+| **💼 Clients** | Payment Form Overdue, Credential Blocking | 2026-02-26+ |
+| **🔄 Workflows** | Plan Before Execute, Verify Before Done | 2026-02-24+ |
+| **⚡ GLM5** | Subagent Strategy, Unlimited Tokens | 2026-02-23+ |
+
+---
+
+## 🔍 Quick Find
+
+| Buscar | Línea aprox | Categoría |
+|--------|-------------|-----------|
+| Edit Tool Race | ~150 | Tools |
+| Zombie Process | ~450 | Tools |
+| LLM Files | ~50 | Documentation |
+| Autonomous Mode Fail | ~2200 | Autonomous |
+| Subagent Strategy | ~15 | GLM5 |
+
+---
+
 ## 2026-02-23 - Subagent Strategy Correction
 
 ### The Mistake
