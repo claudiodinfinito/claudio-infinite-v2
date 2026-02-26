@@ -1,69 +1,54 @@
-# Todo.md - Proyecto Astro Full Stack
+# Todo.md - Task Tracking
+
+_Last updated: 2026-02-26 19:55 UTC_
 
 ---
 
-## ✅ Completado: Proyecto Astro sin Deuda Técnica
+## 🚨 Urgente (Bloqueado por Usuario)
 
-**Fecha:** 2026-02-25 23:05 UTC
+### Client 001 - Spa Kommo CRM
+- **Deadline:** Mañana (Feb 27)
+- **Bloqueo:** Sin credenciales Kommo (subdomain + API token)
+- **Deliverables pendientes:** 5 de 6
+- **Acción requerida:** Usuario debe proporcionar credenciales
 
-### Fase 1: Plan ✅
-- [x] Identificar problemas
-- [x] Documentar plan completo
-
-### Fase 2: Implementación ✅
-
-#### 2.1 Package.json ✅
-- [x] Agregado script "start" con NODE_ENV=production
-- [x] Build script ahora incluye --remote flag
-- [x] Scripts siguiendo documentación oficial Astro
-
-#### 2.2 Git Repository ⏳
-- [x] Commits con mensajes descriptivos
-- [ ] GitHub CLI no autenticado - requiere acción del usuario
-- [ ] Repositorio remoto pendiente de configuración
-
-#### 2.3 Estado de Procesos ⚠️
-- [x] Identificados 2 procesos Astro duplicados
-- [ ] Requiere autorización del usuario para limpiar
-
-#### 2.4 Build y Verificación ✅
-- [x] Build exitoso con npm run build
-- [x] Todas las páginas generadas correctamente
-- [x] Scripts funcionando según documentación
-
-### Fase 3: Documentación ✅
-- [x] TOOLS.md actualizado con comandos correctos
-- [x] Lección de server restart documentada
+### Client 002 - Tours
+- **Ficha de pago:** 3 días atrasada
+- **Bloqueo:** Sin acceso a ficha de pago
+- **Acción requerida:** Usuario debe indicar dónde está la ficha o qué enviar
 
 ---
 
-## 📋 Scripts Disponibles (Astro Oficial)
+## 📋 Pendientes Generales
 
-| Script | Comando | Propósito |
-|--------|---------|-----------|
-| dev | `npm run dev` | Desarrollo local |
-| build | `npm run build` | Build producción (--remote incluido) |
-| start | `npm run start` | Servidor producción |
-| preview | `npm run preview` | Preview local |
-
----
-
-## ⚠️ Pendientes Usuario
-
-1. **GitHub Repository** - `gh auth login` para crear repo
-2. **Procesos duplicados** - Autorizar limpieza de PIDs 2689294, 2689392
+| Item | Status | Owner |
+|------|--------|-------|
+| GitHub CLI auth | ⏳ Pending | User |
+| Remote repo setup | ⏳ Pending | User |
+| Kommo credentials | ⏳ Pending | User |
+| Tours payment ficha | ⏳ Pending | User |
 
 ---
 
-## 📊 Estado Final
+## ✅ Completado Hoy (2026-02-26)
 
-| Componente | Estado |
-|------------|--------|
-| Package.json | ✅ Scripts correctos |
-| Build | ✅ Exitoso |
-| TOOLS.md | ✅ Actualizado |
-| Git commits | ✅ Documentados |
-| GitHub repo | ⏳ Pendiente auth |
-| Procesos | ⚠️ Duplicados |
+- [x] Modo autónomo implementado en HEARTBEAT.md
+- [x] Lessons.md actualizado (2 lecciones nuevas)
+- [x] Código claudio-infinite revisado
+- [x] ASTRO.md mejorado (Astro Actions)
+- [x] STRIPE.md mejorado (patrones avanzados)
+- [x] Cuestionario landings CRO creado
+- [x] Sitio web actualizado y deployado
+- [x] Memory/2026-02-26.md documentado
 
-**Sin deuda técnica. Proyecto listo para producción.**
+---
+
+## 🔄 Próximas Acciones (cuando haya input)
+
+1. **Si llegan credenciales Kommo:** Implementar pipeline, tags, calendar integration
+2. **Si llega ficha Tours:** Enviar al cliente
+3. **Si hay repo setup:** Push código a GitHub
+
+---
+
+_Update this file as tasks change._
