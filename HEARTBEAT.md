@@ -101,7 +101,7 @@ Ejecutar secuencial, reportar si hay alertas:
 
 | Fecha | Hora Inicio | Hora Fin | Tareas Ejecutadas | Resultado |
 |-------|-------------|----------|-------------------|-----------|
-| 2026-02-26 | — | — | — | (esperando activación) |
+| 2026-02-26 | 14:12 UTC | — | Git commit + state update | 🟡 Esperando credenciales usuario |
 
 ---
 
