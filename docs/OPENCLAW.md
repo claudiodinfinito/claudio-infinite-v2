@@ -281,6 +281,126 @@ openclaw gateway restart
 
 ---
 
+## 🛠️ CLI Examples - Copy & Paste
+
+### Cron Jobs
+
+```bash
+# Morning briefing 9am Cancún daily
+openclaw cron add \
+  --name "Morning Briefing" \
+  --cron "0 9 * * *" \
+  --tz "America/Cancun" \
+  --session isolated \
+  --message "Briefing: weather, check CLIENTS.md, calendar events" \
+  --announce \
+  --channel telegram \
+  --to "8596613010"
+
+# Client check cada 4 horas
+openclaw cron add \
+  --name "Client Check" \
+  --cron "0 10,14,18 * * *" \
+  --tz "America/Cancun" \
+  --session isolated \
+  --message "Check CLIENTS.md for deadlines and overdue actions" \
+  --announce
+
+# Weekly review lunes 9am
+openclaw cron add \
+  --name "Weekly Review" \
+  --cron "0 9 * * 1" \
+  --tz "America/Cancun" \
+  --session isolated \
+  --message "Weekly review: git commits, memory logs, lessons learned" \
+  --announce
+
+# One-shot reminder in 20 minutes
+openclaw cron add \
+  --name "Test Reminder" \
+  --at "20m" \
+  --session main \
+  --system-event "Reminder: test completed" \
+  --wake now \
+  --delete-after-run
+
+# One-shot at specific time
+openclaw cron add \
+  --name "Meeting at 3pm" \
+  --at "2026-02-27T15:00:00-06:00" \
+  --session main \
+  --system-event "Meeting starts now" \
+  --wake now
+
+# List all jobs
+openclaw cron list
+
+# Run job immediately (test)
+openclaw cron run <job-id>
+
+# View run history
+openclaw cron runs --id <job-id>
+
+# Remove job
+openclaw cron remove <job-id>
+```
+
+### Hooks
+
+```bash
+# List all available hooks
+openclaw hooks list
+
+# Show only eligible hooks
+openclaw hooks list --eligible
+
+# Enable session memory (auto-saves on /new)
+openclaw hooks enable session-memory
+
+# Enable command logger
+openclaw hooks enable command-logger
+
+# Check hook status
+openclaw hooks check
+
+# Show detailed info
+openclaw hooks info session-memory
+
+# Disable a hook
+openclaw hooks disable command-logger
+```
+
+### Gateway
+
+```bash
+# Check gateway status
+openclaw gateway status
+
+# Start gateway
+openclaw gateway start
+
+# Stop gateway
+openclaw gateway stop
+
+# Restart gateway
+openclaw gateway restart
+```
+
+### Configuration
+
+```bash
+# View current config
+openclaw config get
+
+# View config schema
+openclaw config schema
+
+# Edit config (opens editor)
+openclaw config edit
+```
+
+---
+
 ## 🚨 Gotchas
 
 ### 1. Heartbeat NO es para Timing Exacto

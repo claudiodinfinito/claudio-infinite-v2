@@ -13,6 +13,20 @@ _Reglas de ejecución para tareas complejas. Consultar en cada heartbeat durante
 - Write detailed specs upfront to reduce ambiguity
 - Write plan to `tasks/todo.md` with checkable items
 
+**Example:**
+```
+❌ User: "Fix the bug"
+   Me: [starts coding immediately]
+
+✅ User: "Fix the bug"
+   Me: Writes plan in tasks/todo.md:
+       - [ ] Reproduce bug
+       - [ ] Find root cause
+       - [ ] Implement fix
+       - [ ] Test fix
+       - [ ] Verify no side effects
+```
+
 ---
 
 ## 2. Subagent Strategy
@@ -23,6 +37,18 @@ _Reglas de ejecución para tareas complejas. Consultar en cada heartbeat durante
 - For complex problems, throw more compute at it via subagents
 - One task per subagent for focused execution
 - Subagents can use different models optimized for the task
+
+**Example:**
+```
+❌ Me: Reading 1000 lines of docs myself (blocks main context)
+
+✅ Me: sessions_spawn(
+       task: "Read OpenClaw cron docs and extract key patterns",
+       agentId: "main"
+     )
+     → Returns summary in 30 seconds
+     → Main context stays clean
+```
 
 ---
 
@@ -35,6 +61,16 @@ _Reglas de ejecución para tareas complejas. Consultar en cada heartbeat durante
 - Review lessons at session start for relevant project
 - Include: what went wrong, root cause, prevention pattern
 
+**Example:**
+```
+User: "No hiciste nada durante 8 horas"
+Me: [Documents in lessons.md]:
+    ## 2026-02-26 - Modo Autónomo Declarado vs Implementado
+    - Error: HEARTBEAT.md decía "auto-activation" pero no había código
+    - Root cause: Declaración ≠ Implementación
+    - Pattern: Verificar con pruebas, no asumir
+```
+
 ---
 
 ## 4. Verification Before Done
@@ -45,6 +81,17 @@ _Reglas de ejecución para tareas complejas. Consultar en cada heartbeat durante
 - Ask yourself: "Would a staff engineer approve this?"
 - Run tests, check logs, demonstrate correctness
 - For forms: submit test data, verify saved to DB, show success message
+
+**Example:**
+```
+❌ Me: "Done! The feature works."
+
+✅ Me: "Feature implemented. Verifying..."
+     [runs curl test]
+     → HTTP 200 confirmed
+     → Response: {"success": true}
+     "Verified. Here's the evidence:"
+```
 
 ---
 
@@ -57,6 +104,15 @@ _Reglas de ejecución para tareas complejas. Consultar en cada heartbeat durante
 - Challenge your own work before presenting it
 - **Consult official documentation (llms-full.txt) before implementing**
 
+**Example:**
+```
+❌ Me: Using workaround found in random blog post
+
+✅ Me: Checking docs/ASTRO.md first
+     → Found official Astro Actions pattern
+     → Implementing with official approach
+```
+
 ---
 
 ## 6. Autonomous Bug Fixing
@@ -67,6 +123,18 @@ _Reglas de ejecución para tareas complejas. Consultar en cada heartbeat durante
 - Zero context switching required from the user
 - Go fix failing CI tests without being told how
 - Read error messages carefully, trace to root cause
+
+**Example:**
+```
+User: "Server keeps crashing"
+Me: [Investigates]
+    → ps aux | grep node → zombie process found
+    → kill zombie
+    → npm run build
+    → restart server
+    → curl test → HTTP 200
+    "Fixed. Zombie process killed, server restarted."
+```
 
 ---
 

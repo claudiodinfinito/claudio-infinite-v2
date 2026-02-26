@@ -670,4 +670,123 @@ Derived from macOS onboarding. Sets `messages.ackReaction` from `identity.emoji`
 
 ---
 
+## 📄 Full Working Config Example
+
+```json5
+// ~/.openclaw/openclaw.json - Complete Working Configuration
+{
+  gateway: {
+    port: 18789
+  },
+
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      agentDir: "~/.openclaw/agents/main/agent",
+      model: "custom-api-us-west-2-modal-direct/zai-org/GLM-5-FP8",
+      identity: {
+        name: "Claudio",
+        emoji: "🤖",
+        theme: "Directo, proactivo, aprende de errores"
+      },
+      tools: {
+        profile: "full"
+      },
+      subagents: {
+        allowAgents: ["*"]
+      },
+      compaction: {
+        reserveTokensFloor: 20000,
+        memoryFlush: {
+          enabled: true,
+          softThresholdTokens: 4000,
+          prompt: "Write lasting notes to memory/YYYY-MM-DD.md; reply NO_REPLY if nothing."
+        }
+      },
+      memorySearch: {
+        provider: "openai",
+        model: "text-embedding-3-small",
+        enabled: true
+      }
+    }
+  },
+
+  models: {
+    providers: {
+      "custom-api-us-west-2-modal-direct": {
+        type: "openai-compatible",
+        baseURL: "https://api.example.com/v1",
+        apiKey: "${CUSTOM_API_KEY}"
+      }
+    },
+    aliases: {
+      "GLM5-FP8": "custom-api-us-west-2-modal-direct/zai-org/GLM-5-FP8"
+    }
+  },
+
+  channels: {
+    telegram: {
+      accounts: [{
+        id: "main",
+        token: "${TELEGRAM_BOT_TOKEN}"
+      }],
+      reactions: {
+        mode: "minimal"
+      }
+    }
+  },
+
+  session: {
+    store: "~/.openclaw/sessions",
+    reset: {
+      mode: "daily",
+      at: "04:00"
+    }
+  },
+
+  messages: {
+    ackReaction: "👀",
+    responsePrefix: {
+      enabled: false
+    }
+  },
+
+  tools: {
+    profiles: {
+      full: {
+        allow: ["*"],
+        deny: []
+      }
+    }
+  },
+
+  sandbox: {
+    mode: "off"
+  },
+
+  memory: {
+    enabled: true,
+    paths: ["MEMORY.md", "memory/*.md"]
+  },
+
+  heartbeat: {
+    every: "10m",
+    target: "last"
+  },
+
+  cron: {
+    enabled: true
+  }
+}
+```
+
+**Notes:**
+- `${VAR}` = environment variable substitution
+- `profile: "full"` = all tools enabled
+- `sandbox.mode: "off"` = no Docker sandbox (production server)
+- `heartbeat.every: "10m"` = periodic checks every 10 minutes
+- `session.reset.at: "04:00"` = daily reset at 4 AM UTC
+
+---
+
 _This is a condensed reference. Full docs at `/usr/lib/node_modules/openclaw/docs/gateway/configuration-reference.md`_
