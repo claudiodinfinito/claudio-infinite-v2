@@ -15,31 +15,114 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Modo** | ⚪ Normal |
-| **Último Mensaje Usuario** | 2026-02-25 18:05 UTC |
-| **Inactividad Actual** | 0 min (usuario activo) |
+| **Modo** | 🟡 Autónomo |
+| **Último Mensaje Usuario** | 2026-02-26 12:48 UTC |
+| **Último Message ID** | 5725 |
+| **Inactividad Actual** | 84 min |
 
 ---
 
-## 🔄 Batch Checks (ejecutar en cada heartbeat)
+## 🧠 ALGORITMO DE ACTIVACIÓN (EJECUTAR EN CADA HEARTBEAT)
 
-**Secuencial, un turno:**
+### PASO 1: Verificar Active Hours
 
-1. `memory_search("pending urgent")` → contexto
-2. `git status` → commit si hay cambios
-3. `curl localhost:4321` → server health
-4. Scan `CLIENTS.md` → action needed?
-5. Responder **HEARTBEAT_OK** o alertar
+```
+Hora actual Cancún = (UTC - 5/6)
+Si hora < 08:00 OR hora > 23:00 → SKIP HEARTBEAT (responder HEARTBEAT_OK)
+```
+
+### PASO 2: Calcular Inactividad
+
+```
+inactividad_min = (now_utc - último_mensaje_usuario_utc) / 60
+```
+
+### PASO 3: Decidir Modo
+
+| Condición | Modo | Acción |
+|-----------|------|--------|
+| inactividad < 15 min | Normal | Batch checks pasivos |
+| inactividad >= 15 min | 🟡 Autónomo | Ejecutar tareas proactivas |
+| Usuario responde | Normal | Actualizar timestamp, desactivar autónomo |
+
+### PASO 4: Actualizar Estado
+
+**SI usuario envió mensaje nuevo:**
+1. Actualizar `Último Mensaje Usuario` con timestamp actual
+2. Actualizar `Último Message ID`
+3. Cambiar `Modo` a `Normal`
+4. `Inactividad Actual` = 0
+
+**SI heartbeat sin mensaje nuevo:**
+1. Incrementar `Inactividad Actual` según tiempo transcurrido
+2. Si >= 15 min → cambiar `Modo` a `🟡 Autónomo`
 
 ---
 
-## 📝 Notas
+## 🔄 TAREAS POR MODO
 
-- **Timing exacto** → Cron jobs isolated (ver `openclaw cron list`)
-- **Eventos automáticos** → Hooks (ver `openclaw hooks list`)
-- **Decision logic** → MEMORY.md sección "Autonomous Behavior"
-- **Historial sesiones** → `memory/YYYY-MM-DD.md`
+### Modo Normal (Batch Checks Pasivos)
+
+Ejecutar secuencial, reportar si hay alertas:
+
+1. `git status` → si hay cambios, commit
+2. `curl localhost:4321` → server health
+3. Leer `CLIENTS.md` → si hay deadlines/atrasos, alertar
+4. Responder HEARTBEAT_OK si todo OK
+
+### Modo Autónomo (Tareas Proactivas)
+
+**Ejecutar UNA tarea por heartbeat, reportar progreso:**
+
+#### Prioridad 1 — Clientes (CRÍTICO)
+- [ ] Revisar CLIENTS.md para acciones pendientes
+- [ ] Si deadline < 24h → alertar al usuario
+- [ ] Si ficha atrasada → alertar al usuario
+- [ ] Si deliverable pendiente → preguntar si trabajar en él
+
+#### Prioridad 2 — Proyectos
+- [ ] Verificar servidor claudio-infinite activo
+- [ ] Verificar otros proyectos en `/root/projects/`
+- [ ] Git status y commit si hay cambios
+
+#### Prioridad 3 — Memoria
+- [ ] Actualizar `memory/YYYY-MM-DD.md` con progreso
+- [ ] Limpiar logs antiguos (>7 días)
+- [ ] Actualizar MEMORY.md si hay insights nuevos
+
+#### Prioridad 4 — Documentación
+- [ ] Revisar `tasks/todo.md` para items pendientes
+- [ ] Actualizar `tasks/lessons.md` si aprendí algo
+- [ ] Mejorar documentación existente
 
 ---
 
-_Leer este archivo en cada heartbeat. Sin tareas pendientes = HEARTBEAT_OK._
+## 📝 Tracking de Sesiones Autónomas
+
+| Fecha | Hora Inicio | Hora Fin | Tareas Ejecutadas | Resultado |
+|-------|-------------|----------|-------------------|-----------|
+| 2026-02-26 | — | — | — | (esperando activación) |
+
+---
+
+## 🎯 Reglas de Ejecución
+
+1. **UNA tarea a la vez** — no paralelizar
+2. **Reportar progreso** — actualizar este archivo después de cada tarea
+3. **Salir al primer input del usuario** — cambiar a modo Normal inmediatamente
+4. **No modificar archivos críticos sin permiso** — CLIENTS.md = READ ONLY en autónomo
+5. **Priorizar alertas al usuario sobre trabajo silencioso** — comunicación > ejecución
+
+---
+
+## 📎 Referencias
+
+- **Workflow Rules:** `system/WORKFLOW_ORCHESTRATION.md`
+- **Clients:** `business/CLIENTS.md`
+- **Tasks:** `tasks/todo.md`
+- **Lessons:** `tasks/lessons.md`
+- **Daily Log:** `memory/YYYY-MM-DD.md`
+
+---
+
+_Leer este archivo en CADA heartbeat. Ejecutar algoritmo completo. Sin tareas = HEARTBEAT_OK._

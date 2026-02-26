@@ -311,6 +311,19 @@ _Extraído de documentación OpenClaw y WORKFLOW_ORCHESTRATION.md_
 | Active hours (08:00-23:00) | Heartbeats activos |
 | Fuera de active hours | Skip heartbeat |
 
+### ⚠️ FIX: Modo Autónomo Implementado (2026-02-26)
+
+**Problema:** El modo autónomo estaba declarado pero NO implementado. Heartbeats respondían HEARTBEAT_OK sin ejecutar tareas.
+
+**Solución:** HEARTBEAT.md ahora incluye:
+1. ✅ Algoritmo paso a paso para detectar inactividad
+2. ✅ Tracking de estado (timestamp, message_id, modo)
+3. ✅ Tareas específicas por prioridad en modo autónomo
+4. ✅ Registro de sesiones autónomas
+5. ✅ Reglas de ejecución claras
+
+**Key Change:** El heartbeat ahora EJECUTA lógica, no solo responde pasivamente.
+
 ### Execution Model (GLM5 Single Execution)
 
 **YO SOY GLM5** → Una ejecución a la vez
