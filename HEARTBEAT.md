@@ -16,9 +16,9 @@
 | Campo | Valor |
 |-------|-------|
 | **Modo** | 🟡 Autónomo (reportes cada 15 min) |
-| **Último Mensaje Usuario** | 2026-02-26 21:07 UTC |
-| **Último Message ID** | 5777 |
-| **Inactividad Actual** | 384 min |
+| **Último Mensaje Usuario** | 2026-02-27 03:35 UTC |
+| **Último Message ID** | 5801 |
+| **Inactividad Actual** | 0 min |
 
 ---
 
