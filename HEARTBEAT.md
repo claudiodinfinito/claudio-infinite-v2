@@ -18,7 +18,7 @@
 | **Modo** | 🟡 Autónomo (reportes cada 15 min) |
 | **Último Mensaje Usuario** | 2026-02-26 21:07 UTC |
 | **Último Message ID** | 5777 |
-| **Inactividad Actual** | 154 min |
+| **Inactividad Actual** | 164 min |
 
 ---
 
