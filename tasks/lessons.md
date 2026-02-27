@@ -8,7 +8,7 @@ _Corrections and patterns to prevent repeat mistakes._
 
 | Categoría | Lecciones | Fecha |
 |-----------|-----------|-------|
-| **🛠️ Tools** | Edit Tool Race Condition, Compaction Timeout, Zombie Process | 2026-02-24+ |
+| **🛠️ Tools** | Edit Tool Solución Definitiva, Race Condition, Zombie Process | 2026-02-24+ |
 | **📝 Documentation** | LLM Files vs Web, Declaración ≠ Implementación | 2026-02-24+ |
 | **🤖 Autonomous** | Mode = Work Not Wait, HEARTBEAT_OK Not Enough | 2026-02-26+ |
 | **💼 Clients** | Payment Form Overdue, Credential Blocking | 2026-02-26+ |
@@ -21,11 +21,13 @@ _Corrections and patterns to prevent repeat mistakes._
 
 | Buscar | Línea aprox | Categoría |
 |--------|-------------|-----------|
-| Edit Tool Race | ~150 | Tools |
+| Edit Tool Solución Definitiva | ~2530 | Tools |
 | Zombie Process | ~450 | Tools |
 | LLM Files | ~50 | Documentation |
 | Autonomous Mode Fail | ~2200 | Autonomous |
 | Subagent Strategy | ~15 | GLM5 |
+
+**Referencia rápida:** `docs/EDIT_TOOL_SOLUTION.md`
 
 ---
 
@@ -518,6 +520,8 @@ NUNCA encadenar comandos destructivos sin verificación intermedia.
 
 ## 2026-02-25 - Edit Tool Race Condition
 
+> **⚠️ VER SOLUCIÓN DEFINITIVA (2026-02-27, línea ~2530) - Investigación completa con 11 pruebas.**
+
 ### The Mistake
 `edit` falla con "Could not find the exact text" incluso después de leer el archivo. Causa: el archivo cambió entre read y edit.
 
@@ -594,6 +598,8 @@ Add to HEARTBEAT.md autonomous tasks:
 ---
 
 ## 2026-02-25 - Usar write, NO edit para Archivos Dinámicos
+
+> **⚠️ VER SOLUCIÓN DEFINITIVA (2026-02-27, línea ~2530) - Investigación completa con 11 pruebas.**
 
 ### The Mistake
 Durante sesión autónoma, intenté usar `edit` múltiples veces en HEARTBEAT.md, memory/2026-02-25.md, MEMORY.md. Todos fallaron con "oldText must match exactly".
@@ -678,6 +684,8 @@ exec: sed -i '/patrón/d' archivo.md
 
 ## 2026-02-25 - NUNCA usar write, usar exec para append
 
+> **⚠️ VER SOLUCIÓN DEFINITIVA (2026-02-27, línea ~2530) - Investigación completa con 11 pruebas.**
+
 ### The Problem
 `edit` falla constantemente. `write` sobrescribe todo y PIERDE INFORMACIÓN.
 
@@ -691,17 +699,17 @@ exec: sed -i '/patrón/d' archivo.md
 | `sed -i 's/viejo/nuevo/g'` | Reemplazar texto | Modifica sin perder info |
 | `sed -i '/patrón/d'` | Borrar línea | Elimina línea específica |
 
-### REGLA ABSOLUTA
+### REGLA REVISADA (2026-02-27)
 ```markdown
-✅ USAR: exec (echo, sed, cat)
-❌ EVITAR: edit (falla por contexto compactado)
-❌ NUNCA: write (PIERDE INFORMACIÓN)
+✅ USAR: exec (echo, sed, cat) - Para append y reemplazos
+✅ USAR: write - Para sobrescribir archivo COMPLETO (si tienes el contenido)
+❌ EVITAR: edit (falla si archivo cambió desde el read)
 ```
 
 ### The Pattern
-> **exec + Unix tools = SEGURO**
-> 
-> echo append, sed modifica. NUNCA sobrescribir con write.
+> **exec + Unix tools = SEGURO para modificaciones parciales**
+>
+> echo append, sed modifica. write es válido para sobrescribir completo.
 
 
 ---
@@ -2478,3 +2486,90 @@ Tarea bloqueada por usuario → ¿Hay trabajo útil mientras espero?
   NO → Volver a modo Normal, alertar una vez, esperar
 ```
 
+
+---
+
+## 2026-02-27 - Edit Tool: Solución Definitiva (Investigación Completa)
+
+### El Problema
+El edit tool falla con: "Could not find the exact text in file. The old text must match exactly including all whitespace and newlines."
+
+### Investigación Realizada
+**11 pruebas prácticas** realizadas para aislar el problema:
+
+| Test | Escenario | Resultado |
+|------|-----------|-----------|
+| 1 | Edit inmediato después de read | ✅ Funciona |
+| 2 | Edit con CRLF (Windows line endings) | ✅ Funciona |
+| 3 | Archivo modificado externamente | ❌ Falla (reproduce bug) |
+| 4 | Releer antes de edit | ✅ Funciona |
+| 5 | Usar sed -i | ✅ Funciona |
+| 6 | Usar write | ✅ Funciona (pero arriesgado) |
+| 7 | HEARTBEAT.md real | ✅ Funciona con read fresco |
+| 8 | Múltiples edits secuenciales | ✅ Funciona (contexto actualizado) |
+| 9 | Archivo cambia externamente durante sesión | ❌ Falla |
+| 10 | Simular compactación de contexto | ❌ Falla |
+| 11 | Caracteres especiales (${variable}, backticks) | ✅ Funciona |
+
+### Causa Raíz Confirmada
+**El archivo cambió entre el read y el edit.**
+
+Factores que causan el cambio:
+1. **Heartbeat/Cron/Usuario** modifican el archivo externamente
+2. **Contexto compactado** - la información del archivo quedó desactualizada
+3. **Tiempo transcurrido** - pasaron múltiples turnos entre read y edit
+
+### Solución Definitiva
+
+**Patrón Correcto:**
+```
+read → edit (INMEDIATO, mismo turno)
+```
+
+**Regla #1: UN read → UN edit**
+```
+read → edit → read → edit  ✅
+read → edit → edit         ❌ (segundo edit falla)
+```
+
+**Regla #2: Agrupar operaciones por archivo**
+```
+read(file1) → edit(file1) → read(file2) → edit(file2)  ✅
+read(file1) → read(file2) → edit(file1)                ❌ (puede fallar)
+```
+
+### Alternativas cuando edit falla
+
+| Herramienta | Comando | Cuándo usar |
+|-------------|---------|-------------|
+| `edit` | `edit(path, oldText, newText)` | Default - modificar texto específico |
+| `exec: sed -i` | `sed -i 's/old/new/g' file` | Edit falló, necesito reemplazar |
+| `exec: echo >>` | `echo "text" >> file` | Append al final (simple, seguro) |
+| `write` | `write(path, content)` | Sobrescribir archivo COMPLETO |
+
+### Contradicciones Resueltas
+
+Lecciones anteriores contradictorias:
+- "Usar write, NO edit" vs "NUNCA usar write" → **write es válido para sobrescribir completo**
+- "Archivos dinámicos" vs "NO existen archivos dinámicos" → **todos son estáticos, el problema es timing**
+- "read → edit → read → edit" vs "read → edit → edit funciona" → **el segundo funciona si el contexto se actualiza**
+
+### La Regla Final
+
+> **Si edit falla, releer el archivo y volver a intentar con el texto exacto del nuevo read.**
+>
+> Si sigue fallando, usar `exec: sed -i 's/old/new/g' file`.
+
+### Prevención
+
+Antes de usar edit, verificar:
+- [ ] ¿Leí el archivo en este mismo turno?
+- [ ] ¿Copié el texto EXACTO del resultado del read?
+- [ ] ¿El archivo puede ser modificado por otros procesos?
+- [ ] Si es así, ¿releí inmediatamente antes de editar?
+
+### The Pattern
+```
+Archivo a editar → read → edit (mismo turno) → ✅
+Archivo modificado externamente → read → ... → edit → ❌ → Releer → edit → ✅
+```

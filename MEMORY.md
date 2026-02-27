@@ -17,7 +17,7 @@ _Curated knowledge that persists across sessions. Update sparingly with high-val
 | **Critical Thinking** | 202-215 | Evaluate rules vs environment |
 | **HEARTBEAT.md Architecture** | 217-280 | Autonomous mode design |
 | **LLM-Optimized Docs** | 282-320 | .txt files for LLMs |
-| **Technical Gotchas** | 322-380 | Edit Tool, Compaction, Zombies |
+| **Technical Gotchas** | 322-380 | Edit Tool Solución Definitiva, Compaction, Zombies |
 | **File Consolidation** | 382-450 | Disaster lessons, final structure |
 | **Autonomous Behavior** | 452-550 | Activation rules, delegation |
 | **Modo Autónomo = Trabajo** | 552-end | Lessons, patterns |
@@ -28,6 +28,7 @@ _Curated knowledge that persists across sessions. Update sparingly with high-val
 
 - **¿Credenciales Kommo?** → Active Projects > claudio-infinite
 - **¿Reglas workflow?** → Lessons Learned
+- **¿Edit tool falla?** → Technical Gotchas > Edit Tool Solución Definitiva
 - **¿Config heartbeat?** → HEARTBEAT.md Architecture
 - **¿Token efficiency?** → Key Insights + Token Efficiency Strategy
 - **¿Lecciones de errores?** → Lessons Learned + Technical Gotchas
@@ -201,10 +202,29 @@ Muchos frameworks ahora ofrecen archivos `.txt` optimizados para LLMs:
 
 ## 🛠️ Technical Gotchas (2026-02-24)
 
-### Edit Tool Race Condition
+### Edit Tool - Solución Definitiva (2026-02-27)
 **Problem:** `edit` fails with "Could not find the exact text" even after reading the file.
-**Cause:** File changed between read and edit (heartbeat updates, compacted context shows old version).
-**Solution:** Re-read file immediately before editing, or use `write` for small/dynamic files.
+**Causa raíz:** El archivo cambió entre el read y el edit (11 pruebas lo confirman).
+
+**Solución definitiva:**
+```
+read → edit (MISMO TURNO, inmediato)
+```
+
+**Si necesitas múltiples edits:**
+```
+read → edit → read → edit
+```
+
+**Alternativas cuando edit falla:**
+| Herramienta | Comando | Cuándo usar |
+|-------------|---------|-------------|
+| `edit` | Default | Modificar texto específico |
+| `sed -i` | `sed -i 's/old/new/g' file` | Edit falló |
+| `echo >>` | Append al final | Simple, seguro |
+| `write` | Sobrescribir completo | Tienes el contenido |
+
+**Referencia completa:** `tasks/lessons.md` línea ~2530 | `docs/EDIT_TOOL_SOLUTION.md`
 
 ### Compaction Timeout
 **What:** System tries to compress conversation history to save tokens.
