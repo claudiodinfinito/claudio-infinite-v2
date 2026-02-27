@@ -2495,8 +2495,9 @@ Tarea bloqueada por usuario → ¿Hay trabajo útil mientras espero?
 El edit tool falla con: "Could not find the exact text in file. The old text must match exactly including all whitespace and newlines."
 
 ### Investigación Realizada
-**11 pruebas prácticas** realizadas para aislar el problema:
+**19 pruebas prácticas** realizadas para aislar el problema:
 
+#### Tests Básicos
 | Test | Escenario | Resultado |
 |------|-----------|-----------|
 | 1 | Edit inmediato después de read | ✅ Funciona |
@@ -2504,38 +2505,76 @@ El edit tool falla con: "Could not find the exact text in file. The old text mus
 | 3 | Archivo modificado externamente | ❌ Falla (reproduce bug) |
 | 4 | Releer antes de edit | ✅ Funciona |
 | 5 | Usar sed -i | ✅ Funciona |
-| 6 | Usar write | ✅ Funciona (pero arriesgado) |
+| 6 | Usar write | ✅ Funciona |
 | 7 | HEARTBEAT.md real | ✅ Funciona con read fresco |
 | 8 | Múltiples edits secuenciales | ✅ Funciona (contexto actualizado) |
 | 9 | Archivo cambia externamente durante sesión | ❌ Falla |
 | 10 | Simular compactación de contexto | ❌ Falla |
 | 11 | Caracteres especiales (${variable}, backticks) | ✅ Funciona |
 
+#### Tests Avanzados
+| Test | Escenario | Resultado |
+|------|-----------|-----------|
+| 12 | Archivo grande (5000 líneas) | ✅ Funciona |
+| 13 | Múltiples líneas en oldText | ✅ Funciona |
+| 14 | Líneas duplicadas sin contexto | ❌ Error (mensaje útil) |
+| 14b | Líneas duplicadas con contexto | ✅ Funciona |
+| 15 | Contexto extendido | ✅ Funciona |
+| 16 | Trailing whitespace | ✅ Funciona |
+| 17 | Sin read explícito (contexto de exec) | ✅ Funciona |
+| 18 | Adivinar contenido correctamente | ✅ Funciona |
+| 19 | Adivinar contenido incorrectamente | ❌ Falla |
+
 ### Causa Raíz Confirmada
-**El archivo cambió entre el read y el edit.**
+**El archivo cambió entre el momento en que tienes el contenido y el momento del edit.**
 
 Factores que causan el cambio:
 1. **Heartbeat/Cron/Usuario** modifican el archivo externamente
-2. **Contexto compactado** - la información del archivo quedó desactualizada
+2. **Contexto desactualizado** - la información del archivo quedó vieja
 3. **Tiempo transcurrido** - pasaron múltiples turnos entre read y edit
+
+### Hallazgos Clave
+
+1. **NO es necesario usar el tool `read` específicamente**
+   - El contenido puede venir de `read`, `exec: cat`, o incluso adivinar
+   - Lo importante es tener el contenido ACTUAL
+
+2. **El contexto se actualiza automáticamente**
+   - Múltiples edits secuenciales funcionan sin releer
+   - Solo es necesario releer si el archivo cambió externamente
+
+3. **Líneas duplicadas requieren contexto adicional**
+   - El edit detecta líneas duplicadas y da mensaje útil
+   - Solución: incluir más líneas de contexto en oldText
+
+4. **El tamaño del archivo NO importa**
+   - Archivos de 5000+ líneas funcionan igual
 
 ### Solución Definitiva
 
 **Patrón Correcto:**
 ```
-read → edit (INMEDIATO, mismo turno)
+read → edit (MISMO TURNO)
 ```
 
-**Regla #1: UN read → UN edit**
+**Múltiples edits secuenciales:**
 ```
-read → edit → read → edit  ✅
-read → edit → edit         ❌ (segundo edit falla)
+read → edit → edit → edit  ✅ (contexto se actualiza automáticamente)
 ```
 
-**Regla #2: Agrupar operaciones por archivo**
+**Regla #1: Ten el contenido ACTUAL**
 ```
-read(file1) → edit(file1) → read(file2) → edit(file2)  ✅
-read(file1) → read(file2) → edit(file1)                ❌ (puede fallar)
+Antes de edit → asegúrate de tener el contenido actual del archivo
+```
+
+**Regla #2: Copia EXACTAMENTE**
+```
+oldText = copia exacta del contenido que tienes en tu contexto
+```
+
+**Regla #3: Si falla, releer**
+```
+edit falla → read → copiar texto exacto → reintentar
 ```
 
 ### Alternativas cuando edit falla
@@ -2543,8 +2582,8 @@ read(file1) → read(file2) → edit(file1)                ❌ (puede fallar)
 | Herramienta | Comando | Cuándo usar |
 |-------------|---------|-------------|
 | `edit` | `edit(path, oldText, newText)` | Default - modificar texto específico |
-| `exec: sed -i` | `sed -i 's/old/new/g' file` | Edit falló, necesito reemplazar |
-| `exec: echo >>` | `echo "text" >> file` | Append al final (simple, seguro) |
+| `exec: sed -i` | `sed -i 's/old/new/g' file` | Edit falló, reemplazo simple |
+| `exec: echo >>` | `echo "text" >> file` | Append al final |
 | `write` | `write(path, content)` | Sobrescribir archivo COMPLETO |
 
 ### Contradicciones Resueltas
@@ -2552,7 +2591,7 @@ read(file1) → read(file2) → edit(file1)                ❌ (puede fallar)
 Lecciones anteriores contradictorias:
 - "Usar write, NO edit" vs "NUNCA usar write" → **write es válido para sobrescribir completo**
 - "Archivos dinámicos" vs "NO existen archivos dinámicos" → **todos son estáticos, el problema es timing**
-- "read → edit → read → edit" vs "read → edit → edit funciona" → **el segundo funciona si el contexto se actualiza**
+- "read → edit → read → edit" vs "read → edit → edit funciona" → **ambos funcionan, el contexto se actualiza**
 
 ### La Regla Final
 
@@ -2563,13 +2602,13 @@ Lecciones anteriores contradictorias:
 ### Prevención
 
 Antes de usar edit, verificar:
-- [ ] ¿Leí el archivo en este mismo turno?
-- [ ] ¿Copié el texto EXACTO del resultado del read?
-- [ ] ¿El archivo puede ser modificado por otros procesos?
-- [ ] Si es así, ¿releí inmediatamente antes de editar?
+- [ ] ¿Tengo el contenido ACTUAL del archivo?
+- [ ] ¿Copié el texto EXACTO del resultado?
+- [ ] ¿Líneas duplicadas? → Incluir más contexto
 
 ### The Pattern
 ```
 Archivo a editar → read → edit (mismo turno) → ✅
 Archivo modificado externamente → read → ... → edit → ❌ → Releer → edit → ✅
+Líneas duplicadas → incluir más contexto en oldText → ✅
 ```
