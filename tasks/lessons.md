@@ -13,6 +13,7 @@ _Corrections and patterns to prevent repeat mistakes._
 | **🤖 Autonomous** | Mode = Work Not Wait, HEARTBEAT_OK Not Enough | 2026-02-26+ |
 | **💼 Clients** | Payment Form Overdue, Credential Blocking | 2026-02-26+ |
 | **🔄 Workflows** | Plan Before Execute, Verify Before Done | 2026-02-24+ |
+| **🐙 GitHub** | Push Sin Verificar, Force Push Incorrecto, URLs Incorrectas | 2026-03-01 |
 | **⚡ GLM5** | Subagent Strategy, Unlimited Tokens | 2026-02-23+ |
 
 ---
@@ -2656,3 +2657,60 @@ Archivo a editar → read → edit (mismo turno) → ✅
 Archivo modificado externamente → read → ... → edit → ❌ → Releer → edit → ✅
 Líneas duplicadas → incluir más contexto en oldText → ✅
 ```
+
+---
+
+## 2026-03-01 - GitHub Push Sin Verificar Repo Existente
+
+### The Mistake
+Pushed Astro project to existing `claudio-infinite` repo without checking what was there. Overwrote OpenClaw project with Astro files.
+
+### Why It Happened
+1. Saw repo name `claudio-infinite` existed and assumed it was the Astro project
+2. Did NOT check repo contents before pushing
+3. Did NOT ask user to confirm repo name
+4. Merged unrelated histories, overwriting original content
+5. Force pushed to WRONG commit, losing data
+
+### The Damage
+- Original OpenClaw repo mixed with Astro files (2855 files)
+- User frustrated by overwrite
+- Required multiple force pushes to restore
+- Created confusing repo situation
+
+### The Fix
+```bash
+# Check repo contents BEFORE pushing
+gh repo view owner/repo --json description
+gh api repos/owner/repo/contents --jq '.[].name'
+
+# If repo exists with content, ASK USER:
+# "Repo X exists with [files]. Do you want to use a different name?"
+
+# Create new repo if needed:
+gh repo create new-repo-name --public
+
+# To restore specific commit:
+gh api repos/owner/repo/commits --jq '.[] | "\(.sha[0:7]) \(.commit.message)"'
+git fetch origin SHA
+git reset --hard FETCH_HEAD
+git push --force
+```
+
+### The Pattern
+**ALWAYS verify repo contents before pushing to existing repo.**
+- `gh repo view` to check description
+- `gh api repos/owner/repo/contents` to see files
+- If content exists → ASK USER for confirmation or new name
+- NEVER assume repo is empty or has expected content
+
+### Prevention Checklist
+- [ ] Check if repo exists: `gh repo view owner/repo`
+- [ ] If exists, check contents: `gh api repos/owner/repo/contents`
+- [ ] If has content, ASK USER before proceeding
+- [ ] Use explicit repo name from user, not inferred
+- [ ] Verify .gitignore excludes secrets and build files
+- [ ] NEVER add URLs without verification
+
+### Reference
+**Full postmortem:** `lessons/2026-03-01-github-postmortem.md`
