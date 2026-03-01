@@ -15,11 +15,11 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Modo** | 🟢 Normal |
+| **Modo** | 🟡 Autónomo |
 | **Último Mensaje Usuario** | 2026-02-28 18:52 UTC |
 | **Último Message ID** | 5902 |
-| **Inactividad Actual** | 0 |
-| **Heartbeat** | 2026-02-28 19:41 UTC |
+| **Inactividad Actual** | ~5 horas |
+| **Heartbeat** | 2026-03-01 00:01 UTC |
 
 ---
 
