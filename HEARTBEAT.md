@@ -15,11 +15,11 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Modo** | 🟡 Autónomo |
-| **Último Mensaje Usuario** | 2026-02-28 18:52 UTC |
-| **Último Message ID** | 5902 |
+| **Modo** | Normal |
+| **Último Mensaje Usuario** | 2026-03-01 07:43 UTC |
+| **Último Message ID** | — |
 | **Inactividad Actual** | ~5 horas |
-| **Heartbeat** | 2026-03-01 00:01 UTC |
+| **Heartbeat** | 2026-03-01 12:25 UTC |
 
 ---
 
@@ -108,6 +108,7 @@ Ejecutar secuencial, reportar si hay alertas:
 | 2026-02-26 | 21:07 UTC | — | KANBAN.md, website, OPENCLAW.md CLI, WORKFLOW examples, CONFIG example | 🟡 Ejecutando con reportes cada 15 min |
 | 2026-02-27 | 04:01 UTC | 05:20 UTC | **Investigación Edit Tool completa** - 19 pruebas, documentación, lessons actualizadas | ✅ Solución definitiva encontrada |
 | 2026-02-28 | 04:03 UTC | — | **Alertas clientes atrasados** - Client 001 deadline pasado, Client 002 ficha atrasada | 🚨 Esperando respuesta usuario |
+| 2026-03-01 | 04:01 UTC | 04:54 UTC | **Alertas + Mantenimiento** - 2 alertas clientes, memory actualizado, log archivado | 🟡 Sin respuesta usuario |
 
 ---
 
