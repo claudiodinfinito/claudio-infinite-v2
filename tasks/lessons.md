@@ -31,6 +31,50 @@ _Corrections and patterns to prevent repeat mistakes._
 
 ---
 
+## 2026-03-01 - GitHub Push Sin Verificar Repo Existente
+
+### The Mistake
+Pushed Astro project to existing `claudio-infinite` repo without checking what was there. Overwrote OpenClaw project with Astro files.
+
+### Why It Happened
+1. Saw repo name `claudio-infinite` existed and assumed it was the Astro project
+2. Did NOT check repo contents before pushing
+3. Did NOT ask user to confirm repo name
+4. Merged unrelated histories, overwriting original content
+
+### The Damage
+- Original OpenClaw repo mixed with Astro files
+- User frustrated by overwrite
+- Required force push to restore
+
+### The Fix
+```bash
+# Check repo contents BEFORE pushing
+gh repo view owner/repo --json description
+gh api repos/owner/repo/contents --jq '.[].name'
+
+# If repo exists with content, ASK USER:
+# "Repo X exists with [files]. Do you want to use a different name?"
+
+# Create new repo if needed:
+gh repo create new-repo-name --public
+```
+
+### The Pattern
+**ALWAYS verify repo contents before pushing to existing repo.**
+- `gh repo view` to check description
+- `gh api repos/owner/repo/contents` to see files
+- If content exists → ASK USER for confirmation or new name
+- NEVER assume repo is empty or has expected content
+
+### Prevention Checklist
+- [ ] Check if repo exists: `gh repo view`
+- [ ] If exists, check contents: `gh api repos/owner/repo/contents`
+- [ ] If has content, ASK USER before proceeding
+- [ ] Use explicit repo name from user, not inferred
+
+---
+
 ## 2026-02-23 - Subagent Strategy Correction
 
 ### The Mistake
