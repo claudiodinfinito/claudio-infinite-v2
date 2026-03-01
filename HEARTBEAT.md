@@ -16,10 +16,10 @@
 | Campo | Valor |
 |-------|-------|
 | **Modo** | Normal |
-| **Último Mensaje Usuario** | 2026-03-01 14:41 UTC |
+| **Último Mensaje Usuario** | 2026-03-01 18:36 UTC |
 | **Último Message ID** | — |
-| **Inactividad Actual** | ~3 horas |
-| **Heartbeat** | 2026-03-01 17:32 UTC |
+| **Inactividad Actual** | ~6 minutos |
+| **Heartbeat** | 2026-03-01 18:42 UTC |
 
 ---
 
