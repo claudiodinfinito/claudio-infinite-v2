@@ -53,10 +53,19 @@ npm run preview
 | openclaw.json | `/root/.openclaw/openclaw.json` |
 | Workspace | `/root/.openclaw/workspace/` |
 
+## GitHub Repos
+
+| Repo | URL | Contenido |
+|------|-----|-----------|
+| claudio-infinite-v2 | https://github.com/claudiodinfinito/claudio-infinite-v2 | OpenClaw workspace (este repo) |
+| claudio-infinite | https://github.com/claudiodinfinito/claudio-infinite | OpenClaw original |
+| astro-landing-spa | https://github.com/claudiodinfinito/astro-landing-spa | Proyecto Astro 5 |
+
 ## Notes
 
 - Siempre verificar procesos zombie antes de iniciar servidor: `ps aux | grep "node.*entry.mjs"`
 - GLM5 tiene tokens ilimitados - usar subagents libremente
+- **SIEMPRE verificar contenido de repo antes de push** (lección 2026-03-01)
 
 ---
 
